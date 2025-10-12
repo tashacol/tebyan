@@ -27,12 +27,9 @@
         .btn-loading::after { content: ''; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* --- START: Header & Separator Styles --- */
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 25px; position: relative; }
         .dashboard-header::after { content: ''; position: absolute; bottom: 0; right: 0; left: 0; height: 2px; background: linear-gradient(to left, var(--primary), var(--success)); border-radius: 2px; }
-        /* --- END: Header & Separator Styles --- */
         
-        /* --- START: Article Card & Group Styles --- */
         .article-card { background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); margin-bottom: 15px; padding: 20px; border-top: 4px solid var(--primary); transition: transform 0.2s, box-shadow 0.2s; }
         .article-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
         .article-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
@@ -44,7 +41,16 @@
         .article-actions { display: flex; gap: 10px; }
         .article-actions button { padding: 8px 16px; min-height: initial; font-size: 0.9rem; }
         .article-group-title { font-size: 1.4rem; color: var(--text-dark); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
-        /* --- END: Article Card & Group Styles --- */
+        
+        /* --- START: Mobile Responsive Article Card --- */
+        @media (max-width: 600px) {
+            .article-header { flex-direction: column; align-items: flex-start; }
+            .article-details { flex-direction: column; align-items: stretch; gap: 15px; }
+            .article-title { order: 2; margin-top: 10px; }
+            .status-badges { order: 1; }
+            .article-actions { justify-content: flex-end; }
+        }
+        /* --- END: Mobile Responsive Article Card --- */
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 90%; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; }
@@ -52,47 +58,40 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
         .modal-header h3 { margin: 0; font-size: 1.3rem; }
         .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; }
-        .modal-body { overflow-y: auto; flex-grow: 1; max-height: 70vh; }
+        .modal-body { overflow-y: auto; flex-grow: 1; max-height: 70vh; overflow-x: hidden; /* Fix scrollbar issue */ }
         .wizard-step { display: none; } .wizard-step.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .wizard-nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-        button.btn-secondary { background-color: #6c757d; } button.btn-secondary:hover { background-color: #5a6268; }
-        .supervisor-list { min-height: 280px; max-height: 280px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); }
-        .supervisor-list-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background-color 0.2s; }
-        .supervisor-list-item:hover { background-color: var(--primary-light); }
-        .supervisor-list-item:last-child { border-bottom: none; }
-        .supervisor-list-item strong { display: block; font-weight: 700; color: var(--text-dark); }
-        .supervisor-list-item span { font-size: 0.9rem; color: var(--text-light); }
-        .search-wrapper { position: relative; margin-bottom: 15px; }
-        .search-wrapper input { padding-left: 45px; }
-        .search-wrapper .search-icon { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: var(--text-light); }
         
-        /* --- START: User Menu Styles --- */
         .user-menu { position: relative; }
         .user-menu-trigger { background: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); border-radius: 50%; width: 48px; height: 48px; min-height: 48px; padding: 0; font-size: 1.5rem; box-shadow: var(--shadow); }
-        .user-menu-trigger:hover { background-color: var(--primary-light); }
         .user-menu-content { position: absolute; top: 110%; left: 0; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); border: 1px solid var(--border-color); width: 250px; z-index: 100; padding: 15px; display: flex; flex-direction: column; gap: 15px; transition: opacity 0.2s, transform 0.2s; transform: translateY(-10px); opacity: 0; pointer-events: none; }
         .user-menu-content:not(.hidden) { transform: translateY(0); opacity: 1; pointer-events: auto; }
         .user-info { text-align: right; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .user-info strong { display: block; font-size: 1.1rem; }
-        .user-info span { font-size: 0.9rem; color: var(--text-light); }
-        .user-score { font-weight: 700; font-size: 1rem; }
-        .user-score span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
+        .user-info strong { display: block; font-size: 1.1rem; } .user-info span { font-size: 0.9rem; color: var(--text-light); }
+        .user-score { font-weight: 700; font-size: 1rem; } .user-score span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
         .user-menu #logout-btn { width: 100%; }
-        /* --- END: User Menu Styles --- */
-
-        /* --- START: Skeleton Loader Styles --- */
+        
         .skeleton-loader { background-color: #e0e0e0; position: relative; overflow: hidden; border-radius: var(--radius-md); }
         .skeleton-loader::after { content: ''; position: absolute; top: 0; left: -150%; width: 150%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 100% { left: 150%; } }
         .skeleton-button { width: 180px; height: 48px; margin-bottom: 20px; }
         .skeleton-card { height: 120px; margin-bottom: 15px; }
         .skeleton-list-item { height: 60px; margin-bottom: 1px; border-radius: 0; }
-        /* --- END: Skeleton Loader Styles --- */
+
+        /* --- START: Reference Manager Styles --- */
+        .ref-manager-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+        .reference-list { list-style-type: none; padding: 0; margin-top: 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 250px; overflow-y: auto; }
+        .reference-list li { padding: 10px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .reference-list li:last-child { border-bottom: none; }
+        .reference-list .ref-delete-btn { background: none; border: none; color: var(--danger); cursor: pointer; padding: 5px; min-height: auto; font-size: 1rem; }
+        .validation-note { font-size: 0.85rem; color: var(--text-light); margin-top: 5px; }
+        /* --- END: Reference Manager Styles --- */
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Login Page and Dashboard Shell (No changes here) -->
         <div id="login-page">
             <div class="card">
                 <h1>ورود به پنل کاربری</h1>
@@ -119,13 +118,11 @@
                     </div>
                 </div>
             </div>
-            
             <div id="dashboard-content-placeholder">
                 <div class="skeleton-loader skeleton-button"></div>
                 <div class="skeleton-loader skeleton-card"></div>
                 <div class="skeleton-loader skeleton-card"></div>
             </div>
-            
             <div id="dashboard-content" class="hidden">
                 <button id="add-new-article-btn" style="margin-bottom: 20px;"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله جدید</span></button>
                 <div id="articles-container"></div>
@@ -135,97 +132,27 @@
     <div id="modal-container"></div>
 
 <script>
+    // --- Start of JS: No changes to initial setup ---
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwTgJU4lbocweggC0zU7XyzzWKg3BhcUcFc5kaeYoD6dsAHVN7A-15L19G32UCa2hB/exec';
-
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
     const loginForm = document.getElementById('login-form');
     const modalContainer = document.getElementById('modal-container');
-    
-    // UI Elements for Skeleton Loading
     const dashboardContent = document.getElementById('dashboard-content');
     const dashboardPlaceholder = document.getElementById('dashboard-content-placeholder');
 
-    async function callApi(action, params = {}, button = null) {
-        if(button) button.classList.add('btn-loading');
-        try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, params })
-            });
-            if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
-            return await response.json();
-        } catch (error) {
-            console.error('API Call Failed:', error);
-            alert('خطا در ارتباط با سرور.');
-            return { status: 'error', message: error.message };
-        } finally {
-            if(button) button.classList.remove('btn-loading');
-        }
-    }
+    async function callApi(action, params = {}, button = null) { if(button) button.classList.add('btn-loading'); try { const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, params }) }); if (!response.ok) throw new Error(`Network error: ${response.statusText}`); return await response.json(); } catch (error) { console.error('API Call Failed:', error); alert('خطا در ارتباط با سرور.'); return { status: 'error', message: error.message }; } finally { if(button) button.classList.remove('btn-loading'); } }
+    document.addEventListener('DOMContentLoaded', () => { const user = getStoredUser(); if (user) showDashboard(user); document.addEventListener('click', function(event) { const menu = document.getElementById('user-menu-dropdown'); const menuBtn = document.getElementById('user-menu-btn'); if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) { menu.classList.add('hidden'); } }); });
+    loginForm.addEventListener('submit', async (e) => { e.preventDefault(); const loginError = document.getElementById('login-error'); loginError.textContent = ''; const response = await callApi('login', { nationalId: document.getElementById('national-id').value, password: document.getElementById('password').value }, document.getElementById('login-btn')); if (response?.status === 'success') { storeUser(response.user); showDashboard(response.user); } else { loginError.textContent = response?.message || 'خطایی رخ داد.'; } });
+    function showDashboard(user) { loginPage.classList.add('hidden'); dashboardPage.classList.remove('hidden'); document.getElementById('menu-user-name').textContent = user.name; document.getElementById('menu-user-nid').textContent = `کد ملی: ${user.nationalId}`; document.getElementById('menu-user-score').textContent = user.score; document.getElementById('user-menu-btn').onclick = () => { document.getElementById('user-menu-dropdown').classList.toggle('hidden'); }; document.getElementById('logout-btn').onclick = handleLogout; document.getElementById('add-new-article-btn').onclick = showNewArticleModal; loadArticles(user.nationalId); }
+    async function loadArticles(nationalId) { dashboardContent.classList.add('hidden'); dashboardPlaceholder.classList.remove('hidden'); const response = await callApi('getArticles', { nationalId }); dashboardPlaceholder.classList.add('hidden'); dashboardContent.classList.remove('hidden'); if (response?.status === 'success') { renderArticles(response.articles); document.getElementById('menu-user-score').textContent = response.score; const user = getStoredUser(); user.score = response.score; storeUser(user); } }
+    // --- End of JS: No changes to initial setup ---
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const user = getStoredUser();
-        if (user) showDashboard(user);
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('user-menu-dropdown');
-            const menuBtn = document.getElementById('user-menu-btn');
-            if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
-                menu.classList.add('hidden');
-            }
-        });
-    });
-
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const loginError = document.getElementById('login-error');
-        loginError.textContent = '';
-        const response = await callApi('login', { nationalId: document.getElementById('national-id').value, password: document.getElementById('password').value }, document.getElementById('login-btn'));
-        if (response?.status === 'success') { storeUser(response.user); showDashboard(response.user); } 
-        else { loginError.textContent = response?.message || 'خطایی رخ داد.'; }
-    });
-
-    function showDashboard(user) {
-        loginPage.classList.add('hidden');
-        dashboardPage.classList.remove('hidden');
-        
-        document.getElementById('menu-user-name').textContent = user.name;
-        document.getElementById('menu-user-nid').textContent = `کد ملی: ${user.nationalId}`;
-        document.getElementById('menu-user-score').textContent = user.score;
-        document.getElementById('user-menu-btn').onclick = () => {
-            document.getElementById('user-menu-dropdown').classList.toggle('hidden');
-        };
-        document.getElementById('logout-btn').onclick = handleLogout;
-        document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
-
-        loadArticles(user.nationalId);
-    }
-
-    async function loadArticles(nationalId) {
-        // Show skeleton loader
-        dashboardContent.classList.add('hidden');
-        dashboardPlaceholder.classList.remove('hidden');
-        
-        const response = await callApi('getArticles', { nationalId });
-        
-        // Hide skeleton loader and show content
-        dashboardPlaceholder.classList.add('hidden');
-        dashboardContent.classList.remove('hidden');
-
-        if (response?.status === 'success') {
-            renderArticles(response.articles);
-            document.getElementById('menu-user-score').textContent = response.score;
-            const user = getStoredUser();
-            user.score = response.score;
-            storeUser(user);
-        }
-    }
+    // --- Start of JS: Major updates below ---
 
     function renderArticles(articles) {
         const articlesContainer = document.getElementById('articles-container');
         articlesContainer.innerHTML = '';
-        
-        // Group articles by status
         const inProgress = articles.filter(a => [1, 2].includes(a.articleStatus) || a.supervisorStatus == 1);
         const accepted = articles.filter(a => a.articleStatus == 5);
         const rejected = articles.filter(a => a.supervisorStatus == 0 || a.articleStatus == 0);
@@ -237,13 +164,11 @@
             renderGroup('مقالات پذیرفته شده', accepted, articlesContainer);
             renderGroup('مقالات رد شده', rejected, articlesContainer);
         }
-        
         document.getElementById('add-new-article-btn').disabled = articles.some(a => a.articleStatus == 1 || a.articleStatus == 2);
     }
     
     function renderGroup(title, articles, container) {
         if (articles.length === 0) return;
-
         const groupTitle = document.createElement('h4');
         groupTitle.className = 'article-group-title';
         groupTitle.textContent = title;
@@ -253,8 +178,6 @@
             const [supervisorStatusText, supervisorStatusColor] = getStatusInfo('supervisor', article.supervisorStatus);
             const [articleStatusText, articleStatusColor] = getStatusInfo('article', article.articleStatus);
             const canBeDeleted = article.supervisorStatus != 5;
-            
-            // Use article status color for the top border if it's more definitive (accepted/rejected)
             const cardBorderColor = (article.articleStatus == 5 || article.articleStatus == 0) ? articleStatusColor : supervisorStatusColor;
 
             const card = document.createElement('div');
@@ -262,19 +185,27 @@
             card.style.borderTopColor = cardBorderColor;
             card.innerHTML = `
                 <div class="article-header">
-                    <span class="article-title">${article.title}</span>
+                    <p class="article-id-mobile">شناسه مقاله: ${article.articleId}</p>
                     <div class="status-badges">
                         <span class="status-badge" style="background-color: ${supervisorStatusColor};">${supervisorStatusText}</span>
                         <span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span>
                     </div>
+                    <span class="article-title">${article.title}</span>
                 </div>
                 <div class="article-details">
-                    <p>شناسه مقاله: ${article.articleId}</p>
+                    <p class="article-id-desktop">شناسه مقاله: ${article.articleId}</p>
                     <div class="article-actions">
                         <button class="btn-view">مشاهده و تکمیل</button>
                         ${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
+
+            // Simple CSS to hide/show based on screen size
+            card.querySelector('.article-id-mobile').style.display = 'none';
+            if (window.innerWidth <= 600) {
+                card.querySelector('.article-id-desktop').style.display = 'none';
+                card.querySelector('.article-id-mobile').style.display = 'block';
+            }
             
             card.querySelector('.btn-view').onclick = () => showEditArticleWizard(article);
             if (canBeDeleted) {
@@ -284,115 +215,178 @@
         });
     }
 
-    async function handleDeleteArticle(articleId) {
-        if (!confirm('آیا از حذف این مقاله اطمینان دارید؟ این عمل قابل بازگشت نیست.')) return;
-        const user = getStoredUser();
-        const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
-        if(response?.status === 'success') {
-            alert(response.message);
-            loadArticles(user.nationalId);
-        } else {
-            alert('خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'));
-        }
-    }
-
-    function getKnowledgeAreaOptions(selectedValue = '') {
-        const areas = ["فقه", "اصول", "اخلاق", "کلام", "تفسیر", "ترجمه", "فلسفه", "عرفان", "حدیث", "رجال", "درایه", "نقدالحدیث", "صرف", "نحو", "بلاغت", "مشاوره", "تربیتی", "روانشناسی"];
-        return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join('');
-    }
-    
-    async function showNewArticleModal() {
-        // ... (The rest of the JS is identical, no changes needed from here down)
-        const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><input type="text" id="article-title" required></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`;
-        renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
-        document.getElementById('affiliation').onclick = () => showAffiliationModal('affiliation');
-        document.getElementById('supervisor').onclick = () => showSupervisorModal('supervisor', (supervisor) => { window.selectedSupervisor = supervisor; });
-        document.getElementById('submit-new-article-btn').onclick = handleNewArticleSubmit;
-    }
-    
-    async function handleNewArticleSubmit(e) {
-        if (!window.selectedSupervisor) { alert('لطفاً یک استاد راهنما انتخاب کنید.'); return; }
-        const user = getStoredUser();
-        const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor };
-        const response = await callApi('submitNewArticle', { data }, e.target);
-        if(response?.status === 'success'){ alert(response.message); closeAllModals(); loadArticles(user.nationalId); } 
-        else { alert('خطا: ' + (response.message || 'خطای نامشخص')); }
-    }
-
-    function showAffiliationModal(targetInputId, currentAffiliation = '') {
-        const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
-        const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
-        renderModal('تکمیل وابستگی سازمانی', modalContent, 'modal-sm', true);
-        document.getElementById('save-affiliation-btn').onclick = () => {
-            const parts = [ document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value ].filter(Boolean);
-            document.getElementById(targetInputId).value = parts.join('، ');
-            closeModalById('sub-modal');
-        };
-    }
-    
-    function showSupervisorModal(targetInputId, onSelectCallback) {
-        const modalContent = `
-            <div class="modal-body">
-                <div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div>
-                <div id="supervisor-list-placeholder-modal">
-                    <div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div>
-                </div>
-                <div class="supervisor-list hidden" id="supervisor-list-results-modal"></div>
-                <button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>
-            </div>`;
-        renderModal('انتخاب استاد راهنما', modalContent, 'modal-sm', true);
-        
-        let currentPage = 1, currentSearchTerm = '';
-        const searchInput = document.getElementById('supervisor-search-input-modal');
-        const resultsContainer = document.getElementById('supervisor-list-results-modal');
-        const placeholder = document.getElementById('supervisor-list-placeholder-modal');
-        const loadMoreBtn = document.getElementById('load-more-supervisors-modal');
-
-        const fetchAndRender = async (reset = false) => {
-            if (reset) {
-                currentPage = 1;
-                resultsContainer.innerHTML = '';
-                resultsContainer.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-            }
-            const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
-            
-            placeholder.classList.add('hidden');
-            resultsContainer.classList.remove('hidden');
-
-            if (res?.status === 'success') {
-                if (reset && res.supervisors.length === 0) resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">استادی یافت نشد.</p>';
-                res.supervisors.forEach(s => {
-                    const item = document.createElement('div');
-                    item.className = 'supervisor-list-item';
-                    item.innerHTML = `<strong>${s.name}</strong><span>${s.nationalId}</span>`;
-                    item.onclick = () => { onSelectCallback(s); document.getElementById(targetInputId).value = s.name; closeModalById('sub-modal'); };
-                    resultsContainer.appendChild(item);
-                });
-                loadMoreBtn.classList.toggle('hidden', !res.hasMore);
-            } else { resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>'; }
-        };
-        let debounceTimer;
-        searchInput.addEventListener('keyup', (e) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { currentSearchTerm = e.target.value; fetchAndRender(true); }, 500); });
-        loadMoreBtn.onclick = () => { currentPage++; fetchAndRender(); };
-        fetchAndRender(true);
-    }
-    
     function showEditArticleWizard(article) {
         const canChangeSupervisor = article.supervisorStatus != 5;
         const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--warning); text-align: center;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
-        const modalContent = `<div class="modal-body"><div class="wizard-step active" data-step="1"><h4>مرحله ۱: ویرایش اطلاعات کلی</h4><div class="form-group"><label>عنوان مقاله</label><input type="text" value="${article.title}" disabled></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea">${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3">${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%"><span class="btn-text">ذخیره اطلاعات کلی</span></button></div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8">${article.abstract || ''}</textarea></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها</label><input type="text" id="edit-keywords" value="${article.keywords || ''}"></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%"><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15">${article.introduction || ''}</textarea></div><button class="save-section-btn" data-section="introduction" style="width:100%"><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15">${article.body || ''}</textarea></div><button class="save-section-btn" data-section="body" style="width:100%"><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15">${article.conclusion || ''}</textarea></div><button class="save-section-btn" data-section="conclusion" style="width:100%"><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6"><h4>مرحله ۶: منابع</h4><div class="form-group"><textarea id="edit-references" rows="15">${article.references || ''}</textarea></div><button class="save-section-btn" data-section="references" style="width:100%"><span class="btn-text">ذخیره منابع</span></button></div></div><div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`;
+        
+        // --- NEW: HTML for the advanced reference manager ---
+        const referenceManagerHTML = `
+            <h4>مرحله ۶: منابع</h4>
+            <div class="form-group">
+                <label for="ref-type">نوع منبع</label>
+                <select id="ref-type">
+                    <option value="book">کتاب</option>
+                    <option value="journal">مقاله مجله</option>
+                </select>
+            </div>
+            <!-- Fields for Book -->
+            <div id="ref-book-fields">
+                <div class="ref-manager-grid">
+                    <div class="form-group"><label>نویسنده (ها)</label><input id="ref-book-author" placeholder="مثال: طباطبایی، سید محمدحسین"></div>
+                    <div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374"></div>
+                    <div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن"></div>
+                    <div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی"></div>
+                </div>
+            </div>
+            <!-- Fields for Journal Article -->
+            <div id="ref-journal-fields" class="hidden">
+                 <div class="ref-manager-grid">
+                    <div class="form-group"><label>نویسنده (ها)</label><input id="ref-journal-author" placeholder="مثال: مطهری، مرتضی"></div>
+                    <div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368"></div>
+                    <div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت"></div>
+                    <div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی"></div>
+                </div>
+            </div>
+            <button id="add-ref-btn" class="btn-secondary" style="width:100%;"><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button>
+            <p class="validation-note">حداقل ۵ و حداکثر ۴۰ منبع</p>
+            <ul class="reference-list" id="reference-list-container"></ul>
+            <textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea>
+            <button class="save-section-btn" data-section="references" style="width:100%"><span class="btn-text">ذخیره منابع</span></button>
+        `;
+
+        const modalContent = `<div class="modal-body"><div class="wizard-step active" data-step="1">...</div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8">${article.abstract || ''}</textarea><p class="validation-note">حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</p></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}"><p class="validation-note">حداقل ۳ و حداکثر ۵ کلیدواژه</p></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%"><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15">${article.introduction || ''}</textarea><p class="validation-note">حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</p></div><button class="save-section-btn" data-section="introduction" style="width:100%"><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15">${article.body || ''}</textarea><p class="validation-note">حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</p></div><button class="save-section-btn" data-section="body" style="width:100%"><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15">${article.conclusion || ''}</textarea><p class="validation-note">حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</p></div><button class="save-section-btn" data-section="conclusion" style="width:100%"><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6">${referenceManagerHTML}</div></div><div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`;
         renderModal(`تکمیل مقاله: ${article.title}`, modalContent, 'modal-lg');
-        document.getElementById('edit-affiliation').onclick = () => showAffiliationModal('edit-affiliation', article.affiliation);
-        if (canChangeSupervisor) { document.getElementById('edit-supervisor').onclick = () => showSupervisorModal('edit-supervisor', (s) => { window.selectedSupervisorForEdit = s; }); }
+        
+        // --- NEW: Helper functions for validation ---
+        const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length;
+        const countKeywords = (str) => str.trim().split(',').filter(Boolean).length;
+
+        // --- NEW: Attach validation logic to save buttons ---
+        document.querySelectorAll('.save-section-btn').forEach(btn => {
+            btn.onclick = async (e) => {
+                const section = e.target.closest('button').dataset.section;
+                let content;
+                // Validation checks
+                if (section === 'keywords_abstract') {
+                    const abstractText = document.getElementById('edit-abstract').value;
+                    const keywordsText = document.getElementById('edit-keywords').value;
+                    const abstractWords = countWords(abstractText);
+                    const keywordsCount = countKeywords(keywordsText);
+
+                    if (abstractWords < 150 || abstractWords > 300) return alert(`چکیده باید بین ۱۵۰ تا ۳۰۰ کلمه باشد. (تعداد کلمات فعلی: ${abstractWords})`);
+                    if (keywordsCount < 3 || keywordsCount > 5) return alert(`تعداد کلیدواژه‌ها باید بین ۳ تا ۵ باشد. (تعداد فعلی: ${keywordsCount})`);
+                    
+                    content = { keywords: keywordsText, abstract: abstractText };
+                } else if (section === 'introduction') {
+                    const text = document.getElementById('edit-introduction').value;
+                    const words = countWords(text);
+                    if (words < 350 || words > 500) return alert(`مقدمه باید بین ۳۵۰ تا ۵۰۰ کلمه باشد. (تعداد کلمات فعلی: ${words})`);
+                    content = text;
+                } else if (section === 'body') {
+                    const text = document.getElementById('edit-body').value;
+                    const words = countWords(text);
+                    if (words < 700 || words > 3000) return alert(`بدنه مقاله باید بین ۷۰۰ تا ۳۰۰۰ کلمه باشد. (تعداد کلمات فعلی: ${words})`);
+                    content = text;
+                } else if (section === 'conclusion') {
+                    const text = document.getElementById('edit-conclusion').value;
+                    const words = countWords(text);
+                    if (words < 100 || words > 500) return alert(`نتیجه‌گیری باید بین ۱۰۰ تا ۵۰۰ کلمه باشد. (تعداد کلمات فعلی: ${words})`);
+                    content = text;
+                } else if (section === 'references') {
+                    const refs = document.getElementById('reference-list-container').children.length;
+                    if (refs < 5 || refs > 40) return alert(`تعداد منابع باید بین ۵ تا ۴۰ باشد. (تعداد فعلی: ${refs})`);
+                    content = document.getElementById('edit-references-hidden').value;
+                } else {
+                    content = document.getElementById(`edit-${section}`).value;
+                }
+
+                const res = await callApi('updateArticleSection', { articleId: article.articleId, section, content }, e.target);
+                if(res?.status === 'success') alert(res.message); else alert('خطا: ' + res?.message);
+            };
+        });
+
+        // --- NEW: Logic for Reference Manager ---
+        const refTypeSelect = document.getElementById('ref-type');
+        const bookFields = document.getElementById('ref-book-fields');
+        const journalFields = document.getElementById('ref-journal-fields');
+        const addRefBtn = document.getElementById('add-ref-btn');
+        const refListContainer = document.getElementById('reference-list-container');
+        const hiddenRefTextarea = document.getElementById('edit-references-hidden');
+        
+        const updateRefList = () => {
+            const items = Array.from(refListContainer.children).map(li => li.querySelector('span').textContent);
+            hiddenRefTextarea.value = items.join('\n');
+        };
+
+        const renderInitialRefs = () => {
+            const refs = hiddenRefTextarea.value.split('\n').filter(Boolean);
+            refListContainer.innerHTML = '';
+            refs.forEach(refText => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${refText}</span><button class="ref-delete-btn" title="حذف منبع"><i class="fas fa-times"></i></button>`;
+                li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); };
+                refListContainer.appendChild(li);
+            });
+        };
+        
+        refTypeSelect.onchange = () => {
+            bookFields.classList.toggle('hidden', refTypeSelect.value !== 'book');
+            journalFields.classList.toggle('hidden', refTypeSelect.value !== 'journal');
+        };
+        
+        addRefBtn.onclick = () => {
+            let formattedRef = '';
+            let inputsToClear = [];
+            if (refTypeSelect.value === 'book') {
+                const author = document.getElementById('ref-book-author').value.trim();
+                const year = document.getElementById('ref-book-year').value.trim();
+                const title = document.getElementById('ref-book-title').value.trim();
+                const publisher = document.getElementById('ref-book-publisher').value.trim();
+                if (!author || !year || !title || !publisher) return alert('تمام فیلدهای کتاب باید پر شوند.');
+                formattedRef = `${author} (${year}). *${title}*. ${publisher}.`;
+                inputsToClear = ['ref-book-author', 'ref-book-year', 'ref-book-title', 'ref-book-publisher'];
+            } else {
+                const author = document.getElementById('ref-journal-author').value.trim();
+                const year = document.getElementById('ref-journal-year').value.trim();
+                const title = document.getElementById('ref-journal-title').value.trim();
+                const journal = document.getElementById('ref-journal-name').value.trim();
+                if (!author || !year || !title || !journal) return alert('تمام فیلدهای مقاله باید پر شوند.');
+                formattedRef = `${author} (${year}). "${title}". *${journal}*.`;
+                inputsToClear = ['ref-journal-author', 'ref-journal-year', 'ref-journal-title', 'ref-journal-name'];
+            }
+            
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${formattedRef}</span><button class="ref-delete-btn" title="حذف منبع"><i class="fas fa-times"></i></button>`;
+            li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); };
+            refListContainer.appendChild(li);
+            updateRefList();
+            inputsToClear.forEach(id => document.getElementById(id).value = '');
+        };
+        
+        renderInitialRefs(); // Load existing references into the list on modal open
+
+        // The rest of the wizard logic remains the same...
         let currentStep = 1; const totalSteps = 6;
         const navigateWizard = (dir) => { const newStep = currentStep + dir; if (newStep > 0 && newStep <= totalSteps) { document.querySelector(`.wizard-step.active`).classList.remove('active'); document.querySelector(`.wizard-step[data-step="${newStep}"]`).classList.add('active'); currentStep = newStep; document.getElementById('wizard-prev-btn').disabled = currentStep === 1; document.getElementById('wizard-next-btn').disabled = currentStep === totalSteps; } };
         document.getElementById('wizard-next-btn').onclick = () => navigateWizard(1);
         document.getElementById('wizard-prev-btn').onclick = () => navigateWizard(-1);
+        
+        // Populate step 1 after rendering the modal
+        const step1 = document.querySelector('.wizard-step[data-step="1"]');
+        step1.innerHTML = `<h4>مرحله ۱: ویرایش اطلاعات کلی</h4><div class="form-group"><label>عنوان مقاله</label><input type="text" value="${article.title}" disabled></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea">${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3">${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%"><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
+        document.getElementById('edit-affiliation').onclick = () => showAffiliationModal('edit-affiliation', article.affiliation);
+        if (canChangeSupervisor) { document.getElementById('edit-supervisor').onclick = () => showSupervisorModal('edit-supervisor', (s) => { window.selectedSupervisorForEdit = s; }); }
         document.getElementById('save-details-btn').onclick = async (e) => { const details = { affiliation: document.getElementById('edit-affiliation').value, knowledgeArea: document.getElementById('edit-knowledgeArea').value, topicReason: document.getElementById('edit-topicReason').value }; if (canChangeSupervisor && window.selectedSupervisorForEdit) details.supervisor = window.selectedSupervisorForEdit; const res = await callApi('updateArticleDetails', { articleId: article.articleId, details }, e.target); if(res?.status === 'success') { alert(res.message); loadArticles(getStoredUser().nationalId); } else alert('خطا: ' + res?.message); };
-        document.querySelectorAll('.save-section-btn').forEach(btn => { btn.onclick = async (e) => { const section = e.target.closest('button').dataset.section; let content; if (section === 'keywords_abstract') content = { keywords: document.getElementById('edit-keywords').value, abstract: document.getElementById('edit-abstract').value, }; else content = document.getElementById(`edit-${section}`).value; const res = await callApi('updateArticleSection', { articleId: article.articleId, section, content }, e.target); if(res?.status === 'success') alert(res.message); else alert('خطا: ' + res?.message); }; });
     }
 
+
+    // --- All other utility functions remain the same ---
+    async function handleDeleteArticle(articleId) { if (!confirm('آیا از حذف این مقاله اطمینان دارید؟ این عمل قابل بازگشت نیست.')) return; const user = getStoredUser(); const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId }); if(response?.status === 'success') { alert(response.message); loadArticles(user.nationalId); } else { alert('خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص')); } }
+    function getKnowledgeAreaOptions(selectedValue = '') { const areas = ["فقه", "اصول", "اخلاق", "کلام", "تفسیر", "ترجمه", "فلسفه", "عرفان", "حدیث", "رجال", "درایه", "نقدالحدیث", "صرف", "نحو", "بلاغت", "مشاوره", "تربیتی", "روانشناسی"]; return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join(''); }
+    async function showNewArticleModal() { const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><input type="text" id="article-title" required></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`; renderModal('ثبت مقاله جدید', modalContent, 'modal-lg'); document.getElementById('affiliation').onclick = () => showAffiliationModal('affiliation'); document.getElementById('supervisor').onclick = () => showSupervisorModal('supervisor', (supervisor) => { window.selectedSupervisor = supervisor; }); document.getElementById('submit-new-article-btn').onclick = handleNewArticleSubmit; }
+    async function handleNewArticleSubmit(e) { if (!window.selectedSupervisor) { alert('لطفاً یک استاد راهنما انتخاب کنید.'); return; } const user = getStoredUser(); const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor }; const response = await callApi('submitNewArticle', { data }, e.target); if(response?.status === 'success'){ alert(response.message); closeAllModals(); loadArticles(user.nationalId); } else { alert('خطا: ' + (response.message || 'خطای نامشخص')); } }
+    function showAffiliationModal(targetInputId, currentAffiliation = '') { const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim()); const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`; renderModal('تکمیل وابستگی سازمانی', modalContent, 'modal-sm', true); document.getElementById('save-affiliation-btn').onclick = () => { const parts = [ document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value ].filter(Boolean); document.getElementById(targetInputId).value = parts.join('، '); closeModalById('sub-modal'); }; }
+    function showSupervisorModal(targetInputId, onSelectCallback) { const modalContent = `<div class="modal-body"><div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div id="supervisor-list-placeholder-modal"><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div></div><div class="supervisor-list hidden" id="supervisor-list-results-modal"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button></div>`; renderModal('انتخاب استاد راهنما', modalContent, 'modal-sm', true); let currentPage = 1, currentSearchTerm = ''; const searchInput = document.getElementById('supervisor-search-input-modal'); const resultsContainer = document.getElementById('supervisor-list-results-modal'); const placeholder = document.getElementById('supervisor-list-placeholder-modal'); const loadMoreBtn = document.getElementById('load-more-supervisors-modal'); const fetchAndRender = async (reset = false) => { if (reset) { currentPage = 1; resultsContainer.innerHTML = ''; resultsContainer.classList.add('hidden'); placeholder.classList.remove('hidden'); } const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn); placeholder.classList.add('hidden'); resultsContainer.classList.remove('hidden'); if (res?.status === 'success') { if (reset && res.supervisors.length === 0) resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">استادی یافت نشد.</p>'; res.supervisors.forEach(s => { const item = document.createElement('div'); item.className = 'supervisor-list-item'; item.innerHTML = `<strong>${s.name}</strong><span>${s.nationalId}</span>`; item.onclick = () => { onSelectCallback(s); document.getElementById(targetInputId).value = s.name; closeModalById('sub-modal'); }; resultsContainer.appendChild(item); }); loadMoreBtn.classList.toggle('hidden', !res.hasMore); } else { resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>'; } }; let debounceTimer; searchInput.addEventListener('keyup', (e) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { currentSearchTerm = e.target.value; fetchAndRender(true); }, 500); }); loadMoreBtn.onclick = () => { currentPage++; fetchAndRender(); }; fetchAndRender(true); }
     function handleLogout() { localStorage.removeItem('currentUser'); window.location.reload(); }
     function renderModal(title, content, sizeClass = '', isSubModal = false) { const modalId = isSubModal ? 'sub-modal' : 'main-modal'; const existingModal = document.getElementById(modalId); if(existingModal) existingModal.remove(); const modalWrapper = document.createElement('div'); modalWrapper.id = modalId; modalWrapper.className = 'modal-overlay'; modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button class="modal-close-btn"><i class="fas fa-times"></i></button></div>${content}</div>`; modalContainer.appendChild(modalWrapper); modalWrapper.querySelector('.modal-close-btn').onclick = () => closeModalById(modalId); }
     function closeModalById(modalId) { const modal = document.getElementById(modalId); if(modal) modal.remove(); }
