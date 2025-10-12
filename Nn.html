@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -34,10 +34,11 @@
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; }
         .article-details { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .article-details p { margin: 0; color: var(--text-light); font-size: 0.9rem; }
+        .article-actions { display: flex; gap: 10px; }
+        .article-actions .btn-delete { padding: 8px 12px; min-height: initial; font-size: 0.9rem; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 90%; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; }
-        .modal-box.modal-lg { max-width: 800px; }
-        .modal-box.modal-sm { max-width: 500px; }
+        .modal-box.modal-lg { max-width: 800px; } .modal-box.modal-sm { max-width: 500px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
         .modal-header h3 { margin: 0; font-size: 1.3rem; }
         .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; }
@@ -55,6 +56,20 @@
         .search-wrapper { position: relative; margin-bottom: 15px; }
         .search-wrapper input { padding-left: 45px; }
         .search-wrapper .search-icon { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: var(--text-light); }
+        
+        /* --- START: New User Menu Styles --- */
+        .user-menu { position: relative; }
+        .user-menu-trigger { background: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); border-radius: 50%; width: 48px; height: 48px; min-height: 48px; padding: 0; font-size: 1.5rem; box-shadow: var(--shadow); }
+        .user-menu-trigger:hover { background-color: var(--primary-light); }
+        .user-menu-content { position: absolute; top: 110%; left: 0; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); border: 1px solid var(--border-color); width: 250px; z-index: 100; padding: 15px; display: flex; flex-direction: column; gap: 15px; transition: opacity 0.2s, transform 0.2s; transform: translateY(-10px); opacity: 0; pointer-events: none; }
+        .user-menu-content:not(.hidden) { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .user-info { text-align: right; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .user-info strong { display: block; font-size: 1.1rem; }
+        .user-info span { font-size: 0.9rem; color: var(--text-light); }
+        .user-score { font-weight: 700; font-size: 1rem; }
+        .user-score span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
+        .user-menu #logout-btn { width: 100%; }
+        /* --- END: New User Menu Styles --- */
     </style>
 </head>
 <body>
@@ -72,10 +87,19 @@
         </div>
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
-                <h2 id="welcome-message"></h2>
-                <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button>
+                <h3>پنل کاربری محقق</h3>
+                <div class="user-menu">
+                    <button id="user-menu-btn" class="user-menu-trigger"><i class="fas fa-user"></i></button>
+                    <div id="user-menu-dropdown" class="user-menu-content hidden">
+                        <div class="user-info">
+                            <strong id="menu-user-name"></strong>
+                            <span id="menu-user-nid"></span>
+                        </div>
+                        <div class="user-score">امتیاز شما: <span id="menu-user-score">0</span></div>
+                        <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button>
+                    </div>
+                </div>
             </div>
-            <h3>مقالات من</h3>
             <button id="add-new-article-btn" style="margin-bottom: 20px;"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله جدید</span></button>
             <div id="articles-container"></div>
         </div>
@@ -111,6 +135,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         const user = getStoredUser();
         if (user) showDashboard(user);
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('user-menu-dropdown');
+            const menuBtn = document.getElementById('user-menu-btn');
+            if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
     });
 
     loginForm.addEventListener('submit', async (e) => {
@@ -125,9 +158,17 @@
     function showDashboard(user) {
         loginPage.classList.add('hidden');
         dashboardPage.classList.remove('hidden');
-        document.getElementById('welcome-message').textContent = `خوش آمدید، ${user.name}`;
+        
+        // Populate and manage user menu
+        document.getElementById('menu-user-name').textContent = user.name;
+        document.getElementById('menu-user-nid').textContent = `کد ملی: ${user.nationalId}`;
+        document.getElementById('menu-user-score').textContent = user.score;
+        document.getElementById('user-menu-btn').onclick = () => {
+            document.getElementById('user-menu-dropdown').classList.toggle('hidden');
+        };
         document.getElementById('logout-btn').onclick = handleLogout;
         document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
+
         loadArticles(user.nationalId);
     }
 
@@ -135,7 +176,14 @@
         const articlesContainer = document.getElementById('articles-container');
         articlesContainer.innerHTML = '<p>در حال بارگذاری مقالات...</p>';
         const response = await callApi('getArticles', { nationalId });
-        if (response?.status === 'success') renderArticles(response.articles);
+        if (response?.status === 'success') {
+            renderArticles(response.articles);
+            // Update score in menu and local storage
+            document.getElementById('menu-user-score').textContent = response.score;
+            const user = getStoredUser();
+            user.score = response.score;
+            storeUser(user);
+        }
     }
 
     function renderArticles(articles) {
@@ -143,16 +191,51 @@
         articlesContainer.innerHTML = '';
         if (articles.length === 0) articlesContainer.innerHTML = '<p>شما هنوز مقاله‌ای ثبت نکرده‌اید.</p>';
         document.getElementById('add-new-article-btn').disabled = articles.some(a => a.articleStatus == 1 || a.articleStatus == 2);
+        
         articles.forEach(article => {
             const [supervisorStatusText, supervisorStatusColor] = getStatusInfo('supervisor', article.supervisorStatus);
             const [articleStatusText, articleStatusColor] = getStatusInfo('article', article.articleStatus);
+            const canBeDeleted = article.supervisorStatus != 5;
+
             const card = document.createElement('div');
             card.className = 'article-card';
             card.style.borderRightColor = supervisorStatusColor;
-            card.innerHTML = `<div class="article-header"><span class="article-title">${article.title}</span><div class="status-badges"><span class="status-badge" style="background-color: ${supervisorStatusColor};">${supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div><div class="article-details"><p>شناسه مقاله: ${article.articleId}</p><button>مشاهده و تکمیل مقاله</button></div>`;
-            card.querySelector('button').onclick = () => showEditArticleWizard(article);
+            card.innerHTML = `
+                <div class="article-header">
+                    <span class="article-title">${article.title}</span>
+                    <div class="status-badges">
+                        <span class="status-badge" style="background-color: ${supervisorStatusColor};">${supervisorStatusText}</span>
+                        <span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span>
+                    </div>
+                </div>
+                <div class="article-details">
+                    <p>شناسه مقاله: ${article.articleId}</p>
+                    <div class="article-actions">
+                        <button class="btn-view">مشاهده و تکمیل</button>
+                        ${canBeDeleted ? '<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>' : ''}
+                    </div>
+                </div>`;
+            
+            card.querySelector('.btn-view').onclick = () => showEditArticleWizard(article);
+            if (canBeDeleted) {
+                card.querySelector('.btn-delete').onclick = () => handleDeleteArticle(article.articleId);
+            }
             articlesContainer.appendChild(card);
         });
+    }
+
+    async function handleDeleteArticle(articleId) {
+        if (!confirm('آیا از حذف این مقاله اطمینان دارید؟ این عمل قابل بازگشت نیست.')) return;
+        
+        const user = getStoredUser();
+        const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
+
+        if(response?.status === 'success') {
+            alert(response.message);
+            loadArticles(user.nationalId); // Refresh the article list
+        } else {
+            alert('خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'));
+        }
     }
 
     function getKnowledgeAreaOptions(selectedValue = '') {
@@ -268,7 +351,7 @@
         document.getElementById('wizard-next-btn').onclick = () => navigateWizard(1);
         document.getElementById('wizard-prev-btn').onclick = () => navigateWizard(-1);
         document.getElementById('save-details-btn').onclick = async (e) => { const details = { affiliation: document.getElementById('edit-affiliation').value, knowledgeArea: document.getElementById('edit-knowledgeArea').value, topicReason: document.getElementById('edit-topicReason').value }; if (canChangeSupervisor && window.selectedSupervisorForEdit) details.supervisor = window.selectedSupervisorForEdit; const res = await callApi('updateArticleDetails', { articleId: article.articleId, details }, e.target); if(res?.status === 'success') { alert(res.message); loadArticles(getStoredUser().nationalId); } else alert('خطا: ' + res?.message); };
-        document.querySelectorAll('.save-section-btn').forEach(btn => { btn.onclick = async (e) => { const section = e.target.dataset.section; let content; if (section === 'keywords_abstract') content = { keywords: document.getElementById('edit-keywords').value, abstract: document.getElementById('edit-abstract').value, }; else content = document.getElementById(`edit-${section}`).value; const res = await callApi('updateArticleSection', { articleId: article.articleId, section, content }, e.target); if(res?.status === 'success') alert(res.message); else alert('خطا: ' + res?.message); }; });
+        document.querySelectorAll('.save-section-btn').forEach(btn => { btn.onclick = async (e) => { const section = e.target.closest('button').dataset.section; let content; if (section === 'keywords_abstract') content = { keywords: document.getElementById('edit-keywords').value, abstract: document.getElementById('edit-abstract').value, }; else content = document.getElementById(`edit-${section}`).value; const res = await callApi('updateArticleSection', { articleId: article.articleId, section, content }, e.target); if(res?.status === 'success') alert(res.message); else alert('خطا: ' + res?.message); }; });
     }
 
     function handleLogout() { localStorage.removeItem('currentUser'); window.location.reload(); }
