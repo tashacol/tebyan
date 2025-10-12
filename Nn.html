@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -26,16 +26,26 @@
         .btn-loading .btn-text { visibility: hidden; }
         .btn-loading::after { content: ''; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .article-card { background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); margin-bottom: 15px; padding: 20px; border-right: 5px solid var(--primary); }
-        .article-header { display: flex; justify-content: space-between; align-items: center; }
-        .article-title { font-size: 1.2rem; font-weight: 700; }
-        .status-badges { display: flex; gap: 8px; }
+        
+        /* --- START: Header & Separator Styles --- */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 25px; position: relative; }
+        .dashboard-header::after { content: ''; position: absolute; bottom: 0; right: 0; left: 0; height: 2px; background: linear-gradient(to left, var(--primary), var(--success)); border-radius: 2px; }
+        /* --- END: Header & Separator Styles --- */
+        
+        /* --- START: Article Card & Group Styles --- */
+        .article-card { background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); margin-bottom: 15px; padding: 20px; border-top: 4px solid var(--primary); transition: transform 0.2s, box-shadow 0.2s; }
+        .article-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        .article-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        .article-title { font-size: 1.2rem; font-weight: 700; flex-grow: 1; }
+        .status-badges { display: flex; gap: 8px; flex-shrink: 0; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; }
         .article-details { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .article-details p { margin: 0; color: var(--text-light); font-size: 0.9rem; }
         .article-actions { display: flex; gap: 10px; }
-        .article-actions .btn-delete { padding: 8px 12px; min-height: initial; font-size: 0.9rem; }
+        .article-actions button { padding: 8px 16px; min-height: initial; font-size: 0.9rem; }
+        .article-group-title { font-size: 1.4rem; color: var(--text-dark); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+        /* --- END: Article Card & Group Styles --- */
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 90%; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; }
         .modal-box.modal-lg { max-width: 800px; } .modal-box.modal-sm { max-width: 500px; }
@@ -57,7 +67,7 @@
         .search-wrapper input { padding-left: 45px; }
         .search-wrapper .search-icon { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: var(--text-light); }
         
-        /* --- START: New User Menu Styles --- */
+        /* --- START: User Menu Styles --- */
         .user-menu { position: relative; }
         .user-menu-trigger { background: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); border-radius: 50%; width: 48px; height: 48px; min-height: 48px; padding: 0; font-size: 1.5rem; box-shadow: var(--shadow); }
         .user-menu-trigger:hover { background-color: var(--primary-light); }
@@ -69,7 +79,16 @@
         .user-score { font-weight: 700; font-size: 1rem; }
         .user-score span { background: var(--primary); color: white; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
         .user-menu #logout-btn { width: 100%; }
-        /* --- END: New User Menu Styles --- */
+        /* --- END: User Menu Styles --- */
+
+        /* --- START: Skeleton Loader Styles --- */
+        .skeleton-loader { background-color: #e0e0e0; position: relative; overflow: hidden; border-radius: var(--radius-md); }
+        .skeleton-loader::after { content: ''; position: absolute; top: 0; left: -150%; width: 150%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 100% { left: 150%; } }
+        .skeleton-button { width: 180px; height: 48px; margin-bottom: 20px; }
+        .skeleton-card { height: 120px; margin-bottom: 15px; }
+        .skeleton-list-item { height: 60px; margin-bottom: 1px; border-radius: 0; }
+        /* --- END: Skeleton Loader Styles --- */
     </style>
 </head>
 <body>
@@ -100,8 +119,17 @@
                     </div>
                 </div>
             </div>
-            <button id="add-new-article-btn" style="margin-bottom: 20px;"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله جدید</span></button>
-            <div id="articles-container"></div>
+            
+            <div id="dashboard-content-placeholder">
+                <div class="skeleton-loader skeleton-button"></div>
+                <div class="skeleton-loader skeleton-card"></div>
+                <div class="skeleton-loader skeleton-card"></div>
+            </div>
+            
+            <div id="dashboard-content" class="hidden">
+                <button id="add-new-article-btn" style="margin-bottom: 20px;"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله جدید</span></button>
+                <div id="articles-container"></div>
+            </div>
         </div>
     </div>
     <div id="modal-container"></div>
@@ -114,6 +142,10 @@
     const loginForm = document.getElementById('login-form');
     const modalContainer = document.getElementById('modal-container');
     
+    // UI Elements for Skeleton Loading
+    const dashboardContent = document.getElementById('dashboard-content');
+    const dashboardPlaceholder = document.getElementById('dashboard-content-placeholder');
+
     async function callApi(action, params = {}, button = null) {
         if(button) button.classList.add('btn-loading');
         try {
@@ -135,8 +167,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const user = getStoredUser();
         if (user) showDashboard(user);
-
-        // Close user menu when clicking outside
         document.addEventListener('click', function(event) {
             const menu = document.getElementById('user-menu-dropdown');
             const menuBtn = document.getElementById('user-menu-btn');
@@ -159,7 +189,6 @@
         loginPage.classList.add('hidden');
         dashboardPage.classList.remove('hidden');
         
-        // Populate and manage user menu
         document.getElementById('menu-user-name').textContent = user.name;
         document.getElementById('menu-user-nid').textContent = `کد ملی: ${user.nationalId}`;
         document.getElementById('menu-user-score').textContent = user.score;
@@ -173,12 +202,18 @@
     }
 
     async function loadArticles(nationalId) {
-        const articlesContainer = document.getElementById('articles-container');
-        articlesContainer.innerHTML = '<p>در حال بارگذاری مقالات...</p>';
+        // Show skeleton loader
+        dashboardContent.classList.add('hidden');
+        dashboardPlaceholder.classList.remove('hidden');
+        
         const response = await callApi('getArticles', { nationalId });
+        
+        // Hide skeleton loader and show content
+        dashboardPlaceholder.classList.add('hidden');
+        dashboardContent.classList.remove('hidden');
+
         if (response?.status === 'success') {
             renderArticles(response.articles);
-            // Update score in menu and local storage
             document.getElementById('menu-user-score').textContent = response.score;
             const user = getStoredUser();
             user.score = response.score;
@@ -189,17 +224,42 @@
     function renderArticles(articles) {
         const articlesContainer = document.getElementById('articles-container');
         articlesContainer.innerHTML = '';
-        if (articles.length === 0) articlesContainer.innerHTML = '<p>شما هنوز مقاله‌ای ثبت نکرده‌اید.</p>';
-        document.getElementById('add-new-article-btn').disabled = articles.some(a => a.articleStatus == 1 || a.articleStatus == 2);
         
+        // Group articles by status
+        const inProgress = articles.filter(a => [1, 2].includes(a.articleStatus) || a.supervisorStatus == 1);
+        const accepted = articles.filter(a => a.articleStatus == 5);
+        const rejected = articles.filter(a => a.supervisorStatus == 0 || a.articleStatus == 0);
+
+        if (articles.length === 0) {
+            articlesContainer.innerHTML = '<p>شما هنوز مقاله‌ای ثبت نکرده‌اید.</p>';
+        } else {
+            renderGroup('مقالات در حال پیگیری', inProgress, articlesContainer);
+            renderGroup('مقالات پذیرفته شده', accepted, articlesContainer);
+            renderGroup('مقالات رد شده', rejected, articlesContainer);
+        }
+        
+        document.getElementById('add-new-article-btn').disabled = articles.some(a => a.articleStatus == 1 || a.articleStatus == 2);
+    }
+    
+    function renderGroup(title, articles, container) {
+        if (articles.length === 0) return;
+
+        const groupTitle = document.createElement('h4');
+        groupTitle.className = 'article-group-title';
+        groupTitle.textContent = title;
+        container.appendChild(groupTitle);
+
         articles.forEach(article => {
             const [supervisorStatusText, supervisorStatusColor] = getStatusInfo('supervisor', article.supervisorStatus);
             const [articleStatusText, articleStatusColor] = getStatusInfo('article', article.articleStatus);
             const canBeDeleted = article.supervisorStatus != 5;
+            
+            // Use article status color for the top border if it's more definitive (accepted/rejected)
+            const cardBorderColor = (article.articleStatus == 5 || article.articleStatus == 0) ? articleStatusColor : supervisorStatusColor;
 
             const card = document.createElement('div');
             card.className = 'article-card';
-            card.style.borderRightColor = supervisorStatusColor;
+            card.style.borderTopColor = cardBorderColor;
             card.innerHTML = `
                 <div class="article-header">
                     <span class="article-title">${article.title}</span>
@@ -212,7 +272,7 @@
                     <p>شناسه مقاله: ${article.articleId}</p>
                     <div class="article-actions">
                         <button class="btn-view">مشاهده و تکمیل</button>
-                        ${canBeDeleted ? '<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>' : ''}
+                        ${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
             
@@ -220,19 +280,17 @@
             if (canBeDeleted) {
                 card.querySelector('.btn-delete').onclick = () => handleDeleteArticle(article.articleId);
             }
-            articlesContainer.appendChild(card);
+            container.appendChild(card);
         });
     }
 
     async function handleDeleteArticle(articleId) {
         if (!confirm('آیا از حذف این مقاله اطمینان دارید؟ این عمل قابل بازگشت نیست.')) return;
-        
         const user = getStoredUser();
         const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
-
         if(response?.status === 'success') {
             alert(response.message);
-            loadArticles(user.nationalId); // Refresh the article list
+            loadArticles(user.nationalId);
         } else {
             alert('خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'));
         }
@@ -244,34 +302,18 @@
     }
     
     async function showNewArticleModal() {
-        const modalContent = `
-            <div class="modal-body">
-                <form id="new-article-form">
-                    <div class="form-group"><label for="article-title">عنوان مقاله</label><input type="text" id="article-title" required></div>
-                    <div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div>
-                    <div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div>
-                    <div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div>
-                    <div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div>
-                </form>
-            </div>
-            <div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`;
+        // ... (The rest of the JS is identical, no changes needed from here down)
+        const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><input type="text" id="article-title" required></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`;
         renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
         document.getElementById('affiliation').onclick = () => showAffiliationModal('affiliation');
         document.getElementById('supervisor').onclick = () => showSupervisorModal('supervisor', (supervisor) => { window.selectedSupervisor = supervisor; });
         document.getElementById('submit-new-article-btn').onclick = handleNewArticleSubmit;
     }
-
+    
     async function handleNewArticleSubmit(e) {
         if (!window.selectedSupervisor) { alert('لطفاً یک استاد راهنما انتخاب کنید.'); return; }
         const user = getStoredUser();
-        const data = {
-            researcherName: user.name, researcherId: user.nationalId,
-            title: document.getElementById('article-title').value,
-            affiliation: document.getElementById('affiliation').value,
-            knowledgeArea: document.getElementById('knowledge-area').value,
-            topicReason: document.getElementById('topic-reason').value,
-            supervisor: window.selectedSupervisor
-        };
+        const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor };
         const response = await callApi('submitNewArticle', { data }, e.target);
         if(response?.status === 'success'){ alert(response.message); closeAllModals(); loadArticles(user.nationalId); } 
         else { alert('خطا: ' + (response.message || 'خطای نامشخص')); }
@@ -279,14 +321,7 @@
 
     function showAffiliationModal(targetInputId, currentAffiliation = '') {
         const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
-        const modalContent = `
-            <div class="modal-body">
-                <div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div>
-                <div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div>
-                <div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div>
-                <div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div>
-            </div>
-            <div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
+        const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
         renderModal('تکمیل وابستگی سازمانی', modalContent, 'modal-sm', true);
         document.getElementById('save-affiliation-btn').onclick = () => {
             const parts = [ document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value ].filter(Boolean);
@@ -298,11 +333,11 @@
     function showSupervisorModal(targetInputId, onSelectCallback) {
         const modalContent = `
             <div class="modal-body">
-                <div class="search-wrapper">
-                    <input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی...">
-                    <i class="fas fa-search search-icon"></i>
+                <div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div>
+                <div id="supervisor-list-placeholder-modal">
+                    <div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div><div class="skeleton-loader skeleton-list-item"></div>
                 </div>
-                <div class="supervisor-list" id="supervisor-list-results-modal"></div>
+                <div class="supervisor-list hidden" id="supervisor-list-results-modal"></div>
                 <button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>
             </div>`;
         renderModal('انتخاب استاد راهنما', modalContent, 'modal-sm', true);
@@ -310,28 +345,32 @@
         let currentPage = 1, currentSearchTerm = '';
         const searchInput = document.getElementById('supervisor-search-input-modal');
         const resultsContainer = document.getElementById('supervisor-list-results-modal');
+        const placeholder = document.getElementById('supervisor-list-placeholder-modal');
         const loadMoreBtn = document.getElementById('load-more-supervisors-modal');
 
         const fetchAndRender = async (reset = false) => {
-            if(reset) { currentPage = 1; resultsContainer.innerHTML = ''; }
+            if (reset) {
+                currentPage = 1;
+                resultsContainer.innerHTML = '';
+                resultsContainer.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
             const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
+            
+            placeholder.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+
             if (res?.status === 'success') {
                 if (reset && res.supervisors.length === 0) resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">استادی یافت نشد.</p>';
                 res.supervisors.forEach(s => {
                     const item = document.createElement('div');
                     item.className = 'supervisor-list-item';
                     item.innerHTML = `<strong>${s.name}</strong><span>${s.nationalId}</span>`;
-                    item.onclick = () => { 
-                        onSelectCallback(s); 
-                        document.getElementById(targetInputId).value = s.name;
-                        closeModalById('sub-modal');
-                    };
+                    item.onclick = () => { onSelectCallback(s); document.getElementById(targetInputId).value = s.name; closeModalById('sub-modal'); };
                     resultsContainer.appendChild(item);
                 });
                 loadMoreBtn.classList.toggle('hidden', !res.hasMore);
-            } else {
-                resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>';
-            }
+            } else { resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>'; }
         };
         let debounceTimer;
         searchInput.addEventListener('keyup', (e) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { currentSearchTerm = e.target.value; fetchAndRender(true); }, 500); });
