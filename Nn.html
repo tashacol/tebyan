@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل کاربری محققین</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Vazirmatn", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .hidden { display: none !important; }
+        
+        /* Login Form Styles */
+        #login-form { display: flex; flex-direction: column; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { margin-bottom: 5px; font-weight: 600; color: #555; }
+        input[type="text"], input[type="password"], select, textarea {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #2980b9; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+        /* Dashboard Styles */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        #logout-btn { background-color: #e74c3c; }
+        #logout-btn:hover { background-color: #c0392b; }
+        
+        /* Article List Styles */
+        .article-card {
+            background-color: #ecf0f1;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-right: 5px solid #3498db;
+        }
+        .article-card-header { display: flex; justify-content: space-between; align-items: center; }
+        .article-title { font-size: 1.2em; font-weight: bold; }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.9em;
+        }
+        .status-1 { background-color: #f39c12; } /* در حال بررسی */
+        .status-5 { background-color: #2ecc71; } /* تایید شده */
+        .status-0 { background-color: #e74c3c; } /* رد شده */
+        .status-2 { background-color: #e67e22; } /* نیازمند ویرایش */
+        .status-supervisor-1 { border-color: #f39c12; } /* منتظر تایید استاد */
+        .status-supervisor-5 { border-color: #2ecc71; } /* استاد تایید کرده */
+        .status-supervisor-0 { border-color: #e74c3c; } /* استاد رد کرده */
+        .article-details { margin-top: 15px; }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { font-size: 2em; cursor: pointer; border: none; background: none;}
+        .edit-section { margin-bottom: 20px; }
+        
+        /* Loader Styles */
+        .loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="loader" class="loader hidden"><div class="spinner"></div></div>
+
+    <div class="container">
+        <!-- Login Page -->
+        <div id="login-page">
+            <h1>ورود به پنل کاربری محققین</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="national-id">کد ملی (نام کاربری)</label>
+                    <input type="text" id="national-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">رمز عبور</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">ورود</button>
+                <p id="login-error" style="color: red;"></p>
+            </form>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="hidden">
+            <div class="dashboard-header">
+                <h2 id="welcome-message"></h2>
+                <button id="logout-btn">خروج</button>
+            </div>
+            <h3>مقالات من</h3>
+            <button id="add-new-article-btn">افزودن مقاله جدید</button>
+            <div id="articles-container" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- New Article Modal -->
+    <div id="new-article-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ثبت مقاله جدید</h3>
+                <button class="close-btn" onclick="closeModal('new-article-modal')">&times;</button>
+            </div>
+            <form id="new-article-form">
+                <div class="form-group">
+                    <label for="affiliation">وابستگی سازمانی (پایه تحصیلی، گروه، موسسه، شهر)</label>
+                    <input type="text" id="affiliation" required>
+                </div>
+                <div class="form-group">
+                    <label for="article-title">عنوان مقاله</label>
+                    <input type="text" id="article-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="knowledge-area">حیطه دانشی مقاله</label>
+                    <input type="text" id="knowledge-area" placeholder="مثلا: فقه و اصول، فلسفه و کلام و..." required>
+                </div>
+                <div class="form-group">
+                    <label for="topic-reason">دلیل انتخاب موضوع (مختصر)</label>
+                    <textarea id="topic-reason" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="supervisor-select">انتخاب استاد راهنما</label>
+                    <select id="supervisor-select" required></select>
+                </div>
+                <button type="submit">ارسال جهت بررسی توسط استاد</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Article Modal -->
+    <div id="edit-article-modal" class="modal hidden">
+        <div class="modal-content">
+             <div class="modal-header">
+                <h3 id="edit-modal-title">ویرایش مقاله</h3>
+                <button class="close-btn" onclick="closeModal('edit-article-modal')">&times;</button>
+            </div>
+            <div id="edit-article-content">
+                <input type="hidden" id="editing-article-id">
+                
+                <div class="edit-section">
+                    <label for="edit-abstract">چکیده</label>
+                    <textarea id="edit-abstract" rows="5"></textarea>
+                    <button onclick="saveSection('abstract')">ذخیره چکیده</button>
+                </div>
+                
+                 <div class="edit-section">
+                    <label for="edit-keywords">کلیدواژه‌ها (با ویرگول جدا کنید)</label>
+                    <input type="text" id="edit-keywords">
+                    <button onclick="saveSection('keywords')">ذخیره کلیدواژه‌ها</button>
+                </div>
+
+                <div class="edit-section">
+                    <label for="edit-introduction">مقدمه</label>
+                    <textarea id="edit-introduction" rows="10"></textarea>
+                    <button onclick="saveSection('introduction')">ذخیره مقدمه</button>
+                </div>
+
+                <div class="edit-section">
+                    <label for="edit-body">بدنه مقاله</label>
+                    <textarea id="edit-body" rows="15"></textarea>
+                    <button onclick="saveSection('body')">ذخیره بدنه مقاله</button>
+                </div>
+                
+                <div class="edit-section">
+                    <label for="edit-conclusion">نتیجه‌گیری</label>
+                    <textarea id="edit-conclusion" rows="8"></textarea>
+                    <button onclick="saveSection('conclusion')">ذخیره نتیجه‌گیری</button>
+                </div>
+
+                <div class="edit-section">
+                    <label for="edit-references">منابع (به سبک شیکاگو وارد کنید)</label>
+                    <textarea id="edit-references" rows="8"></textarea>
+                    <button onclick="saveSection('references')">ذخیره منابع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // -------------------------------------------------------------------
+    // --- آدرس وب اپلیکیشن گوگل اسکریپت خود را در اینجا جایگزین کنید ---
+    const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+    // -------------------------------------------------------------------
+
+    const loginPage = document.getElementById('login-page');
+    const dashboardPage = document.getElementById('dashboard-page');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const articlesContainer = document.getElementById('articles-container');
+    const addNewArticleBtn = document.getElementById('add-new-article-btn');
+    const newArticleModal = document.getElementById('new-article-modal');
+    const newArticleForm = document.getElementById('new-article-form');
+    const editArticleModal = document.getElementById('edit-article-modal');
+    const loader = document.getElementById('loader');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // بررسی اینکه آیا کاربر قبلا وارد شده است یا خیر
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = getStoredUser();
+        if (user) {
+            showDashboard(user);
+        }
+    });
+
+    // رویداد ورود کاربر
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
+        const nationalId = document.getElementById('national-id').value;
+        const password = document.getElementById('password').value;
+        
+        showLoader();
+        try {
+            const response = await apiCall({ action: 'login', nationalId, password });
+            if (response.status === 'success') {
+                storeUser(response.user);
+                showDashboard(response.user);
+            } else {
+                loginError.textContent = response.message || 'خطایی رخ داد.';
+            }
+        } catch (error) {
+            loginError.textContent = 'خطا در ارتباط با سرور.';
+        } finally {
+            hideLoader();
+        }
+    });
+
+    // رویداد دکمه افزودن مقاله جدید
+    addNewArticleBtn.addEventListener('click', () => {
+        newArticleModal.classList.remove('hidden');
+        loadSupervisors();
+    });
+    
+    // رویداد ثبت فرم مقاله جدید
+    newArticleForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = getStoredUser();
+        if (!user) return;
+        
+        const data = {
+            researcherName: user.name,
+            researcherId: user.nationalId,
+            affiliation: document.getElementById('affiliation').value,
+            title: document.getElementById('article-title').value,
+            knowledgeArea: document.getElementById('knowledge-area').value,
+            topicReason: document.getElementById('topic-reason').value,
+            supervisor: document.getElementById('supervisor-select').value
+        };
+
+        showLoader();
+        try {
+            const response = await apiCall({ action: 'submitNewArticle', data });
+            if (response.status === 'success') {
+                alert(response.message);
+                closeModal('new-article-modal');
+                loadArticles(user.nationalId);
+            } else {
+                alert('خطا در ثبت مقاله: ' + response.message);
+            }
+        } catch (error) {
+            alert('خطا در ارتباط با سرور.');
+        } finally {
+            hideLoader();
+        }
+    });
+
+    // رویداد خروج
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        loginPage.classList.remove('hidden');
+        dashboardPage.classList.add('hidden');
+    });
+
+    // توابع کمکی
+    function showDashboard(user) {
+        loginPage.classList.add('hidden');
+        dashboardPage.classList.remove('hidden');
+        welcomeMessage.textContent = `خوش آمدید، ${user.name}`;
+        loadArticles(user.nationalId);
+    }
+
+    async function loadArticles(nationalId) {
+        showLoader();
+        try {
+            const response = await apiCall({ action: 'getArticles', nationalId });
+            if (response.status === 'success') {
+                renderArticles(response.articles);
+            } else {
+                articlesContainer.innerHTML = `<p>خطا در دریافت مقالات.</p>`;
+            }
+        } catch (error) {
+            articlesContainer.innerHTML = `<p>خطا در ارتباط با سرور.</p>`;
+        } finally {
+            hideLoader();
+        }
+    }
+
+    function renderArticles(articles) {
+        articlesContainer.innerHTML = '';
+        if (articles.length === 0) {
+            articlesContainer.innerHTML = '<p>شما هنوز مقاله‌ای ثبت نکرده‌اید.</p>';
+        }
+
+        let hasPendingArticle = false;
+        articles.forEach(article => {
+            // مقاله تعیین تکلیف نشده: وضعیت مقاله 1 (در دست بررسی) یا 2 (نیازمند ویرایش) است
+            if (article.articleStatus == 1 || article.articleStatus == 2) {
+                hasPendingArticle = true;
+            }
+
+            const card = document.createElement('div');
+            card.className = `article-card status-supervisor-${article.supervisorStatus}`;
+            
+            const [supervisorStatusText, supervisorStatusColor] = getSupervisorStatusInfo(article.supervisorStatus);
+            const [articleStatusText, articleStatusColor] = getArticleStatusInfo(article.articleStatus);
+
+            card.innerHTML = `
+                <div class="article-card-header">
+                    <span class="article-title">${article.title}</span>
+                    <span class="status-badge" style="background-color: ${supervisorStatusColor}; margin-left: 5px;">${supervisorStatusText}</span>
+                    <span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span>
+                </div>
+                <div class="article-details">
+                    <p>شناسه مقاله: ${article.articleId}</p>
+                    <button onclick='openEditModal(${JSON.stringify(article)})'>مشاهده و ویرایش</button>
+                </div>
+            `;
+            articlesContainer.appendChild(card);
+        });
+
+        addNewArticleBtn.disabled = hasPendingArticle;
+        if (hasPendingArticle) {
+            addNewArticleBtn.title = 'شما یک مقاله در حال بررسی دارید و نمی‌توانید مقاله جدیدی ثبت کنید.';
+        } else {
+            addNewArticleBtn.title = '';
+        }
+    }
+
+    async function loadSupervisors() {
+        const select = document.getElementById('supervisor-select');
+        select.innerHTML = '<option>در حال بارگذاری...</option>';
+        try {
+            const response = await apiCall({ action: 'getSupervisors' });
+            if (response.status === 'success' && response.supervisors) {
+                select.innerHTML = '<option value="">یک استاد را انتخاب کنید</option>';
+                response.supervisors.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+            }
+        } catch (error) {
+             select.innerHTML = '<option>خطا در بارگذاری</option>';
+        }
+    }
+    
+    function openEditModal(article) {
+        document.getElementById('editing-article-id').value = article.articleId;
+        document.getElementById('edit-modal-title').textContent = `ویرایش مقاله: ${article.title}`;
+
+        // پر کردن فیلدها با اطلاعات موجود
+        document.getElementById('edit-abstract').value = article.abstract || '';
+        document.getElementById('edit-keywords').value = article.keywords || '';
+        document.getElementById('edit-introduction').value = article.introduction || '';
+        document.getElementById('edit-body').value = article.body || '';
+        document.getElementById('edit-conclusion').value = article.conclusion || '';
+        document.getElementById('edit-references').value = article.references || '';
+        
+        // فقط در صورتی که استاد راهنما تایید کرده باشد (عدد 5)، امکان ویرایش وجود دارد
+        const canEdit = article.supervisorStatus == 5;
+        const editFields = document.querySelectorAll('#edit-article-content textarea, #edit-article-content input, #edit-article-content button');
+        editFields.forEach(field => field.disabled = !canEdit);
+        
+        if (!canEdit) {
+            alert('تا زمانی که استاد راهنما درخواست شما را تایید نکند، امکان ویرایش محتوای مقاله وجود ندارد.');
+        }
+
+        editArticleModal.classList.remove('hidden');
+    }
+
+    async function saveSection(sectionName) {
+        const articleId = document.getElementById('editing-article-id').value;
+        let content;
+        
+        switch(sectionName) {
+            case 'keywords': content = document.getElementById('edit-keywords').value; break;
+            case 'abstract': content = document.getElementById('edit-abstract').value; break;
+            case 'introduction': content = document.getElementById('edit-introduction').value; break;
+            case 'body': content = document.getElementById('edit-body').value; break;
+            case 'conclusion': content = document.getElementById('edit-conclusion').value; break;
+            case 'references': content = document.getElementById('edit-references').value; break;
+        }
+
+        if (!articleId || content.trim() === '') {
+            alert('لطفا محتوا را وارد کنید.');
+            return;
+        }
+        
+        showLoader();
+        try {
+            const response = await apiCall({ action: 'updateArticleSection', articleId, section: sectionName, content });
+            if (response.status === 'success') {
+                alert(response.message);
+                // رفرش کردن مقالات برای نمایش اطلاعات جدید در آینده می‌تواند اضافه شود
+            } else {
+                alert('خطا در ذخیره: ' + response.message);
+            }
+        } catch (error) {
+            alert('خطا در ارتباط با سرور');
+        } finally {
+            hideLoader();
+        }
+    }
+
+    function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+    function storeUser(user) { localStorage.setItem('currentUser', JSON.stringify(user)); }
+    function getStoredUser() { return JSON.parse(localStorage.getItem('currentUser')); }
+    function showLoader() { loader.classList.remove('hidden'); }
+    function hideLoader() { loader.classList.add('hidden'); }
+
+    function getSupervisorStatusInfo(code) {
+        switch (String(code)) {
+            case '1': return ['منتظر تایید استاد', '#f39c12'];
+            case '5': return ['تایید شده توسط استاد', '#2ecc71'];
+            case '0': return ['رد شده توسط استاد', '#e74c3c'];
+            default: return ['نامشخص', '#95a5a6'];
+        }
+    }
+
+    function getArticleStatusInfo(code) {
+        switch (String(code)) {
+            case '1': return ['در دست بررسی', '#3498db'];
+            case '2': return ['نیازمند ویرایش', '#e67e22'];
+            case '5': return ['تایید نهایی', '#27ae60'];
+            case '0': return ['رد شده', '#c0392b'];
+            default: return ['نامشخص', '#7f8c8d'];
+        }
+    }
+    
+    // تابع اصلی برای ارسال درخواست به گوگل اسکریپت
+    async function apiCall(body) {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',
+        });
+        return response.json();
+    }
+</script>
+
+</body>
+</html>
