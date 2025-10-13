@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -47,7 +47,6 @@
     
     .supervisor-rejection-notice { margin-top: 15px; padding: 12px; background-color: #fff3f3; border: 1px solid var(--danger); border-right: 4px solid var(--danger); color: #58151c; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; }
 
-    /* ======================= [ استایل‌های جدید برای درخواست‌های شما ] ======================= */
     .article-header-clickable { cursor: pointer; }
     .collapsible-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, margin-top 0.4s ease-out, padding-top 0.4s ease-out; }
     .article-card.expanded .collapsible-details { max-height: 500px; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
@@ -60,9 +59,7 @@
     .editor-feedback-notice { margin-top: 15px; padding: 12px 15px; background-color: #fff9e6; border-right: 4px solid var(--warning); color: #664d03; border-radius: var(--radius-md); font-size: 0.9rem; }
     .editor-feedback-notice.rejected { background-color: #fff3f3; border-right-color: var(--danger); color: #58151c; }
     .editor-feedback-notice strong { display: block; margin-bottom: 5px; font-weight: 700; }
-    /* <!-- ویرایش جدید: استایل برای پیام انصراف استاد --> */
     .supervisor-cancellation-notice { margin-top: 15px; padding: 12px 15px; background-color: #fffbeb; border-right: 4px solid #ffc107; color: #664d03; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; }
-    /* ===================================================================================== */
 
     @media (max-width: 600px) {
         .article-header { flex-direction: column; align-items: flex-start; }
@@ -129,7 +126,6 @@
 <body>
     <div id="alert-container"></div>
     <div class="container">
-        <!-- Login Page and Dashboard Shell (No changes here) -->
         <div id="login-page"> <div class="card"> <h1>ورود به پنل کاربری</h1> <form id="login-form"> <div class="form-group"><label for="national-id">کد ملی</label><input type="text" id="national-id" required></div> <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password" required></div> <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود</span></button> <p id="login-error" style="color: var(--danger); margin-top: 10px; text-align: center;"></p> </form> </div> </div>
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header"> <h3>پنل کاربری محقق</h3> <div class="user-menu"> <button id="user-menu-btn" class="user-menu-trigger"><i class="fas fa-user"></i></button> <div id="user-menu-dropdown" class="user-menu-content hidden"> <div class="user-info"> <strong id="menu-user-name"></strong> <span id="menu-user-nid"></span> </div> <div class="user-score">امتیاز شما: <span id="menu-user-score">0</span></div> <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button> </div> </div> </div>
@@ -141,7 +137,6 @@
 
 <script>
     // --- Initial setup and other functions are the same as the previous version ---
-    // ... (This section is copied for completeness and has no changes) ...
     function showSupervisorModal(targetInputId, onSelectCallback) { const skeletonHTML = `<div class="skeleton-loader skeleton-list-item"><div class="bar bar-name"></div><div class="bar bar-nid"></div></div><div class="skeleton-loader skeleton-list-item"><div class="bar bar-name"></div><div class="bar bar-nid"></div></div><div class="skeleton-loader skeleton-list-item"><div class="bar bar-name"></div><div class="bar bar-nid"></div></div><div class="skeleton-loader skeleton-list-item"><div class="bar bar-name"></div><div class="bar bar-nid"></div></div>`; const modalContent = `<div class="modal-body"><div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div id="supervisor-list-placeholder-modal">${skeletonHTML}</div><div class="supervisor-list hidden" id="supervisor-list-results-modal"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button></div>`; renderModal('انتخاب استاد راهنما', modalContent, 'modal-sm', true); let currentPage = 1, currentSearchTerm = ''; const searchInput = document.getElementById('supervisor-search-input-modal'); const resultsContainer = document.getElementById('supervisor-list-results-modal'); const placeholder = document.getElementById('supervisor-list-placeholder-modal'); const loadMoreBtn = document.getElementById('load-more-supervisors-modal'); const fetchAndRender = async (reset = false) => { if (reset) { currentPage = 1; resultsContainer.innerHTML = ''; resultsContainer.classList.add('hidden'); placeholder.classList.remove('hidden'); } const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn); placeholder.classList.add('hidden'); resultsContainer.classList.remove('hidden'); if (res?.status === 'success') { if (reset && res.supervisors.length === 0) resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">استادی یافت نشد.</p>'; res.supervisors.forEach(s => { const item = document.createElement('div'); item.className = 'supervisor-list-item'; item.innerHTML = `<strong>${s.name}</strong><span>کد ملی: ${s.nationalId}</span>`; item.onclick = () => { onSelectCallback(s); document.getElementById(targetInputId).value = s.name; closeModalById('sub-modal'); }; resultsContainer.appendChild(item); }); loadMoreBtn.classList.toggle('hidden', !res.hasMore); } else { resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>'; } }; let debounceTimer; searchInput.addEventListener('keyup', (e) => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { currentSearchTerm = e.target.value; fetchAndRender(true); }, 500); }); loadMoreBtn.onclick = () => { currentPage++; fetchAndRender(); }; fetchAndRender(true); }
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwTgJU4lbocweggC0zU7XyzzWKg3BhcUcFc5kaeYoD6dsAHVN7A-15L19G32UCa2hB/exec';
     const loginPage = document.getElementById('login-page'); const dashboardPage = document.getElementById('dashboard-page'); const loginForm = document.getElementById('login-form'); const modalContainer = document.getElementById('modal-container'); const dashboardContent = document.getElementById('dashboard-content'); const dashboardPlaceholder = document.getElementById('dashboard-content-placeholder');
@@ -202,14 +197,14 @@
             card.className = 'article-card';
             card.style.borderTopColor = cardBorderColor;
 
-            // --- ویرایش جدید: نمایش شرطی توضیحات استاد (ستون J) برای وضعیت 2 و 0 ---
+            // درخواست ۲: نمایش شرطی توضیحات استاد (ستون J) برای وضعیت 2 و 0
             let editorFeedbackHTML = '';
             if ((article.articleStatus == 2 || article.articleStatus == 0) && article.rejectionReason) {
                 const noticeClass = article.articleStatus == 0 ? 'editor-feedback-notice rejected' : 'editor-feedback-notice';
                 editorFeedbackHTML = `<div class="${noticeClass}"><strong>توضیحات:</strong> ${article.rejectionReason}</div>`;
             }
 
-            // --- ویرایش جدید: نمایش پیام انصراف استاد برای وضعیت 4 ---
+            // درخواست ۱: نمایش پیام انصراف استاد برای وضعیت 4
             let supervisorCancellationNotice = '';
             if (article.articleStatus == 4) {
                 supervisorCancellationNotice = `<div class="supervisor-cancellation-notice">استاد از بررسی مقاله شما انصراف داده است. لطفاً از بخش ویرایش، استاد راهنمای مقاله را تغییر دهید.</div>`;
@@ -247,7 +242,7 @@
                 </div>
                 <div class="article-details">
                     <div class="article-actions">
-                        <button class="btn-view">${isReadOnly ? 'مشاهده' : 'مشاهده و تکمیل'}</button>
+                        <button class="btn-view">${isReadOnly || article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'}</button>
                         ${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>`;
