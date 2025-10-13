@@ -230,10 +230,19 @@
         const articlesContainer = document.getElementById('articles-container');
         articlesContainer.innerHTML = '';
         
-        // <<<شروع ویرایش>>> تغییر در منطق گروه‌بندی مقالات مطابق با درخواست شما
-        const inProgress = articles.filter(a => [1, 2, 3, 4, 6].includes(a.articleStatus) || a.supervisorStatus == 1 || a.supervisorStatus == 0);
+        // ========================= START: ویرایش خواسته شده =========================
+        // منطق گروه‌بندی مقالات بر اساس درخواست شما تغییر کرد
+        
+        // گروه مقالات پذیرفته شده: فقط آنهایی که وضعیت مقاله (ستون I) برابر با 5 است
         const accepted = articles.filter(a => a.articleStatus == 5);
-        const rejected = articles.filter(a => a.articleStatus == 0); // فقط مقالاتی که وضعیت مقاله آنها 0 است
+        
+        // گروه مقالات رد شده: فقط و فقط آنهایی که وضعیت مقاله (ستون I) برابر با 0 است
+        const rejected = articles.filter(a => a.articleStatus == 0);
+        
+        // گروه مقالات در حال پیگیری: هر مقاله‌ای که نه پذیرفته شده و نه رد شده باشد
+        const inProgress = articles.filter(a => a.articleStatus != 5 && a.articleStatus != 0);
+        
+        // ========================== END: ویرایش خواسته شده ==========================
 
         if (articles.length === 0) {
             articlesContainer.innerHTML = '<p>شما هنوز مقاله‌ای ثبت نکرده‌اید.</p>';
@@ -242,8 +251,6 @@
             renderGroup('مقالات پذیرفته شده', accepted, articlesContainer);
             renderGroup('مقالات رد شده', rejected, articlesContainer);
         }
-        // <<<پایان ویرایش>>>
-
         document.getElementById('add-new-article-btn').disabled = articles.some(a => a.articleStatus == 1 || a.articleStatus == 2);
     }
 
@@ -319,8 +326,7 @@
     
     function getStatusInfo(type, code) {
         const map = {
-            supervisor: { 
-            },
+            supervisor: {},
             article: {
                 '0': ['رد شده توسط نشریه', '#dc3545'],
                 '1': ['در دست بررسی توسط استاد', '#0d6efd'],
