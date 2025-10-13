@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل کاربری محققین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- لینک به فایل CSS مجزا -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="alert-container"></div>
+    <div class="container">
+        
+        <!-- LOGIN PAGE -->
+        <div id="login-page">
+            <div class="card">
+                <h1>ورود به پنل کاربری</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="national-id">کد ملی</label>
+                        <input type="text" id="national-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">رمز عبور</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود</span></button>
+                    <p id="login-error" style="color: var(--danger); margin-top: 10px; text-align: center;"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard-page" class="hidden">
+            <div class="dashboard-header">
+                <h3>پنل کاربری محقق</h3>
+                <div class="user-menu">
+                    <button id="user-menu-btn" class="user-menu-trigger" aria-label="منوی کاربری"><i class="fas fa-user"></i></button>
+                    <div id="user-menu-dropdown" class="user-menu-content hidden">
+                        <div class="user-info">
+                            <strong id="menu-user-name"></strong>
+                            <span id="menu-user-nid"></span>
+                        </div>
+                        <div class="user-score">امتیاز شما: <span id="menu-user-score">0</span></div>
+                        <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dashboard-content-placeholder">
+                <div class="skeleton-loader skeleton-button"></div>
+                <div class="skeleton-loader skeleton-card"></div>
+                <div class="skeleton-loader skeleton-card"></div>
+            </div>
+            
+            <div id="dashboard-content" class="hidden">
+                <button id="add-new-article-btn" style="margin-bottom: 20px;"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله جدید</span></button>
+                <div id="articles-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONTAINER -->
+    <div id="modal-container"></div>
+
+    <!-- لینک به فایل JavaScript مجزا -->
+    <script src="script.js"></script>
+</body>
+</html>
