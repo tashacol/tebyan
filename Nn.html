@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -32,6 +33,14 @@
             --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* START: EDIT - این بخش برای رفع مشکل به هم ریختگی اضافه شده است */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        /* END: EDIT */
+
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: var(--bg-main);
@@ -40,10 +49,24 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            /* ویرایش ۱: این خط برای وسط‌چین کردن عمودی کل محتوا تغییر کرد */
+            align-items: flex-start;
             min-height: 100vh;
         }
+
+        /* START: EDIT - این بخش برای مرکز کردن فرم ورود اضافه شده است */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 80vh;
+        }
+
+        #login-page > .card {
+            width: 100%;
+            max-width: 420px;
+        }
+        /* END: EDIT */
 
         .hidden {
             display: none !important;
@@ -91,7 +114,6 @@
         select,
         textarea {
             width: 100%;
-            box-sizing: border-box;
             padding: 12px 15px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -693,8 +715,7 @@
         .user-menu-content {
             position: absolute;
             top: 110%;
-            right: 0;
-            /* ویرایش ۲: این خط برای تراز کردن صحیح منو در حالت RTL تغییر کرد */
+            left: 0;
             background: var(--bg-card);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow);
@@ -1073,7 +1094,6 @@
             width: 210mm;
             /* A4 width */
             padding: 20mm;
-            box-sizing: border-box;
             direction: rtl;
             text-align: right;
         }
