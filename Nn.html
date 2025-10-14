@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -270,7 +270,6 @@
         overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
     }
     
-    // [ویرایش شده] - منطق لودینگ به داخل این تابع منتقل شد
     function showCustomConfirm(message, onConfirm, confirmText = 'بله', cancelText = 'خیر') {
         const alertContainer = document.getElementById('alert-container');
         const overlay = document.createElement('div');
@@ -287,9 +286,6 @@
         };
         
         confirmBtn.onclick = () => {
-            confirmBtn.disabled = true;
-            cancelBtn.disabled = true;
-            confirmBtn.classList.add('btn-loading');
             onConfirm(true, confirmBtn, closeModal);
         };
 
@@ -302,9 +298,12 @@
 
     async function handleDeleteArticle(articleId, button) { 
         showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ تمام سوابق آن نیز پاک خواهد شد.', async (confirmed, confirmBtn, closeModal) => { 
-            if (confirmed) { 
+            if (confirmed) {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('btn-loading');
+                overlay.querySelector('#confirm-no-btn').disabled = true;
+                
                 const user = getStoredUser(); 
-                // دکمه confirmBtn را به callApi پاس نمی‌دهیم چون لودینگ در showCustomConfirm مدیریت می‌شود
                 const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
                 closeModal();
                 if (response?.status === 'success') { 
@@ -318,7 +317,21 @@
         }, 'بله، حذف کن', 'لغو'); 
     }
     
-    async function handleNewArticleSubmit(e) { if (document.getElementById('topic-reason').value.trim() === '') { return showCustomAlert('لطفاً دلیل انتخاب موضوع را تکمیل کنید.', 'error'); } if (!window.selectedSupervisor) { return showCustomAlert('لطفاً یک استاد راهنما انتخاب کنید.', 'error'); } const user = getStoredUser(); const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor }; const response = await callApi('submitNewArticle', { data }, e.target); if(response?.status === 'success'){ showCustomAlert(response.message, 'success', () => { closeAllModals(); loadArticles(user.nationalId); }); } else { showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + (response.message || 'خطای نامشخص'), 'error'); } }
+    // [ویرایش شده] - پارامتر isDraft اضافه شد
+    async function handleNewArticleSubmit(e, isDraft = false) { 
+        const button = e.target.closest('button');
+        if (document.getElementById('article-title').value.trim() === '') { return showCustomAlert('لطفاً عنوان مقاله را وارد کنید.', 'error'); }
+        if (document.getElementById('topic-reason').value.trim() === '') { return showCustomAlert('لطفاً دلیل انتخاب موضوع را تکمیل کنید.', 'error'); } 
+        if (!window.selectedSupervisor) { return showCustomAlert('لطفاً یک استاد راهنما انتخاب کنید.', 'error'); } 
+        const user = getStoredUser(); 
+        const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor }; 
+        const response = await callApi('submitNewArticle', { data, isDraft }, button); 
+        if(response?.status === 'success'){ 
+            showCustomAlert(response.message, 'success', () => { closeAllModals(); loadArticles(user.nationalId); }); 
+        } else { 
+            showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + (response.message || 'خطای نامشخص'), 'error'); 
+        } 
+    }
     
     function showEditArticleWizard(article) {
         const isReadOnly = article.articleStatus == 5 || article.articleStatus == 6 || article.articleStatus == 8;
@@ -343,7 +356,7 @@
 
         const setupCounter = (inputId, counterId, validationFn, min, max, isKeyword = false) => { const input = document.getElementById(inputId); const counter = document.getElementById(counterId); const update = () => { const count = isKeyword ? countKeywords(input.value) : countWords(input.value); counter.textContent = count; counter.classList.toggle('invalid', !isReadOnly && (count < min || count > max)); }; input.addEventListener('input', update); update(); }; setupCounter('edit-abstract', 'abstract-counter', countWords, 150, 300); setupCounter('edit-keywords', 'keywords-counter', countKeywords, 3, 5, true); setupCounter('edit-introduction', 'intro-counter', countWords, 350, 500); setupCounter('edit-body', 'body-counter', countWords, 700, 3000); setupCounter('edit-conclusion', 'conclusion-counter', countWords, 100, 500); document.querySelectorAll('.save-section-btn').forEach(btn => { btn.onclick = async (e) => { if(isReadOnly) return; const user = getStoredUser(); const section = e.target.closest('button').dataset.section; let content; const getStorageKey = (sec) => `autosave-${user.nationalId}-${article.articleId}-${sec}`; if (section === 'keywords_abstract') { const abstractText = document.getElementById('edit-abstract').value; const keywordsText = document.getElementById('edit-keywords').value; if (countWords(abstractText) < 150 || countWords(abstractText) > 300) return showCustomAlert('تعداد کلمات چکیده معتبر نیست.', 'error'); if (countKeywords(keywordsText) < 3 || countKeywords(keywordsText) > 5) return showCustomAlert('تعداد کلیدواژه‌ها معتبر نیست.', 'error'); content = { keywords: keywordsText, abstract: abstractText }; } else if(section === 'references') { content = document.getElementById('edit-references-hidden').value; if (document.getElementById('reference-list-container').children.length < 5 || document.getElementById('reference-list-container').children.length > 40) return showCustomAlert('تعداد منابع معتبر نیست.', 'error'); } else { const text = document.getElementById(`edit-${section}`).value; const wordCount = countWords(text); if (section === 'introduction' && (wordCount < 350 || wordCount > 500)) return showCustomAlert('تعداد کلمات مقدمه معتبر نیست.', 'error'); if (section === 'body' && (wordCount < 700 || wordCount > 3000)) return showCustomAlert('تعداد کلمات بدنه مقاله معتبر نیست.', 'error'); if (section === 'conclusion' && (wordCount < 100 || wordCount > 500)) return showCustomAlert('تعداد کلمات نتیجه‌گیری معتبر نیست.', 'error'); content = text; } const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target); if(res?.status === 'success') { showCustomAlert(res.message, 'success'); if (section === 'keywords_abstract') { localStorage.removeItem(getStorageKey('abstract')); localStorage.removeItem(getStorageKey('keywords')); } else { localStorage.removeItem(getStorageKey(section)); } } else { showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error'); } }; });
         const fieldsToAutoSave = [ { id: 'edit-abstract', section: 'abstract' }, { id: 'edit-keywords', section: 'keywords' }, { id: 'edit-introduction', section: 'introduction' }, { id: 'edit-body', section: 'body' }, { id: 'edit-conclusion', section: 'conclusion' }, { id: 'edit-references-hidden', section: 'references'} ];
-        fieldsToAutoSave.forEach(field => { const element = document.getElementById(field.id); if (!element || isReadOnly) return; const user = getStoredUser(); const storageKey = `autosave-${user.nationalId}-${article.articleId}-${field.section}`; const savedContent = localStorage.getItem(storageKey); if (savedContent && savedContent.trim() !== (element.value || '').trim()) { showCustomConfirm('یک نسخه پشتیبان از این بخش پیدا شد. آیا مایل به بازیابی آن هستید؟', (confirmed, closeModal) => { if (confirmed) { element.value = savedContent; element.dispatchEvent(new Event('input')); } localStorage.removeItem(storageKey); closeModal(); }, 'بله، بازیابی کن', 'نه، حذف کن'); }
+        fieldsToAutoSave.forEach(field => { const element = document.getElementById(field.id); if (!element || isReadOnly) return; const user = getStoredUser(); const storageKey = `autosave-${user.nationalId}-${article.articleId}-${field.section}`; const savedContent = localStorage.getItem(storageKey); if (savedContent && savedContent.trim() !== (element.value || '').trim()) { showCustomConfirm('یک نسخه پشتیبان از این بخش پیدا شد. آیا مایل به بازیابی آن هستید؟', (confirmed, btn, closeModal) => { if (confirmed) { element.value = savedContent; element.dispatchEvent(new Event('input')); } localStorage.removeItem(storageKey); closeModal(); }, 'بله، بازیابی کن', 'نه، حذف کن'); }
             let debounceTimer; element.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { localStorage.setItem(storageKey, element.value); }, 2000); });
         });
         const refTypeSelect = document.getElementById('ref-type'); const fields = { book: document.getElementById('ref-book-fields'), journal: document.getElementById('ref-journal-fields'), website: document.getElementById('ref-website-fields') }; const addRefBtn = document.getElementById('add-ref-btn'); const refListContainer = document.getElementById('reference-list-container'); const hiddenRefTextarea = document.getElementById('edit-references-hidden'); const refCounter = document.getElementById('ref-counter'); const updateRefList = () => { const items = Array.from(refListContainer.children).map(li => li.querySelector('span').textContent); hiddenRefTextarea.value = items.join('\n'); hiddenRefTextarea.dispatchEvent(new Event('input')); const count = items.length; refCounter.textContent = count; refCounter.classList.toggle('invalid', !isReadOnly && (count < 5 || count > 40)); }; const renderInitialRefs = () => { refListContainer.innerHTML = ''; hiddenRefTextarea.value.split('\n').filter(Boolean).forEach(refText => { const li = document.createElement('li'); li.innerHTML = `<span>${refText}</span><button class="ref-delete-btn" title="حذف منبع" ${isReadOnly ? 'disabled style="display:none;"' : ''}><i class="fas fa-times"></i></button>`; if (!isReadOnly) { li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); }; } refListContainer.appendChild(li); }); updateRefList(); }; refTypeSelect.onchange = () => Object.keys(fields).forEach(key => fields[key].classList.toggle('hidden', refTypeSelect.value !== key)); addRefBtn.onclick = () => { if(isReadOnly) return; let formattedRef = '', inputsToClear = []; if (refTypeSelect.value === 'book') { const lname = document.getElementById('ref-book-lname').value.trim(), fname = document.getElementById('ref-book-fname').value.trim(), year = document.getElementById('ref-book-year').value.trim(), title = document.getElementById('ref-book-title').value.trim(), publisher = document.getElementById('ref-book-publisher').value.trim(); if (!lname || !fname || !year || !title || !publisher) return showCustomAlert('تمام فیلدهای کتاب باید پر شوند.', 'error'); formattedRef = `${lname}، ${fname} (${year}). *${title}*. ${publisher}.`; inputsToClear = ['ref-book-lname', 'ref-book-fname', 'ref-book-year', 'ref-book-title', 'ref-book-publisher']; } else if (refTypeSelect.value === 'journal') { const lname = document.getElementById('ref-journal-lname').value.trim(), fname = document.getElementById('ref-journal-fname').value.trim(), year = document.getElementById('ref-journal-year').value.trim(), title = document.getElementById('ref-journal-title').value.trim(), journal = document.getElementById('ref-journal-name').value.trim(); if (!lname || !fname || !year || !title || !journal) return showCustomAlert('تمام فیلدهای مقاله باید پر شوند.', 'error'); formattedRef = `${lname}، ${fname} (${year}). "${title}". *${journal}*.`; inputsToClear = ['ref-journal-lname', 'ref-journal-fname', 'ref-journal-year', 'ref-journal-title', 'ref-journal-name']; } else { const author = document.getElementById('ref-web-author').value.trim(), year = document.getElementById('ref-web-year').value.trim(), title = document.getElementById('ref-web-title').value.trim(), url = document.getElementById('ref-web-url').value.trim(); if (!year || !title || !url) return showCustomAlert('سال، عنوان و آدرس اینترنتی الزامی است.', 'error'); const authorPart = author ? `${author} ` : ''; formattedRef = `${authorPart}(${year}). *${title}*. بازیابی شده از: ${url}`; inputsToClear = ['ref-web-author', 'ref-web-year', 'ref-web-title', 'ref-web-url']; } const li = document.createElement('li'); li.innerHTML = `<span>${formattedRef}</span><button class="ref-delete-btn" title="حذف منبع"><i class="fas fa-times"></i></button>`; li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); }; refListContainer.appendChild(li); updateRefList(); inputsToClear.forEach(id => document.getElementById(id).value = ''); }; renderInitialRefs(); let currentStep = 1; const totalSteps = 6; const progressSteps = document.querySelectorAll('.progress-step'); const navigateWizard = (dir) => { const newStep = currentStep + dir; if (newStep > 0 && newStep <= totalSteps) { document.querySelector(`.wizard-step.active`).classList.remove('active'); document.querySelector(`.wizard-step[data-step="${newStep}"]`).classList.add('active'); currentStep = newStep; document.getElementById('wizard-prev-btn').disabled = currentStep === 1; document.getElementById('wizard-next-btn').disabled = currentStep === totalSteps; progressSteps.forEach((step, index) => { step.classList.remove('active', 'completed'); if (index < currentStep - 1) { step.classList.add('completed'); } else if (index === currentStep - 1) { step.classList.add('active'); } }); } }; document.getElementById('wizard-next-btn').onclick = () => navigateWizard(1); document.getElementById('wizard-prev-btn').onclick = () => navigateWizard(-1);
@@ -414,8 +427,12 @@
     
     async function handleRequestReReviewClick(button) {
         const articleId = button.dataset.articleId;
-        showCustomConfirm('آیا از ارسال مقاله برای بررسی مجدد اطمینان دارید؟', async (confirmed, btn, closeModal) => {
+        showCustomConfirm('آیا از ارسال مقاله برای بررسی مجدد اطمینان دارید؟', async (confirmed, confirmBtn, closeModal) => {
             if (confirmed) {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('btn-loading');
+                overlay.querySelector('#confirm-no-btn').disabled = true;
+
                 const user = getStoredUser();
                 const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId });
                 closeModal();
@@ -450,7 +467,7 @@
     }
 
     function formatHistoryEntry(entry) {
-        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود به سیستم', icon: 'fa-sign-in-alt' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوا', icon: 'fa-save' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات', icon: 'fa-edit' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' }, 'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' }, 'SUGGESTED_TITLE_TAKEN': { text: 'انتخاب عنوان پیشنهادی', icon: 'fa-check-circle' }, 'SUGGESTED_TITLE_RELEASED': { text: 'آزادسازی عنوان پیشنهادی', icon: 'fa-undo' } };
+        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود به سیستم', icon: 'fa-sign-in-alt' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوا', icon: 'fa-save' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات', icon: 'fa-edit' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' }, 'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' }, 'SUGGESTED_TITLE_TAKEN': { text: 'انتخاب عنوان پیشنهادی', icon: 'fa-check-circle' }, 'SUGGESTED_TITLE_RELEASED': { text: 'آزادسازی عنوان پیشنهادی', icon: 'fa-undo' }, 'CREATE_DRAFT_SUCCESS': { text: 'ذخیره پیش‌نویس', icon: 'fa-save' }, 'SEND_DRAFT_SUCCESS': { text: 'ارسال پیش‌نویس برای استاد', icon: 'fa-paper-plane' } };
         const formattedDate = new Date(entry.timestamp).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
         const actionInfo = actionMap[entry.action] || { text: entry.action.replace(/_/g, ' ').toLowerCase(), icon: 'fa-info-circle' };
         
@@ -469,11 +486,12 @@
     function getKnowledgeAreaOptions(selectedValue = '') { const areas = ["فقه", "اصول", "اخلاق", "کلام", "تفسیر", "ترجمه", "فلسفه", "عرفان", "حدیث", "رجال", "درایه", "نقدالحدیث", "صرف", "نحو", "بلاغت", "مشاوره", "تربیتی", "روانشناسی"]; return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join(''); }
     
     async function showNewArticleModal() {
-        const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`;
+        const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><button id="save-draft-btn" class="btn-secondary"><span class="btn-text">ذخیره پیش‌نویس</span></button><button id="submit-new-article-btn"><span class="btn-text">ثبت و ارسال</span></button></div>`;
         renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
         document.getElementById('affiliation').onclick = () => showAffiliationModal('affiliation');
         document.getElementById('supervisor').onclick = () => showSupervisorModal('supervisor', (supervisor) => { window.selectedSupervisor = supervisor; });
-        document.getElementById('submit-new-article-btn').onclick = handleNewArticleSubmit;
+        document.getElementById('submit-new-article-btn').onclick = (e) => handleNewArticleSubmit(e, false);
+        document.getElementById('save-draft-btn').onclick = (e) => handleNewArticleSubmit(e, true);
         document.getElementById('suggest-title-btn').onclick = showSuggestedTitlesModal;
     }
 
@@ -529,6 +547,7 @@
                 '4': ['انصراف استاد راهنما', '#ffc107'],
                 '5': ['تایید نهایی و آماده نشر', '#198754'],
                 '6': ['تایید استاد، منتظر بررسی نهایی', '#0dcaf0'],
+                '7': ['پیش‌نویس', '#6c757d'], // [جدید]
                 '8': ['در حال بررسی مجدد', '#6f42c1'] 
             }
         };
