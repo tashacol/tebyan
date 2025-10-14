@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -33,13 +32,14 @@
             --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* START: EDIT - این بخش برای رفع مشکل به هم ریختگی اضافه شده است */
-        *,
-        *::before,
-        *::after {
+        /* START: EDIT - شروع ویرایش برای رفع مشکل بهم ریختگی */
+        *, *::before, *::after {
             box-sizing: border-box;
         }
-        /* END: EDIT */
+
+        html {
+            height: 100%;
+        }
 
         body {
             font-family: 'Vazirmatn', sans-serif;
@@ -49,24 +49,41 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            align-items: flex-start; /* در حالت داشبورد، محتوا از بالا شروع می‌شود */
+            min-height: 100%; /* استفاده از 100% برای هماهنگی با html */
+            overflow-x: hidden; /* جلوگیری از اسکرول افقی ناخواسته */
         }
 
-        /* START: EDIT - این بخش برای مرکز کردن فرم ورود اضافه شده است */
-        #login-page {
-            display: flex;
-            justify-content: center;
+        /* این استایل صفحه ورود را به صورت عمودی هم وسط‌چین می‌کند */
+        body:has(#login-page:not(.hidden)) {
             align-items: center;
-            width: 100%;
-            min-height: 80vh;
         }
 
-        #login-page > .card {
-            width: 100%;
-            max-width: 420px;
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            padding: 20px; /* افزودن فاصله از اطراف صفحه برای موبایل */
+            overflow-y: auto; /* اجازه اسکرول در صورت بلند بودن مودال */
         }
-        /* END: EDIT */
+        
+        .modal-box {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            width: 100%; /* عرض کامل در موبایل */
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            max-height: 95vh; /* جلوگیری از بلندتر شدن مودال از صفحه */
+        }
+        /* END: EDIT - پایان ویرایش */
 
         .hidden {
             display: none !important;
@@ -543,28 +560,6 @@
             .article-actions {
                 justify-content: flex-end;
             }
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-box {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            width: 90%;
-            box-shadow: var(--shadow);
-            position: relative;
-            display: flex;
-            flex-direction: column;
         }
 
         .modal-box.modal-lg {
