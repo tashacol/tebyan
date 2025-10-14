@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         :root {
             --primary: #0d6efd; --primary-dark: #0a58ca; --primary-light: #e7f0ff;
-            --success: #198754; --danger: #dc3545; --warning: #ffc107;
+            --success: #198754; --danger: #dc3545; --warning: #ffc107; --info: #6f42c1;
             --text-dark: #212529; --text-light: #6c757d; --bg-main: #f8f9fa;
             --bg-card: #ffffff; --border-color: #dee2e6; --shadow: 0 4px 25px rgba(0,0,0,0.08);
             --radius-md: 12px; --radius-lg: 16px; --transition: 0.3s ease;
@@ -25,7 +25,6 @@
         h1, h2, h3, h4 { color: var(--text-dark); font-weight: 700; margin-top: 0; }
         h1 { font-size: 1.8rem; text-align: center; margin-bottom: 25px; }
 
-        /* --- Forms & Buttons --- */
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-light); }
         input, select, textarea {
@@ -33,23 +32,20 @@
             border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 1rem;
             font-family: inherit; transition: var(--transition); background-color: #fff;
         }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); outline: none;
-        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); outline: none; }
         button {
             font-family: inherit; padding: 12px 24px; background-color: var(--primary); color: white;
             border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 500;
             cursor: pointer; transition: var(--transition); display: inline-flex;
-            align-items: center; justify-content: center; gap: 8px; min-height: 48px;
+            align-items: center; justify-content: center; gap: 8px; min-height: 48px; position: relative;
         }
-        button:hover:not(:disabled) { background-color: var(--primary-dark); }
+        button:hover:not(:disabled) { background-color: var(--primary-dark); transform: translateY(-2px); }
         button:disabled { background-color: #ced4da; cursor: not-allowed; }
-        button.btn-success { background-color: var(--success); } button.btn-success:hover { background-color: #157347; }
-        button.btn-danger { background-color: var(--danger); } button.btn-danger:hover { background-color: #bb2d3b; }
-        button.btn-warning { background-color: var(--warning); color: var(--text-dark); } button.btn-warning:hover { background-color: #ffca2c; }
-        button.btn-secondary { background-color: #6c757d; } button.btn-secondary:hover { background-color: #5a6268; }
+        button.btn-success { background-color: var(--success); } button.btn-success:hover:not(:disabled) { background-color: #157347; }
+        button.btn-danger { background-color: var(--danger); } button.btn-danger:hover:not(:disabled) { background-color: #bb2d3b; }
+        button.btn-warning { background-color: var(--warning); color: var(--text-dark); } button.btn-warning:hover:not(:disabled) { background-color: #ffca2c; }
+        button.btn-secondary { background-color: #6c757d; } button.btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
 
-        /* --- Loading Spinner --- */
         .btn-loading .btn-text, .btn-loading .fas { visibility: hidden; }
         .btn-loading::after {
             content: ''; position: absolute; width: 20px; height: 20px;
@@ -58,58 +54,33 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- Dashboard Header & Stats --- */
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card {
-            background: var(--bg-card); border-radius: var(--radius-md); padding: 20px;
-            text-align: center; border-bottom: 4px solid var(--primary);
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; text-align: center; border-bottom: 4px solid var(--primary); }
         .stat-card .stat-number { font-size: 2.2rem; font-weight: 700; }
         .stat-card .stat-label { font-size: 0.9rem; color: var(--text-light); }
         .stat-card.warning { border-color: var(--warning); }
         .stat-card.success { border-color: var(--success); }
         
-        /* --- Search & Filter --- */
         .toolbar { display: flex; gap: 15px; margin-bottom: 20px; }
-        .search-box {
-            flex-grow: 1; position: relative;
-        }
-        .search-box input {
-            padding-right: 40px;
-        }
-        .search-box .search-icon {
-            position: absolute; top: 50%; right: 15px;
-            transform: translateY(-50%); color: var(--text-light);
-        }
+        .search-box { flex-grow: 1; position: relative; }
+        .search-box input { padding-left: 40px; }
+        .search-box .search-icon { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: var(--text-light); }
         
-        /* --- Article Cards --- */
         .article-group-title { font-size: 1.4rem; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); margin-bottom: 15px; }
-        .article-card {
-            background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 15px;
-            padding: 20px; border-left: 5px solid var(--primary); cursor: pointer; transition: var(--transition);
-        }
+        .article-card { background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 15px; padding: 20px; border-right: 5px solid var(--primary); cursor: pointer; transition: var(--transition); }
         .article-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
-        .article-card.type-new-request { border-left-color: var(--warning); }
-        .article-card.type-in-progress { border-left-color: var(--primary); }
-        .article-card.type-completed { border-left-color: var(--success); opacity: 0.8; }
+        .article-card.type-new-request { border-right-color: var(--warning); }
+        .article-card.type-in-progress { border-right-color: var(--primary); }
+        .article-card.type-completed { border-right-color: var(--success); opacity: 0.85; }
         .article-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .article-title { font-size: 1.2rem; font-weight: 700; flex-grow: 1; }
-        .article-meta { font-size: 0.9rem; color: var(--text-light); }
+        .article-meta { font-size: 0.9rem; color: var(--text-light); margin-top: 5px; }
         .article-status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; background: var(--primary); }
 
-        /* --- Modals --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px);
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); }
         .modal-overlay.visible { opacity: 1; }
-        .modal-box {
-            background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg);
-            width: 90%; max-width: 500px; box-shadow: var(--shadow);
-            transform: scale(0.95); transition: transform 0.2s;
-        }
+        .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 90%; max-width: 500px; box-shadow: var(--shadow); transform: scale(0.95); transition: transform 0.2s; }
         .modal-overlay.visible .modal-box { transform: scale(1); }
         .modal-box.modal-lg { max-width: 800px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; }
@@ -117,18 +88,36 @@
         .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); }
 
-        /* Review Modal Specifics */
         .review-modal-body { max-height: 70vh; overflow-y: auto; }
-        .review-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
-        .review-tab-btn { padding: 10px 20px; border: none; background: none; cursor: pointer; font-size: 1rem; font-family: inherit; border-bottom: 3px solid transparent; }
+        .review-tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .review-tab-btn { padding: 10px 15px; border: none; background: none; cursor: pointer; font-size: 1rem; font-family: inherit; border-bottom: 3px solid transparent; margin-bottom: -1px; }
         .review-tab-btn.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 700; }
         .review-tab-content { display: none; }
         .review-tab-content.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .article-content-box { background: var(--bg-main); border-radius: var(--radius-md); padding: 20px; line-height: 1.8; white-space: pre-wrap; }
+        .article-content-box { background: var(--bg-main); border-radius: var(--radius-md); padding: 20px; line-height: 1.8; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
         
-        /* Custom Alert */
         .custom-alert-actions button { margin-top: 15px; }
+
+        .user-menu { position: relative; }
+        .user-menu-trigger { background: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); border-radius: 50%; width: 48px; height: 48px; min-height: 48px; padding: 0; font-size: 1.5rem; box-shadow: var(--shadow); }
+        .user-menu-content { position: absolute; top: 110%; left: 0; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow); border: 1px solid var(--border-color); width: 220px; z-index: 100; padding: 10px; display: flex; flex-direction: column; gap: 5px; opacity: 0; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+        .user-menu-content:not(.hidden) { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .user-menu-item { background: none; border: none; padding: 10px; width: 100%; text-align: right; border-radius: var(--radius-md); font-size: 0.95rem; display: flex; align-items: center; }
+        .user-menu-item:hover { background-color: var(--bg-main); }
+        .user-menu-item .fas { color: var(--text-light); }
+
+        .history-timeline { list-style: none; padding: 20px 0; position: relative; }
+        .history-timeline::before { content: ''; position: absolute; top: 0; right: 8px; height: 100%; width: 3px; background: var(--border-color); border-radius: 3px; }
+        .timeline-item { margin-bottom: 25px; position: relative; padding-right: 35px; }
+        .timeline-item::after { content: ''; position: absolute; right: 0; top: 5px; width: 18px; height: 18px; background: var(--bg-card); border: 4px solid var(--primary); border-radius: 50%; z-index: 1; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-content { background-color: var(--bg-main); padding: 15px; border-radius: var(--radius-md); }
+        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; flex-wrap: wrap; gap: 10px; }
+        .timeline-action { font-weight: 700; color: var(--primary-dark); font-size: 1.1rem; }
+        .timeline-actor { font-size: 0.9rem; color: var(--text-light); }
+        .timeline-timestamp { font-size: 0.85rem; color: var(--text-light); }
+        .timeline-details { font-size: 0.95rem; color: var(--text-dark); word-break: break-word; }
     </style>
 </head>
 <body>
@@ -136,58 +125,39 @@
     <div id="alert-container"></div>
     <div class="container">
 
-        <!-- ============== LOGIN PAGE ============== -->
         <div id="login-page">
             <div class="card" style="max-width: 400px; margin: 50px auto;">
                 <h1><i class="fas fa-user-shield"></i> پنل اساتید</h1>
                 <form id="login-form">
-                    <div class="form-group">
-                        <label for="national-id">کد ملی</label>
-                        <input type="text" id="national-id" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">رمز عبور</label>
-                        <input type="password" id="password" required>
-                    </div>
-                    <button type="submit" id="login-btn" style="width: 100%;">
-                        <span class="btn-text">ورود</span>
-                    </button>
+                    <div class="form-group"><label for="national-id">کد ملی</label><input type="text" id="national-id" required></div>
+                    <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password" required></div>
+                    <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود</span></button>
                     <p id="login-error" style="color: var(--danger); margin-top: 10px; text-align: center;"></p>
                 </form>
             </div>
         </div>
 
-        <!-- ============== DASHBOARD PAGE ============== -->
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
                 <h3 id="professor-welcome"></h3>
-                <button id="logout-btn" class="btn-secondary">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="btn-text">خروج</span>
-                </button>
+                <div class="user-menu">
+                    <button id="user-menu-btn" class="user-menu-trigger"><i class="fas fa-user-cog"></i></button>
+                    <div id="user-menu-dropdown" class="user-menu-content hidden">
+                        <button class="user-menu-item" id="profile-btn"><i class="fas fa-id-card fa-fw" style="margin-left: 8px;"></i>پروفایل من</button>
+                        <button class="user-menu-item" id="logout-btn"><i class="fas fa-sign-out-alt fa-fw" style="margin-left: 8px;"></i>خروج از سیستم</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card warning">
-                    <div id="stat-new-requests" class="stat-number">0</div>
-                    <div class="stat-label">درخواست جدید راهنمایی</div>
-                </div>
-                <div class="stat-card">
-                    <div id="stat-needs-review" class="stat-number">0</div>
-                    <div class="stat-label">مقاله نیازمند بازبینی</div>
-                </div>
-                <div class="stat-card success">
-                    <div id="stat-total-guided" class="stat-number">0</div>
-                    <div class="stat-label">کل مقالات راهنمایی شده</div>
-                </div>
+                <div class="stat-card warning"><div id="stat-new-requests" class="stat-number">0</div><div class="stat-label">درخواست جدید راهنمایی</div></div>
+                <div class="stat-card"><div id="stat-needs-review" class="stat-number">0</div><div class="stat-label">مقاله نیازمند بازبینی</div></div>
+                <div class="stat-card success"><div id="stat-total-guided" class="stat-number">0</div><div class="stat-label">کل مقالات راهنمایی شده</div></div>
             </div>
 
-            <!-- Toolbar -->
             <div class="toolbar">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان یا نام محقق...">
-                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان یا نام محقق..."><i class="fas fa-search search-icon"></i>
                 </div>
             </div>
 
@@ -205,67 +175,60 @@
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxezFY04wIvrP1xVNue39H3tuSI2sx2rJcxMIW3xdaqUMyNMaNKGWbNsu5b-GVJHAla/exec';
     let allArticles = [];
 
-    // --- DOM Elements ---
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
     const loginForm = document.getElementById('login-form');
     const modalContainer = document.getElementById('modal-container');
     const articlesContainer = document.getElementById('articles-container');
 
-    // --- API Call Function ---
     async function callApi(action, params = {}, button = null) {
         if (button) button.classList.add('btn-loading');
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', mode: 'cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action, params })
             });
-            if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
-            return await response.json();
+            if (!response.ok) throw new Error(`Network error`);
+            const data = await response.json();
+            if(data.status === 'error' && !data.isNetworkError) console.error('API Error:', data.message);
+            return data;
         } catch (error) {
             console.error('API Call Failed:', error);
-            showCustomAlert('خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.', 'error');
-            return { status: 'error', message: error.message };
+            return { status: 'error', message: 'خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.', isNetworkError: true };
         } finally {
             if (button) button.classList.remove('btn-loading');
         }
     }
 
-    // --- Authentication ---
     document.addEventListener('DOMContentLoaded', () => {
         const user = getStoredUser();
-        if (user) {
-            showDashboard(user);
-        }
+        if (user) showDashboard(user);
+        
         loginForm.addEventListener('submit', handleLogin);
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
         document.getElementById('search-input').addEventListener('input', (e) => renderArticles(allArticles, e.target.value));
+        document.getElementById('user-menu-btn').addEventListener('click', () => {
+            document.getElementById('user-menu-dropdown').classList.toggle('hidden');
+        });
+        document.getElementById('profile-btn').addEventListener('click', showProfileModal);
     });
 
     async function handleLogin(e) {
         e.preventDefault();
         const loginError = document.getElementById('login-error');
         loginError.textContent = '';
-        const response = await callApi('loginProfessor', {
-            nationalId: document.getElementById('national-id').value,
-            password: document.getElementById('password').value
-        }, document.getElementById('login-btn'));
+        const response = await callApi('loginProfessor', { nationalId: document.getElementById('national-id').value, password: document.getElementById('password').value }, document.getElementById('login-btn'));
         if (response?.status === 'success') {
             storeUser(response.user);
             showDashboard(response.user);
         } else {
-            loginError.textContent = response?.message || 'خطایی رخ داد.';
+            showCustomAlert(response.isNetworkError ? 'خطای شبکه' : response.message || 'خطایی رخ داد.', 'error');
+            loginError.textContent = response.isNetworkError ? 'خطای شبکه' : response.message || 'خطایی رخ داد.';
         }
     }
 
-    function handleLogout() {
-        localStorage.removeItem('currentProfessor');
-        window.location.reload();
-    }
+    function handleLogout() { localStorage.removeItem('currentProfessor'); window.location.reload(); }
 
-    // --- Dashboard Rendering ---
     async function showDashboard(user) {
         loginPage.classList.add('hidden');
         dashboardPage.classList.remove('hidden');
@@ -274,20 +237,22 @@
     }
     
     async function loadDashboardData(nationalId, showLoader = true) {
-        if(showLoader) {
+        if (showLoader) {
             document.getElementById('loader').classList.remove('hidden');
-            articlesContainer.classList.add('hidden');
+            articlesContainer.innerHTML = '';
+            document.getElementById('dashboard-content').classList.add('hidden');
         }
         const response = await callApi('getProfessorDashboard', { nationalId });
-        if(showLoader) {
+        if (showLoader) {
             document.getElementById('loader').classList.add('hidden');
-            articlesContainer.classList.remove('hidden');
+            document.getElementById('dashboard-content').classList.remove('hidden');
         }
-
         if (response?.status === 'success') {
             allArticles = response.articles;
             renderArticles(response.articles);
             updateStats(response.stats);
+        } else {
+            showCustomAlert(response.message || 'خطا در بارگذاری اطلاعات', 'error');
         }
     }
 
@@ -295,56 +260,34 @@
         let filteredArticles = articles;
         if (searchTerm) {
             const lowerCaseSearch = searchTerm.toLowerCase().trim();
-            filteredArticles = articles.filter(a => 
-                a.title.toLowerCase().includes(lowerCaseSearch) || 
-                a.researcherName.toLowerCase().includes(lowerCaseSearch)
-            );
+            filteredArticles = articles.filter(a => a.title.toLowerCase().includes(lowerCaseSearch) || a.researcherName.toLowerCase().includes(lowerCaseSearch));
         }
-        
         const newRequests = filteredArticles.filter(a => a.supervisorStatus == 1);
-        const inProgress = filteredArticles.filter(a => a.supervisorStatus == 5 && (a.articleStatus != 5 && a.articleStatus != 0));
+        const inProgress = filteredArticles.filter(a => a.supervisorStatus == 5 && a.articleStatus != 5 && a.articleStatus != 0);
         const completed = filteredArticles.filter(a => a.supervisorStatus == 5 && (a.articleStatus == 5 || a.articleStatus == 0));
-
         articlesContainer.innerHTML = '';
         renderGroup('درخواست‌های جدید راهنمایی', newRequests);
         renderGroup('مقالات در حال بررسی', inProgress);
         renderGroup('مقالات تکمیل شده', completed);
-        
-        const anyArticles = newRequests.length + inProgress.length + completed.length > 0;
-        document.getElementById('no-articles-msg').classList.toggle('hidden', anyArticles);
+        document.getElementById('no-articles-msg').classList.toggle('hidden', filteredArticles.length > 0);
     }
 
     function renderGroup(title, articles) {
         if (articles.length === 0) return;
-        
         let groupHTML = `<h4 class="article-group-title">${title}</h4>`;
         articles.forEach(article => {
-            let cardType = 'type-in-progress';
-            let statusText = 'در حال بررسی';
-            if (article.supervisorStatus == 1) {
-                cardType = 'type-new-request';
-                statusText = 'نیازمند تصمیم‌گیری';
-            } else if (article.articleStatus == 5) {
-                cardType = 'type-completed';
-                statusText = 'تایید نهایی شده';
-            } else if (article.articleStatus == 2) {
-                statusText = 'ارسال شده برای ویرایش';
-            }
+            let cardType = 'type-in-progress', statusText = 'در حال انجام';
+            const statusMap = { 1: 'منتظر تصمیم شما', 2: 'ارسال شده برای ویرایش', 6: 'منتظر بررسی نهایی نشریه', 7: 'منتظر اصلاحات جزئی محقق', 8: 'نیازمند بررسی مجدد' };
+            if (article.supervisorStatus == 1) { cardType = 'type-new-request'; statusText = 'نیازمند تصمیم‌گیری'; }
+            else if (article.articleStatus == 5 || article.articleStatus == 0) { cardType = 'type-completed'; statusText = article.articleStatus == 5 ? 'تایید نهایی شده' : 'رد شده'; }
+            else { statusText = statusMap[article.articleStatus] || 'در حال انجام'; }
 
-            groupHTML += `
-                <div class="article-card ${cardType}" onclick="handleArticleClick('${article.articleId}')">
-                    <div class="article-header">
-                        <span class="article-title">${article.title}</span>
-                        <span class="article-status-badge">${statusText}</span>
-                    </div>
-                    <div class="article-meta">
-                        <span>محقق: ${article.researcherName}</span> | <span>تاریخ درخواست: ${new Date(article.requestDate).toLocaleDateString('fa-IR')}</span>
-                    </div>
-                </div>
-            `;
+            groupHTML += `<div class="article-card ${cardType}" data-article-id="${article.articleId}"><div class="article-header"><span class="article-title">${article.title}</span><span class="article-status-badge">${statusText}</span></div><div class="article-meta"><span>محقق: ${article.researcherName}</span> | <span>تاریخ درخواست: ${new Date(article.requestDate).toLocaleDateString('fa-IR')}</span></div></div>`;
         });
         articlesContainer.innerHTML += groupHTML;
     }
+    
+    articlesContainer.addEventListener('click', (e) => { const card = e.target.closest('.article-card'); if(card && card.dataset.articleId) handleArticleClick(card.dataset.articleId); });
 
     function updateStats(stats) {
         document.getElementById('stat-new-requests').textContent = stats.newRequests;
@@ -352,186 +295,145 @@
         document.getElementById('stat-total-guided').textContent = stats.totalGuided;
     }
 
-    // --- Article Interaction & Modals ---
     function handleArticleClick(articleId) {
         const article = allArticles.find(a => a.articleId == articleId);
         if (!article) return;
-        
-        if (article.supervisorStatus == 1) {
-            showGuidanceRequestModal(article);
-        } else if (article.supervisorStatus == 5) {
-            showReviewModal(article);
-        }
+        if (article.supervisorStatus == 1) showGuidanceRequestModal(article);
+        else if (article.supervisorStatus == 5) showReviewModal(article);
     }
 
     function showGuidanceRequestModal(article) {
-        const content = `
-            <div class="modal-body">
-                <p><strong>محقق:</strong> ${article.researcherName}</p>
-                <p><strong>حیطه دانشی:</strong> ${article.knowledgeArea}</p>
-                <p><strong>دلیل انتخاب موضوع:</strong> ${article.topicReason}</p>
-                <hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">
-                <p><strong>چکیده مقاله:</strong></p>
-                <div class="article-content-box">${article.abstract || 'هنوز ثبت نشده'}</div>
-            </div>
-            <div class="modal-actions">
-                <button id="reject-btn" class="btn-danger"><i class="fas fa-times"></i> عدم پذیرش</button>
-                <button id="accept-btn" class="btn-success"><i class="fas fa-check"></i> پذیرش راهنمایی</button>
-            </div>
-        `;
+        const content = `<div class="modal-body"><p><strong>محقق:</strong> ${article.researcherName}</p><p><strong>حیطه دانشی:</strong> ${article.knowledgeArea}</p><p><strong>دلیل انتخاب موضوع:</strong><br>${article.topicReason}</p><hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;"><p><strong>چکیده مقاله:</strong></p><div class="article-content-box">${article.abstract || 'هنوز ثبت نشده'}</div></div><div class="modal-actions"><button id="reject-btn" class="btn-danger"><i class="fas fa-times"></i> عدم پذیرش</button><button id="accept-btn" class="btn-success"><i class="fas fa-check"></i> پذیرش راهنمایی</button></div>`;
         renderModal(`درخواست راهنمایی: ${article.title}`, content, 'modal-lg');
         document.getElementById('accept-btn').onclick = async (e) => {
-            const res = await callApi('handleGuidanceRequest', { articleId: article.articleId, accepted: true, professorNid: getStoredUser().nationalId }, e.target);
-            if(res.status === 'success') {
-                showCustomAlert(res.message, 'success');
-                closeAllModals();
-                loadDashboardData(getStoredUser().nationalId, false);
-            }
+            const user = getStoredUser();
+            const res = await callApi('handleGuidanceRequest', { articleId: article.articleId, accepted: true, professorNid: user.nationalId, professorName: user.name }, e.target);
+            if(res.status === 'success') { showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(user.nationalId, false); }); } else { showCustomAlert(res.message, 'error'); }
         };
         document.getElementById('reject-btn').onclick = () => showRejectionReasonModal(article);
     }
     
     function showRejectionReasonModal(article) {
-        const content = `
-            <div class="modal-body">
-                <p>آیا از عدم پذیرش راهنمایی این مقاله اطمینان دارید؟</p>
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="rejection-reason">دلیل عدم پذیرش (اختیاری)</label>
-                    <textarea id="rejection-reason" rows="3" placeholder="این پیام برای محقق نمایش داده خواهد شد..."></textarea>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button id="cancel-btn" class="btn-secondary">لغو</button>
-                <button id="confirm-reject-btn" class="btn-danger"><i class="fas fa-times"></i> تایید و ارسال</button>
-            </div>
-        `;
+        const content = `<div class="modal-body"><p>آیا از عدم پذیرش راهنمایی این مقاله اطمینان دارید؟</p><div class="form-group" style="margin-top: 20px;"><label for="rejection-reason">دلیل عدم پذیرش (اختیاری)</label><textarea id="rejection-reason" rows="3" placeholder="این پیام برای محقق نمایش داده خواهد شد..."></textarea></div></div><div class="modal-actions"><button id="cancel-btn" class="btn-secondary">لغو</button><button id="confirm-reject-btn" class="btn-danger"><i class="fas fa-times"></i> تایید و ارسال</button></div>`;
         renderModal('عدم پذیرش راهنمایی', content, '');
         document.getElementById('cancel-btn').onclick = () => showGuidanceRequestModal(article);
         document.getElementById('confirm-reject-btn').onclick = async (e) => {
+            const user = getStoredUser();
             const reason = document.getElementById('rejection-reason').value;
-            const res = await callApi('handleGuidanceRequest', { articleId: article.articleId, accepted: false, reason, professorNid: getStoredUser().nationalId }, e.target);
-            if(res.status === 'success') {
-                showCustomAlert(res.message, 'success');
-                closeAllModals();
-                loadDashboardData(getStoredUser().nationalId, false);
-            }
+            const res = await callApi('handleGuidanceRequest', { articleId: article.articleId, accepted: false, reason, professorNid: user.nationalId, professorName: user.name }, e.target);
+            if(res.status === 'success') { showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(user.nationalId, false); }); } else { showCustomAlert(res.message, 'error'); }
         };
     }
 
     function showReviewModal(article) {
-        const content = `
-            <div class="modal-body review-modal-body">
-                <div class="review-tabs">
-                    <button class="review-tab-btn active" data-tab="abstract">چکیده</button>
-                    <button class="review-tab-btn" data-tab="introduction">مقدمه</button>
-                    <button class="review-tab-btn" data-tab="body">بدنه</button>
-                    <button class="review-tab-btn" data-tab="conclusion">نتیجه‌گیری</button>
-                    <button class="review-tab-btn" data-tab="references">منابع</button>
-                </div>
-                <div id="tab-abstract" class="review-tab-content active"><div class="article-content-box">${article.abstract || 'ثبت نشده'}</div></div>
-                <div id="tab-introduction" class="review-tab-content"><div class="article-content-box">${article.introduction || 'ثبت نشده'}</div></div>
-                <div id="tab-body" class="review-tab-content"><div class="article-content-box">${article.body || 'ثبت نشده'}</div></div>
-                <div id="tab-conclusion" class="review-tab-content"><div class="article-content-box">${article.conclusion || 'ثبت نشده'}</div></div>
-                <div id="tab-references" class="review-tab-content"><div class="article-content-box">${article.references || 'ثبت نشده'}</div></div>
-                
-                <hr style="border:0; border-top:1px solid var(--border-color); margin: 30px 0;">
-
-                <h4>فرم داوری و ارسال بازخورد</h4>
-                <div class="form-group">
-                    <label for="review-feedback">توضیحات و نکات ویرایشی (در صورت نیاز)</label>
-                    <textarea id="review-feedback" rows="5" placeholder="این پیام برای محقق نمایش داده خواهد شد..."></textarea>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button id="revision-btn" class="btn-warning"><i class="fas fa-edit"></i> ارسال برای بازبینی کلی</button>
-                <button id="minor-edits-btn" class="btn-primary"><i class="fas fa-tasks"></i> تایید با اصلاحات جزئی</button>
-                <button id="approve-btn" class="btn-success"><i class="fas fa-check-double"></i> تایید نهایی و ارسال به نشریه</button>
-            </div>
-        `;
+        const isCompleted = article.articleStatus == 5 || article.articleStatus == 0;
+        const actionsHTML = isCompleted ? `<div style="text-align: center; padding: 20px; background-color: var(--bg-main); border-radius: var(--radius-md);">این مقاله قبلاً نهایی شده و اقدامی نیاز ندارد.</div>` : `<h4>فرم داوری و ارسال بازخورد</h4><div class="form-group"><label for="review-feedback">توضیحات و نکات ویرایشی (در صورت نیاز)</label><textarea id="review-feedback" rows="5" placeholder="این پیام برای محقق نمایش داده خواهد شد..."></textarea></div></div><div class="modal-actions"><button id="revision-btn" class="btn-warning"><i class="fas fa-edit"></i> ارسال برای بازبینی</button><button id="minor-edits-btn" class="btn-primary"><i class="fas fa-tasks"></i> تایید با اصلاحات جزئی</button><button id="approve-btn" class="btn-success"><i class="fas fa-check-double"></i> تایید نهایی</button></div>`;
+        const content = `<div class="modal-body review-modal-body"><div class="review-tabs"><button class="review-tab-btn active" data-tab="abstract">چکیده</button><button class="review-tab-btn" data-tab="introduction">مقدمه</button><button class="review-tab-btn" data-tab="body">بدنه</button><button class="review-tab-btn" data-tab="conclusion">نتیجه‌گیری</button><button class="review-tab-btn" data-tab="references">منابع</button><button class="review-tab-btn" data-tab="history">تاریخچه</button></div><div id="tab-abstract" class="review-tab-content active"><div class="article-content-box">${article.abstract || 'ثبت نشده'}</div></div><div id="tab-introduction" class="review-tab-content"><div class="article-content-box">${article.introduction || 'ثبت نشده'}</div></div><div id="tab-body" class="review-tab-content"><div class="article-content-box">${article.body || 'ثبت نشده'}</div></div><div id="tab-conclusion" class="review-tab-content"><div class="article-content-box">${article.conclusion || 'ثبت نشده'}</div></div><div id="tab-references" class="review-tab-content"><div class="article-content-box">${article.references || 'ثبت نشده'}</div></div><div id="tab-history" class="review-tab-content" style="position:relative; min-height: 150px;"><div class="list-loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div></div><hr style="border:0; border-top:1px solid var(--border-color); margin: 30px 0;">${actionsHTML}`;
         renderModal(`بررسی مقاله: ${article.title}`, content, 'modal-lg');
         
-        // Tab functionality
         document.querySelectorAll('.review-tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
                 document.querySelector('.review-tab-btn.active').classList.remove('active');
                 document.querySelector('.review-tab-content.active').classList.remove('active');
                 btn.classList.add('active');
                 document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                if(btn.dataset.tab === 'history' && !btn.dataset.loaded) { loadArticleHistory(article.articleId); btn.dataset.loaded = 'true'; }
             });
         });
         
-        // Action buttons
-        document.getElementById('revision-btn').onclick = (e) => submitReview(e, article.articleId, 'revision');
-        document.getElementById('minor-edits-btn').onclick = (e) => submitReview(e, article.articleId, 'minor_edits');
-        document.getElementById('approve-btn').onclick = (e) => submitReview(e, article.articleId, 'final_approval');
+        if (!isCompleted) {
+            document.getElementById('revision-btn').onclick = (e) => submitReview(e, article.articleId, 'revision');
+            document.getElementById('minor-edits-btn').onclick = (e) => submitReview(e, article.articleId, 'minor_edits');
+            document.getElementById('approve-btn').onclick = (e) => submitReview(e, article.articleId, 'final_approval');
+        }
     }
 
     async function submitReview(event, articleId, decision) {
         const feedback = document.getElementById('review-feedback').value;
-        const res = await callApi('submitArticleReview', { articleId, decision, feedback, professorNid: getStoredUser().nationalId }, event.target);
-        if(res.status === 'success') {
-            showCustomAlert(res.message, 'success');
-            closeAllModals();
-            loadDashboardData(getStoredUser().nationalId, false);
-        }
+        const user = getStoredUser();
+        const res = await callApi('submitArticleReview', { articleId, decision, feedback, professorNid: user.nationalId, professorName: user.name }, event.target);
+        if(res.status === 'success') { showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(user.nationalId, false); }); }
+        else { showCustomAlert(res.isNetworkError ? 'خطای شبکه' : res.message, 'error'); }
     }
 
-    // --- Utility Functions ---
-    function renderModal(title, content, sizeClass = '') {
-        const modalId = 'main-modal';
-        closeAllModals(); // Close any existing modal
-        const modalWrapper = document.createElement('div');
-        modalWrapper.id = modalId;
-        modalWrapper.className = 'modal-overlay';
-        modalWrapper.innerHTML = `
-            <div class="modal-box ${sizeClass}">
-                <div class="modal-header">
-                    <h3>${title}</h3>
-                    <button class="modal-close-btn"><i class="fas fa-times"></i></button>
+    async function showProfileModal() {
+        const user = getStoredUser();
+        const content = `<div class="modal-body" id="profile-body"><div class="list-loader" style="position:relative; margin: 50px auto;"></div></div>`;
+        renderModal('پروفایل من', content, 'modal-sm');
+        const response = await callApi('getProfessorProfile', { nationalId: user.nationalId });
+        const profileBody = document.getElementById('profile-body');
+
+        if (response?.status === 'success') {
+            const profile = response.profile;
+            const allSpecializations = ["فقه", "اصول", "اخلاق", "کلام", "تفسیر", "ترجمه", "فلسفه", "عرفان", "حدیث", "رجال", "درایه", "نقدالحدیث", "صرف", "نحو", "بلاغت", "مشاوره", "تربیتی", "روانشناسی"];
+            const currentSpecs = profile.specializations ? profile.specializations.split(',').map(s => s.trim()) : [];
+
+            profileBody.innerHTML = `
+                <div class="form-group">
+                    <label>وضعیت فعالیت</label>
+                    <select id="profile-status" class="form-control">
+                        <option value="5" ${profile.status != 0 ? 'selected' : ''}>فعال (درخواست‌های جدید دریافت می‌کنم)</option>
+                        <option value="0" ${profile.status == 0 ? 'selected' : ''}>غیرفعال (درخواست جدید دریافت نمی‌کنم)</option>
+                    </select>
                 </div>
-                ${content}
-            </div>
-        `;
-        modalContainer.appendChild(modalWrapper);
-        setTimeout(() => modalWrapper.classList.add('visible'), 10);
-        modalWrapper.querySelector('.modal-close-btn').onclick = closeAllModals;
+                <div class="form-group">
+                    <label>تخصص‌ها (موارد مرتبط را انتخاب کنید)</label>
+                    <div id="specializations-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 200px; overflow-y: auto; background: var(--bg-main); padding: 10px; border-radius: var(--radius-md);">
+                        ${allSpecializations.map(spec => `<label style="display:flex; align-items:center; gap:8px; font-size: 0.9rem;"><input type="checkbox" class="spec-checkbox" value="${spec}" ${currentSpecs.includes(spec) ? 'checked' : ''}>${spec}</label>`).join('')}
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i> ذخیره تغییرات</button>
+                </div>`;
+            document.getElementById('save-profile-btn').onclick = saveProfile;
+        } else { profileBody.innerHTML = `<p style="color:var(--danger)">خطا در دریافت اطلاعات پروفایل.</p>`; }
+    }
+
+    async function saveProfile(e) {
+        const user = getStoredUser();
+        const status = document.getElementById('profile-status').value;
+        const selectedSpecs = Array.from(document.querySelectorAll('.spec-checkbox:checked')).map(cb => cb.value).join(', ');
+        const response = await callApi('updateProfessorProfile', { nationalId: user.nationalId, profileData: { status: status, specializations: selectedSpecs } }, e.target);
+        if (response.status === 'success') { showCustomAlert(response.message, 'success', () => closeModalById('main-modal')); } 
+        else { showCustomAlert(response.message || 'خطا در ذخیره پروفایل', 'error'); }
     }
     
-    function closeAllModals() {
-        const modal = document.getElementById('main-modal');
-        if (modal) {
-            modal.classList.remove('visible');
-            modal.addEventListener('transitionend', () => modal.remove());
-        }
+    async function loadArticleHistory(articleId) {
+        const user = getStoredUser();
+        const response = await callApi('getArticleHistory', { actorId: user.nationalId, articleId: articleId });
+        const historyContainer = document.getElementById('tab-history');
+        if (response?.status === 'success') {
+            if (response.history.length === 0) { historyContainer.innerHTML = '<p>هیچ سابقه‌ای برای این مقاله ثبت نشده است.</p>'; return; }
+            historyContainer.innerHTML = `<ul class="history-timeline">${response.history.map(formatHistoryEntry).join('')}</ul>`;
+        } else { historyContainer.innerHTML = `<p style="color:var(--danger);">${response.message || 'خطا در دریافت تاریخچه'}</p>`; }
+    }
+    
+    function formatHistoryEntry(entry) {
+        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود به سیستم' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوا' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله' }, 'GUIDANCE_ACCEPTED': { text: 'پذیرش راهنمایی' }, 'GUIDANCE_REJECTED': { text: 'عدم پذیرش راهنمایی' }, 'REVIEW_SENT_FOR_REVISION': { text: 'ارسال برای بازبینی' }, 'REVIEW_APPROVED_WITH_EDITS': { text: 'تایید با اصلاحات جزئی' }, 'REVIEW_FINAL_APPROVAL': { text: 'تایید نهایی توسط استاد' } };
+        const formattedDate = new Date(entry.timestamp).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
+        const actionInfo = actionMap[entry.action] || { text: entry.action };
+        return `<li class="timeline-item"><div class="timeline-content"><div class="timeline-header"><span class="timeline-action">${actionInfo.text}</span><span class="timeline-actor">${entry.actorName}</span></div>${entry.details ? `<div class="timeline-details">${entry.details}</div>` : ''}<div class="timeline-timestamp" style="text-align: left; margin-top: 10px;">${formattedDate}</div></div></li>`;
     }
 
-    function showCustomAlert(message, type = 'info') {
+    function renderModal(title, content, sizeClass = '') { const modalId = 'main-modal'; closeAllModals(); const modalWrapper = document.createElement('div'); modalWrapper.id = modalId; modalWrapper.className = 'modal-overlay'; modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button class="modal-close-btn"><i class="fas fa-times"></i></button></div>${content}</div>`; modalContainer.appendChild(modalWrapper); setTimeout(() => modalWrapper.classList.add('visible'), 10); modalWrapper.querySelector('.modal-close-btn').onclick = closeAllModals; }
+    function closeModalById(id) { const modal = document.getElementById(id); if (modal) { modal.classList.remove('visible'); modal.addEventListener('transitionend', () => modal.remove()); } }
+    function closeAllModals() { closeModalById('main-modal'); }
+
+    function showCustomAlert(message, type = 'info', onClose = null) {
         const alertContainer = document.getElementById('alert-container');
         const overlay = document.createElement('div');
         overlay.className = 'modal-overlay custom-alert-overlay';
-        const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
-        const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--primary)' };
-        overlay.innerHTML = `
-            <div class="modal-box" style="max-width: 400px; text-align: center;">
-                <i class="fas ${icons[type]}" style="font-size: 3rem; color: ${colors[type]}; margin-bottom: 15px;"></i>
-                <p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p>
-                <div class="custom-alert-actions">
-                    <button id="alert-ok-btn" class="btn-success">تایید</button>
-                </div>
-            </div>`;
+        const icons = { success: 'fa-check-circle', error: 'fa-times-circle' };
+        const colors = { success: 'var(--success)', error: 'var(--danger)' };
+        overlay.innerHTML = `<div class="modal-box" style="max-width: 400px; text-align: center;"><i class="fas ${icons[type] || 'fa-info-circle'}" style="font-size: 3rem; color: ${colors[type] || 'var(--primary)'}; margin-bottom: 15px;"></i><p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p><div class="custom-alert-actions"><button id="alert-ok-btn" style="background-color:${colors[type] || 'var(--primary)'}; min-width: 100px;">تایید</button></div></div>`;
         alertContainer.appendChild(overlay);
         setTimeout(() => overlay.classList.add('visible'), 10);
-        
-        const closeAlert = () => {
-            overlay.classList.remove('visible');
-            overlay.addEventListener('transitionend', () => overlay.remove());
-        };
+        const closeAlert = () => { overlay.classList.remove('visible'); overlay.addEventListener('transitionend', () => { overlay.remove(); if (onClose) onClose(); }); };
         overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
     }
 
     function storeUser(user) { localStorage.setItem('currentProfessor', JSON.stringify(user)); }
     function getStoredUser() { return JSON.parse(localStorage.getItem('currentProfessor')); }
-
 </script>
 </body>
 </html>
