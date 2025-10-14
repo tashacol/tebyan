@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -182,7 +182,6 @@
         .timeline-timestamp { font-size: 0.85rem; color: var(--text-light); }
         .timeline-details { font-size: 0.95rem; color: var(--text-dark); word-break: break-word; }
 
-        /* [جدید] استایل برای دکمه عناوین پیشنهادی */
         .title-input-wrapper { position: relative; }
         .suggest-title-btn {
             position: absolute;
@@ -284,7 +283,7 @@
     }
 
     async function handleDeleteArticle(articleId, button) { 
-        showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ این عمل قابل بازگشت نیست.', async (confirmed, closeModalCallback) => { 
+        showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ تمام سوابق آن نیز پاک خواهد شد.', async (confirmed, closeModalCallback) => { 
             if (confirmed) { 
                 const user = getStoredUser(); 
                 const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId }, button);
@@ -302,16 +301,13 @@
     
     async function handleNewArticleSubmit(e) { if (document.getElementById('topic-reason').value.trim() === '') { return showCustomAlert('لطفاً دلیل انتخاب موضوع را تکمیل کنید.', 'error'); } if (!window.selectedSupervisor) { return showCustomAlert('لطفاً یک استاد راهنما انتخاب کنید.', 'error'); } const user = getStoredUser(); const data = { researcherName: user.name, researcherId: user.nationalId, title: document.getElementById('article-title').value, affiliation: document.getElementById('affiliation').value, knowledgeArea: document.getElementById('knowledge-area').value, topicReason: document.getElementById('topic-reason').value, supervisor: window.selectedSupervisor }; const response = await callApi('submitNewArticle', { data }, e.target); if(response?.status === 'success'){ showCustomAlert(response.message, 'success', () => { closeAllModals(); loadArticles(user.nationalId); }); } else { showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + (response.message || 'خطای نامشخص'), 'error'); } }
     
-    // [ویرایش شده] - منطق محدودسازی ویزارد اضافه شد
     function showEditArticleWizard(article) {
         const isReadOnly = article.articleStatus == 5 || article.articleStatus == 6 || article.articleStatus == 8;
         const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length; const countKeywords = (str) => str.trim().split(/[,،]/).filter(s => s.trim() !== "").length; const referenceManagerHTML = `<h4>مرحله ۶: منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;" ${isReadOnly ? 'disabled' : ''}><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`; const modalContent = `<div class="modal-body"><div class="wizard-progress"><div class="progress-step active" data-step="1">اطلاعات کلی</div><div class="progress-step" data-step="2">چکیده</div><div class="progress-step" data-step="3">مقدمه</div><div class="progress-step" data-step="4">بدنه</div><div class="progress-step" data-step="5">نتیجه‌گیری</div><div class="progress-step" data-step="6">منابع</div></div><div class="wizard-step active" data-step="1"></div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6">${referenceManagerHTML}</div></div><div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`; renderModal(`مشاهده مقاله: ${article.title}`, modalContent, 'modal-lg');
         
-        // --- [ ویرایش کلیدی: محدود کردن دسترسی به ویزارد ] ---
-        if (article.supervisorStatus == 0 || article.supervisorStatus == 1) {
+        if (String(article.supervisorStatus) === '0' || String(article.supervisorStatus) === '1') {
             document.querySelector('.wizard-progress').style.display = 'none';
             document.querySelector('.wizard-nav').style.display = 'none';
-            // افزودن یک پیام توضیحی برای کاربر
             const step1Container = document.querySelector('.wizard-step[data-step="1"]');
             const notice = document.createElement('div');
             notice.className = 'supervisor-rejection-notice';
@@ -319,9 +315,9 @@
             notice.style.borderColor = 'var(--primary)';
             notice.style.color = 'var(--primary-dark)';
             notice.innerHTML = 'تا زمان تایید استاد راهنما، امکان ویرایش بخش‌های دیگر مقاله وجود ندارد.';
-            if (article.supervisorStatus == 0) {
+            if (String(article.supervisorStatus) === '0') {
                  notice.innerHTML = 'استاد راهنما درخواست شما را نپذیرفته است. لطفاً از این بخش، استاد راهنمای دیگری انتخاب کنید.';
-                 notice.className = 'supervisor-rejection-notice'; // Re-apply original class for red color
+                 notice.className = 'supervisor-rejection-notice';
             }
             step1Container.prepend(notice);
         }
@@ -434,10 +430,20 @@
         }
     }
 
+    // [ویرایش شده] - متون فارسی برای نمایش وقایع بهبود یافت
     function formatHistoryEntry(entry) {
-        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود موفق به سیستم', icon: 'fa-sign-in-alt' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی بخش', icon: 'fa-save' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات کلی', icon: 'fa-edit' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' }, 'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' }, };
+        const actionMap = { 
+            'LOGIN_SUCCESS': { text: 'ورود موفق به سیستم', icon: 'fa-sign-in-alt' },
+            'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' },
+            'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوای مقاله', icon: 'fa-save' },
+            'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات کلی', icon: 'fa-edit' },
+            'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' },
+            'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' },
+            'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' },
+            'SUGGESTED_TITLE_TAKEN': { text: 'انتخاب عنوان پیشنهادی', icon: 'fa-check-circle' }
+        };
         const formattedDate = new Date(entry.timestamp).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
-        const actionInfo = actionMap[entry.action] || { text: entry.action, icon: 'fa-info-circle' };
+        const actionInfo = actionMap[entry.action] || { text: entry.action.replace(/_/g, ' ').toLowerCase(), icon: 'fa-info-circle' };
         
         return `
             <li class="timeline-item">
@@ -453,7 +459,6 @@
 
     function getKnowledgeAreaOptions(selectedValue = '') { const areas = ["فقه", "اصول", "اخلاق", "کلام", "تفسیر", "ترجمه", "فلسفه", "عرفان", "حدیث", "رجال", "درایه", "نقدالحدیث", "صرف", "نحو", "بلاغت", "مشاوره", "تربیتی", "روانشناسی"]; return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join(''); }
     
-    // [ویرایش شده] - دکمه عناوین پیشنهادی اضافه شد
     async function showNewArticleModal() {
         const modalContent = `<div class="modal-body"><form id="new-article-form"><div class="form-group"><label for="article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div><div class="form-group"><label for="affiliation">وابستگی سازمانی</label><input type="text" id="affiliation" readonly placeholder="برای تکمیل کلیک کنید..." required></div><div class="form-group"><label for="knowledge-area">حیطه دانشی</label><select id="knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div><div class="form-group"><label for="topic-reason">دلیل انتخاب موضوع</label><textarea id="topic-reason" rows="3" required></textarea></div><div class="form-group"><label for="supervisor">استاد راهنما</label><input type="text" id="supervisor" readonly placeholder="برای انتخاب استاد کلیک کنید..." required></div></form></div><div class="wizard-nav"><div></div><button id="submit-new-article-btn"><span class="btn-text">ثبت اولیه و ارسال</span></button></div>`;
         renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
@@ -463,7 +468,6 @@
         document.getElementById('suggest-title-btn').onclick = showSuggestedTitlesModal;
     }
 
-    // [جدید] - تابع برای نمایش مودال عناوین پیشنهادی
     async function showSuggestedTitlesModal(e) {
         const button = e.target.closest('button');
         const modalBodyId = 'suggested-titles-body';
