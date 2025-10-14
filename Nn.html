@@ -65,7 +65,8 @@
 
         h1,
         h2,
-        h3 {
+        h3,
+        h4 {
             color: var(--text-dark);
             font-weight: 700;
             margin-top: 0;
@@ -99,7 +100,7 @@
             font-size: 1rem;
             font-family: inherit;
             transition: var(--transition);
-            background-color: #fdfdff;
+            background-color: var(--bg-main);
         }
 
         input:disabled,
@@ -146,7 +147,6 @@
         button:hover:not(:disabled) {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         button:disabled {
@@ -186,7 +186,21 @@
         button.btn-success:hover {
             background-color: #146c43;
         }
+        
+        /* --- Loading Spinner Styles --- */
+        .spinner {
+            animation: spin 0.8s linear infinite;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+        }
 
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .btn-loading .btn-text,
         .btn-loading .fas {
             visibility: hidden;
@@ -197,41 +211,14 @@
             position: absolute;
             top: 50%;
             left: 50%;
+            margin-top: -10px;
+            margin-left: -10px;
             width: 20px;
             height: 20px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
-            animation: spin-center 0.8s linear infinite;
-        }
-
-        @keyframes spin-center {
-            from {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-        
-        /* Professional loader for content sections */
-        .content-loader-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 150px;
-        }
-        .content-loader {
-          width: 50px;
-          aspect-ratio: 1;
-          border-radius: 50%;
-          border: 8px solid var(--primary-light);
-          border-right-color: var(--primary);
-          animation: spin-content 1s infinite linear;
-        }
-        @keyframes spin-content {
-          to {transform: rotate(1turn)}
+            animation: spin 0.8s linear infinite;
         }
 
         .dashboard-header {
@@ -257,21 +244,19 @@
         .dashboard-title-wrapper {
             flex-grow: 1;
         }
-
+        
         .dashboard-subtitle {
             font-size: 1rem;
             font-weight: 400;
             color: var(--text-light);
             margin: 5px 0 0;
         }
-
+        
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
-            min-height: 100px;
-            position: relative;
         }
 
         .summary-card {
@@ -282,6 +267,10 @@
             border-right: 5px solid var(--primary);
             box-shadow: var(--shadow);
             transition: var(--transition);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .summary-card:hover {
@@ -295,6 +284,10 @@
             color: var(--text-dark);
             display: block;
             margin-bottom: 8px;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .summary-card .label {
@@ -303,14 +296,9 @@
             font-weight: 500;
         }
 
-        .summary-card.accepted {
-            border-right-color: var(--success);
-        }
-
-        .summary-card.rejected {
-            border-right-color: var(--danger);
-        }
-
+        .summary-card.accepted { border-right-color: var(--success); }
+        .summary-card.rejected { border-right-color: var(--danger); }
+        
         .dashboard-controls {
             display: flex;
             flex-wrap: wrap;
@@ -319,15 +307,12 @@
             gap: 20px;
             margin-bottom: 25px;
         }
-        
-        /* --- Search Input Improvements --- */
+
         .search-field-wrapper {
             position: relative;
             flex-grow: 1;
-            display: flex;
-            align-items: center;
         }
-
+        
         .search-field-wrapper input {
             padding-left: 45px;
             font-size: 1rem;
@@ -341,20 +326,34 @@
             transform: translateY(-50%);
             color: var(--text-light);
             font-size: 1.3rem;
+            transition: opacity 0.2s;
         }
-        
-        .search-loader {
+
+        .search-field-wrapper .search-spinner {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             width: 20px;
             height: 20px;
             border: 3px solid var(--primary-light);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin-center 0.8s linear infinite;
-            margin-left: -40px; /* Position it inside the input field */
-            margin-right: 15px;
-            z-index: 3;
+            animation: spin 0.8s linear infinite;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
         }
         
+        .search-field-wrapper.loading .search-spinner {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .search-field-wrapper.loading .search-icon {
+            opacity: 0;
+        }
+
         .article-card {
             background: var(--bg-card);
             border-radius: var(--radius-md);
@@ -389,7 +388,7 @@
             font-size: 1.2rem;
             font-weight: 700;
         }
-
+        
         .status-badges {
             display: flex;
             gap: 8px;
@@ -412,7 +411,7 @@
             justify-content: flex-end;
             align-items: center;
         }
-
+        
         .article-actions {
             display: flex;
             gap: 10px;
@@ -432,11 +431,6 @@
             padding-bottom: 10px;
             border-bottom: 2px solid var(--border-color);
         }
-        
-        #articles-container {
-            position: relative;
-            min-height: 200px;
-        }
 
         .supervisor-rejection-notice {
             margin-top: 15px;
@@ -450,9 +444,7 @@
             font-weight: 500;
         }
 
-        .article-header-clickable {
-            cursor: pointer;
-        }
+        .article-header-clickable { cursor: pointer; }
 
         .collapsible-details {
             max-height: 0;
@@ -466,7 +458,7 @@
             padding-top: 20px;
             border-top: 1px dashed var(--border-color);
         }
-
+        
         .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -520,7 +512,7 @@
             border-right-color: var(--danger);
             color: #58151c;
         }
-
+        
         .editor-feedback-notice strong {
             display: block;
             margin-bottom: 5px;
@@ -562,13 +554,8 @@
             max-height: calc(100vh - 2rem);
         }
 
-        .modal-box.modal-lg {
-            max-width: 800px;
-        }
-
-        .modal-box.modal-sm {
-            max-width: 500px;
-        }
+        .modal-box.modal-lg { max-width: 800px; }
+        .modal-box.modal-sm { max-width: 500px; }
 
         .modal-header {
             display: flex;
@@ -600,58 +587,61 @@
             overflow-x: hidden;
         }
         
-        /* --- Content Writing Window Navigation Improvements --- */
-        .wizard-header-nav {
+        /* --- Carousel Nav Styles --- */
+        .carousel-nav-wrapper {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--border-color);
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 25px;
-            padding: 0 5px;
+            padding: 5px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .tab-nav-wrapper {
-            flex-grow: 1;
+        .carousel-arrow {
+            background: var(--bg-main);
+            color: var(--text-dark);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            min-height: auto;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .carousel-arrow:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .carousel-window {
             overflow: hidden;
+            flex-grow: 1;
         }
-        .tab-nav {
+        .carousel-track {
             display: flex;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .tab-nav-item {
-            padding: 12px 20px;
+        .carousel-item {
+            padding: 10px 15px;
             cursor: pointer;
             font-weight: 500;
             color: var(--text-light);
-            border-bottom: 3px solid transparent;
             transition: var(--transition);
             white-space: nowrap;
-            position: relative;
             flex-shrink: 0;
+            opacity: 0.6;
         }
-        .tab-nav-item:hover { color: var(--text-dark); }
-        .tab-nav-item.active {
+        .carousel-item.active {
             color: var(--primary);
-            border-bottom-color: var(--primary);
             font-weight: 700;
+            transform: scale(1.1);
+            opacity: 1;
         }
-        .tab-nav-item.prev-item, .tab-nav-item.next-item {
-             color: var(--text-dark);
-        }
-        .tab-nav-arrow {
-            background: transparent;
-            color: var(--text-light);
-            font-size: 1.2rem;
-            padding: 8px 12px;
-            min-height: auto;
-        }
-        .tab-nav-arrow:hover { color: var(--primary); background: var(--primary-light); }
-        .tab-nav-arrow:disabled { color: var(--border-color); cursor: not-allowed; }
+
         .tab-content { display: none; }
         .tab-content.active {
             display: block;
             animation: fadeIn 0.4s;
         }
-        
+
         .modal-footer {
             margin-top: 25px;
             padding-top: 20px;
@@ -660,18 +650,22 @@
             justify-content: flex-end;
             gap: 10px;
         }
-        
+
         /* --- New Article Wizard Styles --- */
         .wizard-step {
             display: none;
             padding: 10px 5px;
         }
+
         .wizard-step.active {
             display: block;
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.4s;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .wizard-nav {
             display: flex;
@@ -682,19 +676,16 @@
             border-top: 1px solid var(--border-color);
             gap: 10px;
         }
-
-        .wizard-nav .next-step-icon {
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            padding: 0;
-            font-size: 1.5rem;
-            min-height: auto;
+        .wizard-nav .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-right: auto;
         }
-        .wizard-nav .next-step-icon:hover {
-            transform: scale(1.1) translateY(-2px);
+        
+        .wizard-step h4 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
         }
 
         @media (max-width: 600px) {
@@ -702,44 +693,29 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .article-details {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 15px;
             }
-
             .article-title-wrapper {
                 order: 2;
                 margin-top: 10px;
                 width: 100%;
                 justify-content: space-between;
             }
-
-            .status-badges {
-                order: 1;
-                flex-wrap: wrap;
-            }
-
-            .article-actions {
-                justify-content: flex-end;
-            }
-
+            .status-badges { order: 1; flex-wrap: wrap; }
+            .article-actions { justify-content: flex-end; }
             .wizard-nav {
                 flex-direction: column-reverse;
                 gap: 15px;
                 align-items: stretch;
             }
-
-            .wizard-nav button {
-                width: 100%;
-            }
-        }
-        
-        .user-menu {
-            position: relative;
+            .wizard-nav button { width: 100%; }
         }
 
+        /* --- User Menu Styles --- */
+        .user-menu { position: relative; }
         .user-menu-trigger {
             background: var(--bg-card);
             color: var(--text-dark);
@@ -752,7 +728,6 @@
             font-size: 1.5rem;
             box-shadow: var(--shadow);
         }
-
         .user-menu-content {
             position: absolute;
             top: 110%;
@@ -772,34 +747,28 @@
             opacity: 0;
             pointer-events: none;
         }
-
         .user-menu-content:not(.hidden) {
             transform: translateY(0);
             opacity: 1;
             pointer-events: auto;
         }
-
         .user-info {
             text-align: right;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
-
         .user-info strong {
             display: block;
             font-size: 1.1rem;
         }
-
         .user-info span {
             font-size: 0.9rem;
             color: var(--text-light);
         }
-
         .user-score {
             font-weight: 700;
             font-size: 1rem;
         }
-
         .user-score span {
             background: var(--primary);
             color: white;
@@ -808,24 +777,6 @@
             margin-right: 5px;
         }
         
-        .search-wrapper {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .search-wrapper .form-input {
-            padding-left: 45px;
-        }
-
-        .search-wrapper .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 1.2rem;
-        }
-
         .supervisor-list,
         .suggestion-list {
             min-height: 280px;
@@ -835,7 +786,7 @@
             border-radius: var(--radius-md);
             position: relative;
         }
-
+        
         .supervisor-list-item,
         .suggestion-list-item {
             padding: 15px;
@@ -849,25 +800,13 @@
             background-color: #f8f9fa;
             color: #adb5bd;
         }
-
-        .supervisor-list-item.disabled strong {
-            color: #adb5bd;
-        }
-
-        .supervisor-list-item.disabled:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .supervisor-list-item.selected {
-            background-color: var(--success-light);
-            border-right: 4px solid var(--success);
-        }
-
+        .supervisor-list-item.disabled strong { color: #adb5bd; }
+        .supervisor-list-item.disabled:hover { background-color: #f8f9fa; }
         .supervisor-list-item:hover:not(.disabled),
         .suggestion-list-item:hover {
             background-color: var(--primary-light);
         }
-
+        
         .supervisor-list-item:last-child,
         .suggestion-list-item:last-child {
             border-bottom: none;
@@ -899,16 +838,9 @@
             font-weight: 500;
             white-space: nowrap;
         }
-
-        .tag-inactive {
-            background-color: #f8d7da;
-            color: #58151c;
-        }
-
-        .tag-full {
-            background-color: #fff3cd;
-            color: #664d03;
-        }
+        
+        .tag-inactive { background-color: #f8d7da; color: #58151c; }
+        .tag-full { background-color: #fff3cd; color: #664d03; }
 
         .supervisor-list-item .description {
             font-size: 0.9rem;
@@ -921,34 +853,37 @@
             color: var(--text-light);
             margin-right: 8px;
         }
-
+        
         .list-loader {
             position: absolute;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(255,255,255,0.7);
-            z-index: 5;
-        }
-        
-        .list-loader::after {
-            content: '';
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 40px;
             height: 40px;
             border: 4px solid var(--primary-light);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin-center 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        
+        .small-loader {
+             width: 24px;
+             height: 24px;
+             border: 3px solid var(--primary-light);
+             border-top-color: var(--primary);
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
         }
 
+        /* --- Reference Manager Styles --- */
         .ref-manager-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
-
+        
         .reference-list {
             list-style-type: none;
             padding: 0;
@@ -967,11 +902,7 @@
             align-items: center;
             gap: 10px;
         }
-
-        .reference-list li:last-child {
-            border-bottom: none;
-        }
-
+        .reference-list li:last-child { border-bottom: none; }
         .reference-list .ref-delete-btn {
             background: none;
             border: none;
@@ -994,7 +925,8 @@
             color: var(--danger);
             font-weight: bold;
         }
-
+        
+        /* --- Custom Alert Styles --- */
         .custom-alert-overlay {
             position: fixed;
             inset: 0;
@@ -1008,10 +940,7 @@
             backdrop-filter: blur(4px);
         }
 
-        .custom-alert-overlay.visible {
-            opacity: 1;
-        }
-
+        .custom-alert-overlay.visible { opacity: 1; }
         .custom-alert-box {
             background: var(--bg-card);
             padding: 25px;
@@ -1023,45 +952,24 @@
             transform: scale(0.9);
             transition: transform 0.2s;
         }
-
-        .custom-alert-overlay.visible .custom-alert-box {
-            transform: scale(1);
-        }
-
-        .custom-alert-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .custom-alert-icon.success {
-            color: var(--success);
-        }
-
-        .custom-alert-icon.error {
-            color: var(--danger);
-        }
-
-        .custom-alert-icon.confirm {
-            color: var(--warning);
-        }
-
-        .custom-alert-message {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
+        .custom-alert-overlay.visible .custom-alert-box { transform: scale(1); }
+        .custom-alert-icon { font-size: 3rem; margin-bottom: 15px; }
+        .custom-alert-icon.success { color: var(--success); }
+        .custom-alert-icon.error { color: var(--danger); }
+        .custom-alert-icon.confirm { color: var(--warning); }
+        .custom-alert-message { font-size: 1.1rem; margin-bottom: 20px; }
         .custom-alert-actions {
             display: flex;
             justify-content: center;
             gap: 10px;
         }
 
+        /* --- History Timeline Styles --- */
         .history-timeline {
             list-style: none;
             padding: 20px 0;
             position: relative;
         }
-
         .history-timeline::before {
             content: '';
             position: absolute;
@@ -1072,13 +980,11 @@
             background: var(--border-color);
             border-radius: 3px;
         }
-
         .timeline-item {
             margin-bottom: 25px;
             position: relative;
             padding-right: 35px;
         }
-
         .timeline-item::after {
             content: '';
             position: absolute;
@@ -1091,17 +997,12 @@
             border-radius: 50%;
             z-index: 1;
         }
-
-        .timeline-item:last-child {
-            margin-bottom: 0;
-        }
-
+        .timeline-item:last-child { margin-bottom: 0; }
         .timeline-content {
             background-color: var(--bg-main);
             padding: 15px;
             border-radius: var(--radius-md);
         }
-
         .timeline-header {
             display: flex;
             justify-content: space-between;
@@ -1110,28 +1011,23 @@
             border-bottom: 1px dashed var(--border-color);
             padding-bottom: 8px;
         }
-
         .timeline-action {
             font-weight: 700;
             color: var(--primary-dark);
             font-size: 1.1rem;
         }
-
         .timeline-timestamp {
             font-size: 0.85rem;
             color: var(--text-light);
         }
-
         .timeline-details {
             font-size: 0.95rem;
             color: var(--text-dark);
             word-break: break-word;
         }
 
-        .title-input-wrapper {
-            position: relative;
-        }
-
+        /* --- Misc Styles --- */
+        .title-input-wrapper { position: relative; }
         .suggest-title-btn {
             position: absolute;
             left: 8px;
@@ -1146,12 +1042,12 @@
             color: var(--primary-dark);
             border: 1px solid var(--border-color);
         }
-
         .suggest-title-btn:hover {
             background-color: var(--primary);
             color: white;
         }
-
+        
+        /* --- PDF Render Styles (Hidden) --- */
         #pdf-render-container {
             font-family: 'Vazirmatn', sans-serif;
             position: fixed;
@@ -1166,10 +1062,7 @@
             direction: rtl;
             text-align: right;
         }
-
-        #pdf-render-container h1,
-        #pdf-render-container h2,
-        #pdf-render-container h3 {
+        #pdf-render-container h1, #pdf-render-container h2, #pdf-render-container h3 {
             font-family: 'Vazirmatn', sans-serif;
             color: black;
             font-weight: bold;
@@ -1178,18 +1071,8 @@
             padding-bottom: 5px;
             border-bottom: 1px solid #ccc;
         }
-
-        #pdf-render-container .pdf-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        #pdf-render-container .pdf-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
+        #pdf-render-container .pdf-header { text-align: center; margin-bottom: 30px; }
+        #pdf-render-container .pdf-title { font-size: 22px; font-weight: bold; margin-top: 20px; }
         #pdf-render-container .pdf-meta {
             display: flex;
             justify-content: space-between;
@@ -1200,31 +1083,16 @@
             border-bottom: 1px solid #eee;
             padding: 10px 0;
         }
-
-        #pdf-render-container .pdf-authors {
-            margin: 20px 0;
-            font-weight: 500;
-        }
-
+        #pdf-render-container .pdf-authors { margin: 20px 0; font-weight: 500; }
         #pdf-render-container p {
             font-size: 14px;
             line-height: 1.8;
             text-align: justify;
         }
+        #pdf-render-container .pdf-keywords { margin-top: 15px; font-style: italic; }
+        #pdf-render-container .pdf-references ul { list-style-type: none; padding-right: 0; }
+        #pdf-render-container .pdf-references li { margin-bottom: 8px; }
 
-        #pdf-render-container .pdf-keywords {
-            margin-top: 15px;
-            font-style: italic;
-        }
-
-        #pdf-render-container .pdf-references ul {
-            list-style-type: none;
-            padding-right: 0;
-        }
-
-        #pdf-render-container .pdf-references li {
-            margin-bottom: 8px;
-        }
     </style>
 </head>
 
@@ -1244,6 +1112,7 @@
                 </form>
             </div>
         </div>
+
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
                 <div class="dashboard-title-wrapper">
@@ -1258,23 +1127,20 @@
                             <span id="menu-user-nid"></span>
                         </div>
                         <div class="user-score">امتیاز شما: <span id="menu-user-score">0</span></div>
-                        <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span
-                                class="btn-text">خروج</span></button>
+                        <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button>
                     </div>
                 </div>
             </div>
-            
+
             <div id="dashboard-content">
                 <div id="summary-dashboard" class="summary-grid"></div>
                 <div class="dashboard-controls">
                     <div class="search-field-wrapper">
-                        <input type="text" id="article-search-input"
-                            placeholder="جستجو در مقالات...">
-                        <div id="search-loader-container"></div>
+                        <input type="text" id="article-search-input" placeholder="جستجو در مقالات...">
                         <i class="fas fa-search search-icon"></i>
+                        <div class="search-spinner"></div>
                     </div>
-                    <button id="add-new-article-btn"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله
-                            جدید</span></button>
+                    <button id="add-new-article-btn"><i class="fas fa-plus"></i><span class="btn-text">ثبت مقاله جدید</span></button>
                 </div>
                 <div id="articles-container"></div>
                 <div id="load-more-container" style="text-align: center; margin-top: 20px;"></div>
@@ -1283,6 +1149,7 @@
     </div>
     <div id="modal-container"></div>
     <div id="pdf-render-container" aria-hidden="true"></div>
+
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwTgJU4lbocweggC0zU7XyzzWKg3BhcUcFc5kaeYoD6dsAHVN7A-15L19G32UCa2hB/exec';
         const loginPage = document.getElementById('login-page');
@@ -1296,6 +1163,7 @@
         let currentSearchTerm = '';
         let isLoading = false;
         let hasMoreArticles = true;
+        let newArticleData = {};
 
         async function callApi(action, params = {}, button = null) {
             if (button) button.classList.add('btn-loading');
@@ -1317,18 +1185,10 @@
                 if (button) button.classList.remove('btn-loading');
             }
         }
-
+        
         document.addEventListener('DOMContentLoaded', () => {
             const user = getStoredUser();
-            if (user) {
-                loginPage.classList.add('hidden');
-                dashboardPage.classList.remove('hidden');
-                showDashboard(user);
-            } else {
-                 loginPage.classList.remove('hidden');
-                 dashboardPage.classList.add('hidden');
-            }
-
+            if (user) showDashboard(user);
             document.addEventListener('click', function (event) {
                 const menu = document.getElementById('user-menu-dropdown');
                 const menuBtn = document.getElementById('user-menu-btn');
@@ -1348,8 +1208,6 @@
             }, document.getElementById('login-btn'));
             if (response?.status === 'success') {
                 storeUser(response.user);
-                loginPage.classList.add('hidden');
-                dashboardPage.classList.remove('hidden');
                 showDashboard(response.user);
             } else {
                 loginError.textContent = response?.isNetworkError ? 'خطا در ارتباط با سرور' : response?.message || 'خطایی رخ داد.';
@@ -1357,6 +1215,8 @@
         });
 
         function showDashboard(user) {
+            loginPage.classList.add('hidden');
+            dashboardPage.classList.remove('hidden');
             document.getElementById('dashboard-user-name').textContent = user.name;
             document.getElementById('menu-user-name').textContent = user.name;
             document.getElementById('menu-user-nid').textContent = `کد ملی: ${user.nationalId}`;
@@ -1368,36 +1228,33 @@
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
             let searchDebounce;
-            const searchInput = document.getElementById('article-search-input');
-            const searchLoaderContainer = document.getElementById('search-loader-container');
-
-            searchInput.addEventListener('input', (e) => {
+            document.getElementById('article-search-input').addEventListener('input', (e) => {
                 clearTimeout(searchDebounce);
-                searchLoaderContainer.innerHTML = '<div class="search-loader"></div>'; // Show loader immediately
                 searchDebounce = setTimeout(() => {
                     currentSearchTerm = e.target.value.trim();
-                    loadArticles(user.nationalId, false).finally(() => {
-                         searchLoaderContainer.innerHTML = ''; // Hide loader after search is done
-                    });
+                    loadArticles(user.nationalId, { isSearch: true });
                 }, 500);
             });
-            loadArticles(user.nationalId, false);
+            loadArticles(user.nationalId);
         }
 
-        async function loadArticles(nationalId, isLoadMore = false) {
+        async function loadArticles(nationalId, options = {}) {
+            const { isLoadMore = false, isSearch = false } = options;
             if (isLoading) return;
             isLoading = true;
 
             const loadMoreContainer = document.getElementById('load-more-container');
-            const summaryContainer = document.getElementById('summary-dashboard');
             const articlesContainer = document.getElementById('articles-container');
+            const searchWrapper = document.querySelector('.search-field-wrapper');
+            
+            if (isSearch) searchWrapper.classList.add('loading');
 
             if (!isLoadMore) {
                 currentPage = 1;
                 allUserArticles = [];
                 hasMoreArticles = true;
-                summaryContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
-                articlesContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
+                articlesContainer.innerHTML = `<div class="list-loader" style="position: relative; margin: 50px auto;"></div>`;
+                if (!isSearch) updateSummaryDashboard(null); // Show loaders
             } else {
                 if (loadMoreContainer.querySelector('button')) {
                     loadMoreContainer.querySelector('button').classList.add('btn-loading');
@@ -1409,19 +1266,33 @@
                 searchTerm: currentSearchTerm,
                 page: currentPage
             });
+            
+            if (isSearch) searchWrapper.classList.remove('loading');
 
             if (isLoadMore && loadMoreContainer.querySelector('button')) {
                 loadMoreContainer.querySelector('button').classList.remove('btn-loading');
             }
 
             if (response?.status === 'success') {
-                allUserArticles.push(...response.articles);
+                const newArticles = response.articles;
+                if (!isLoadMore) articlesContainer.innerHTML = '';
+                
+                if (isLoadMore) {
+                    allUserArticles.push(...newArticles);
+                } else {
+                    allUserArticles = newArticles;
+                }
+
                 hasMoreArticles = response.hasMore;
                 currentPage++;
-
-                renderArticles(allUserArticles); // This will replace the loader in articlesContainer
-                if (!isLoadMore) {
-                    updateSummaryDashboard(allUserArticles); // This will replace the loader in summaryContainer
+                
+                renderArticles(newArticles, isLoadMore);
+                
+                if (!isSearch) {
+                    const fullArticleList = await callApi('getArticles', { nationalId, page: 1, limit: 1000 });
+                    if(fullArticleList?.status === 'success') {
+                        updateSummaryDashboard(fullArticleList.articles);
+                    }
                     document.getElementById('menu-user-score').textContent = response.score;
                     const user = getStoredUser();
                     if (user) {
@@ -1429,22 +1300,24 @@
                         storeUser(user);
                     }
                 }
-            } else {
-                 if (!isLoadMore) {
-                    summaryContainer.innerHTML = '<p style="color:var(--danger); text-align: center;">خطا در بارگذاری آمار</p>';
-                    articlesContainer.innerHTML = '<p style="color:var(--danger); text-align: center;">خطا در بارگذاری مقالات</p>';
-                 }
-                if (response.isNetworkError) {
-                    showCustomAlert('خطا در دریافت اطلاعات مقالات به دلیل مشکل در ارتباط با سرور.', 'error');
-                }
+            } else if (response.isNetworkError) {
+                showCustomAlert('خطا در دریافت اطلاعات مقالات به دلیل مشکل در ارتباط با سرور.', 'error');
+                articlesContainer.innerHTML = `<p style="text-align: center; color: var(--danger);">خطا در بارگذاری مقالات.</p>`;
             }
-            
+
             isLoading = false;
         }
 
 
         function updateSummaryDashboard(articles) {
             const container = document.getElementById('summary-dashboard');
+            if (!articles) {
+                container.innerHTML = `
+                    <div class="summary-card"><span class="count"><div class="small-loader"></div></span><span class="label">در حال پیگیری</span></div>
+                    <div class="summary-card accepted"><span class="count"><div class="small-loader"></div></span><span class="label">پذیرفته شده</span></div>
+                    <div class="summary-card rejected"><span class="count"><div class="small-loader"></div></span><span class="label">رد شده</span></div>`;
+                return;
+            }
             const inProgress = articles.filter(a => ![0, 5, 9, '0', '5', '9'].includes(a.articleStatus)).length;
             const accepted = articles.filter(a => String(a.articleStatus) === '5').length;
             const rejected = articles.filter(a => String(a.articleStatus) === '0').length;
@@ -1453,7 +1326,7 @@
                 <div class="summary-card accepted"><span class="count">${accepted}</span><span class="label">پذیرفته شده</span></div>
                 <div class="summary-card rejected"><span class="count">${rejected}</span><span class="label">رد شده</span></div>`;
         }
-
+        
         function showCustomAlert(message, type = 'info', onClose = null) {
             const alertContainer = document.getElementById('alert-container');
             const overlay = document.createElement('div');
@@ -1495,14 +1368,14 @@
             setTimeout(() => overlay.classList.add('visible'), 10);
         }
 
-        async function handleDeleteArticle(articleId, button) {
+        async function handleDeleteArticle(articleId) {
             showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ تمام سوابق آن نیز پاک خواهد شد.', async (confirmed, confirmBtn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
                     const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
                     closeModal();
                     if (response?.status === 'success') {
-                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
+                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId));
                     } else {
                         showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'), 'error');
                     }
@@ -1511,38 +1384,33 @@
         }
 
         async function handleNewArticleSubmit(e, isDraft) {
-            if (!isDraft && !window.selectedSupervisor) {
-                return showCustomAlert('لطفاً یک استاد راهنما برای ارسال نهایی انتخاب کنید.', 'error');
-            }
-
+            const button = e.target.closest('button');
             const user = getStoredUser();
             const data = {
                 researcherName: user.name,
                 researcherId: user.nationalId,
-                title: document.getElementById('new-article-title').value,
-                affiliation: [document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value].filter(Boolean).join('، '),
-                knowledgeArea: document.getElementById('new-knowledge-area').value,
-                topicReason: document.getElementById('new-topic-reason').value,
-                supervisor: isDraft ? null : window.selectedSupervisor
+                title: newArticleData.title,
+                affiliation: newArticleData.affiliation,
+                knowledgeArea: newArticleData.knowledgeArea,
+                topicReason: newArticleData.topicReason,
+                supervisor: isDraft ? null : newArticleData.supervisor
             };
 
-            const response = await callApi('submitNewArticle', { data, isDraft }, e.target);
+            const response = await callApi('submitNewArticle', { data, isDraft }, button);
 
             if (response?.status === 'success') {
                 const message = isDraft
-                    ? 'مقاله با موفقیت به عنوان پیش‌نویس ذخیره شد. برای ارسال نهایی، از طریق دکمه "تکمیل پیش‌نویس" اقدام کنید.'
+                    ? 'مقاله با موفقیت به عنوان پیش‌نویس ذخیره شد.'
                     : response.message;
-                showCustomAlert(message, 'success', async () => {
+                showCustomAlert(message, 'success', () => {
                     closeAllModals();
-                    // Full reload to reflect changes
-                    const user = getStoredUser();
-                    await loadArticles(user.nationalId, false);
+                    loadArticles(user.nationalId);
                 });
             } else {
                 showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + (response.message || 'خطای نامشخص'), 'error');
             }
         }
-        
+
         function showEditArticleWizard(article) {
             const isReadOnly = [5, 6, 8].includes(Number(article.articleStatus));
             const isDraft = Number(article.articleStatus) === 9;
@@ -1550,71 +1418,86 @@
             const countKeywords = (str) => str ? str.trim().split(/[,،]/).filter(s => s.trim() !== "").length : 0;
 
             const referenceManagerHTML = `<h4>منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;" ${isReadOnly ? 'disabled' : ''}><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`;
-
+            const tabTitles = ["اطلاعات کلی", "چکیده", "مقدمه", "بدنه", "نتیجه‌گیری", "منابع"];
             const modalContent = `
-            <div class="modal-body">
-                <div class="wizard-header-nav">
-                    <button id="nav-prev" class="tab-nav-arrow"><i class="fas fa-chevron-right"></i></button>
-                    <div class="tab-nav-wrapper">
-                        <div class="tab-nav">
-                            <div class="tab-nav-item active" data-tab="1">اطلاعات کلی</div>
-                            <div class="tab-nav-item" data-tab="2">چکیده</div>
-                            <div class="tab-nav-item" data-tab="3">مقدمه</div>
-                            <div class="tab-nav-item" data-tab="4">بدنه</div>
-                            <div class="tab-nav-item" data-tab="5">نتیجه‌گیری</div>
-                            <div class="tab-nav-item" data-tab="6">منابع</div>
-                        </div>
+                <div class="modal-body">
+                    <div class="carousel-nav-wrapper">
+                         <button id="carousel-prev" class="carousel-arrow"><i class="fas fa-chevron-right"></i></button>
+                         <div class="carousel-window">
+                             <div class="carousel-track">
+                                 ${tabTitles.map((title, index) => `<div class="carousel-item" data-tab="${index + 1}">${title}</div>`).join('')}
+                             </div>
+                         </div>
+                         <button id="carousel-next" class="carousel-arrow"><i class="fas fa-chevron-left"></i></button>
                     </div>
-                    <button id="nav-next" class="tab-nav-arrow"><i class="fas fa-chevron-left"></i></button>
+                    <div class="tab-content" data-tab="1"></div>
+                    <div class="tab-content" data-tab="2">
+                        <h4>چکیده و کلیدواژه‌ها</h4>
+                        <div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div>
+                        <div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div>
+                        <button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button>
+                    </div>
+                    <div class="tab-content" data-tab="3">
+                        <h4>مقدمه</h4>
+                        <div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div>
+                        <button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button>
+                    </div>
+                    <div class="tab-content" data-tab="4">
+                        <h4>بدنه مقاله</h4>
+                        <div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div>
+                        <button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button>
+                    </div>
+                    <div class="tab-content" data-tab="5">
+                        <h4>نتیجه‌گیری</h4>
+                        <div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div>
+                        <button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button>
+                    </div>
+                    <div class="tab-content" data-tab="6">${referenceManagerHTML}</div>
                 </div>
-                <div class="tab-content active" data-tab="1"></div>
-                <div class="tab-content" data-tab="2">
-                    <h4>چکیده و کلیدواژه‌ها</h4>
-                    <div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div>
-                    <div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div>
-                    <button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button>
-                </div>
-                <div class="tab-content" data-tab="3">
-                    <h4>مقدمه</h4>
-                    <div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div>
-                    <button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button>
-                </div>
-                <div class="tab-content" data-tab="4">
-                    <h4>بدنه مقاله</h4>
-                    <div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div>
-                    <button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button>
-                </div>
-                <div class="tab-content" data-tab="5">
-                    <h4>نتیجه‌گیری</h4>
-                    <div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div>
-                    <button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button>
-                </div>
-                <div class="tab-content" data-tab="6">${referenceManagerHTML}</div>
-            </div>
-            ${isDraft ? `<div class="modal-footer"><button id="submit-draft-btn" class="btn-success"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال نهایی برای استاد</span></button></div>` : ''}
-        `;
+                ${isDraft ? `<div class="modal-footer"><button id="submit-draft-btn" class="btn-success"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال نهایی برای استاد</span></button></div>` : ''}
+            `;
             renderModal(`ویرایش مقاله: ${article.title}`, modalContent, 'modal-lg');
+
+            // --- Carousel Functionality ---
+            const track = document.querySelector('.carousel-track');
+            const items = Array.from(track.children);
+            const nextButton = document.getElementById('carousel-next');
+            const prevButton = document.getElementById('carousel-prev');
+            const windowEl = document.querySelector('.carousel-window');
+            let activeIndex = 0;
+
+            const updateCarousel = (newIndex, isInstant = false) => {
+                activeIndex = Math.max(0, Math.min(newIndex, items.length - 1));
+                
+                const itemWidth = items[activeIndex].getBoundingClientRect().width;
+                const windowWidth = windowEl.getBoundingClientRect().width;
+                const offset = -items[activeIndex].offsetLeft + (windowWidth / 2) - (itemWidth / 2);
+
+                if(isInstant) track.style.transition = 'none';
+                track.style.transform = `translateX(${offset}px)`;
+                if(isInstant) setTimeout(() => track.style.transition = '', 50);
+
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === activeIndex);
+                    const content = document.querySelector(`.tab-content[data-tab="${item.dataset.tab}"]`);
+                    if(content) content.classList.toggle('active', index === activeIndex);
+                });
+                
+                prevButton.disabled = activeIndex === 0;
+                nextButton.disabled = activeIndex === items.length - 1;
+            };
+
+            items.forEach((item, index) => {
+                item.addEventListener('click', () => updateCarousel(index));
+            });
+            prevButton.addEventListener('click', () => updateCarousel(activeIndex - 1));
+            nextButton.addEventListener('click', () => updateCarousel(activeIndex + 1));
             
-            // Carousel Tab functionality
-            setupTabCarousel();
+            // Initialize
+            setTimeout(() => updateCarousel(0, true), 50);
 
             if (isDraft) {
                 document.getElementById('submit-draft-btn').onclick = (e) => handleSubmitDraft(e, article.articleId, article.supervisorName);
-            }
-
-            if (!isDraft && [0, 1].includes(Number(article.supervisorStatus))) {
-                const step1Container = document.querySelector('.tab-content[data-tab="1"]');
-                const notice = document.createElement('div');
-                notice.className = 'supervisor-rejection-notice';
-                notice.style.backgroundColor = 'var(--primary-light)';
-                notice.style.borderColor = 'var(--primary)';
-                notice.style.color = 'var(--primary-dark)';
-                notice.innerHTML = 'تا زمان تایید استاد راهنما، امکان ویرایش بخش‌های دیگر مقاله وجود ندارد.';
-                if (Number(article.supervisorStatus) === 0) {
-                    notice.innerHTML = 'استاد راهنما درخواست شما را نپذیرفته است. لطفاً از این بخش، استاد راهنمای دیگری انتخاب کنید.';
-                    notice.className = 'supervisor-rejection-notice';
-                }
-                step1Container.prepend(notice);
             }
             
             const setupCounter = (inputId, counterId, min, max, isKeyword = false) => {
@@ -1640,7 +1523,6 @@
                     const user = getStoredUser();
                     const section = e.target.closest('button').dataset.section;
                     let content;
-                    const getStorageKey = (sec) => `autosave-${user.nationalId}-${article.articleId}-${sec}`;
                     if (section === 'keywords_abstract') {
                         const abstractText = document.getElementById('edit-abstract').value;
                         const keywordsText = document.getElementById('edit-keywords').value;
@@ -1661,44 +1543,12 @@
                     const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target);
                     if (res?.status === 'success') {
                         showCustomAlert(res.message, 'success');
-                        if (section === 'keywords_abstract') {
-                            localStorage.removeItem(getStorageKey('abstract'));
-                            localStorage.removeItem(getStorageKey('keywords'));
-                        } else {
-                            localStorage.removeItem(getStorageKey(section));
-                        }
                     } else {
                         showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
                     }
                 };
             });
-            const fieldsToAutoSave = [
-                { id: 'edit-abstract', section: 'abstract' }, { id: 'edit-keywords', section: 'keywords' },
-                { id: 'edit-introduction', section: 'introduction' }, { id: 'edit-body', section: 'body' },
-                { id: 'edit-conclusion', section: 'conclusion' }, { id: 'edit-references-hidden', section: 'references' }
-            ];
-            fieldsToAutoSave.forEach(field => {
-                const element = document.getElementById(field.id);
-                if (!element || isReadOnly) return;
-                const user = getStoredUser();
-                const storageKey = `autosave-${user.nationalId}-${article.articleId}-${field.section}`;
-                const savedContent = localStorage.getItem(storageKey);
-                if (savedContent && savedContent.trim() !== (element.value || '').trim()) {
-                    showCustomConfirm('یک نسخه پشتیبان از این بخش پیدا شد. آیا مایل به بازیابی آن هستید؟', (confirmed, btn, closeModal) => {
-                        if (confirmed) {
-                            element.value = savedContent;
-                            element.dispatchEvent(new Event('input'));
-                        }
-                        localStorage.removeItem(storageKey);
-                        closeModal();
-                    }, 'بله، بازیابی کن', 'نه، حذف کن');
-                }
-                let debounceTimer;
-                element.addEventListener('input', () => {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => { localStorage.setItem(storageKey, element.value); }, 2000);
-                });
-            });
+           
             const refTypeSelect = document.getElementById('ref-type');
             const fields = { book: document.getElementById('ref-book-fields'), journal: document.getElementById('ref-journal-fields'), website: document.getElementById('ref-website-fields') };
             const addRefBtn = document.getElementById('add-ref-btn');
@@ -1780,7 +1630,7 @@
                 if (res?.status === 'success') {
                     showCustomAlert(res.message, 'success', () => {
                         closeModalById('main-modal');
-                        loadArticles(user.nationalId, false);
+                        loadArticles(user.nationalId);
                     });
                 } else {
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
@@ -1790,7 +1640,7 @@
 
         async function handleSubmitDraft(e, articleId, supervisorName) {
             if (!supervisorName) {
-                return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید.', 'error');
+                return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید (از بخش اطلاعات کلی).', 'error');
             }
             showCustomConfirm('آیا از ارسال مقاله برای استاد راهنما اطمینان دارید؟ پس از ارسال، مقاله قفل شده و منتظر تایید استاد خواهد ماند.', async (confirmed, btn, closeModal) => {
                 if (confirmed) {
@@ -1800,7 +1650,7 @@
                     if (response?.status === 'success') {
                         showCustomAlert(response.message, 'success', () => {
                             closeAllModals();
-                            loadArticles(user.nationalId, false);
+                            loadArticles(user.nationalId);
                         });
                     } else {
                         showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
@@ -1809,45 +1659,30 @@
             });
         }
 
-        function renderArticles(articles) {
+        function renderArticles(articles, isAppending = false) {
             const articlesContainer = document.getElementById('articles-container');
             const loadMoreContainer = document.getElementById('load-more-container');
-            articlesContainer.innerHTML = '';
+            
+            if (!isAppending) articlesContainer.innerHTML = '';
+            
+            const renderGroup = (title, articlesList, container) => {
+                if (articlesList.length === 0) return;
+                
+                let groupWrapper = container.querySelector(`.group-${title.replace(/\s+/g, '-')}`);
+                if (!groupWrapper) {
+                    groupWrapper = document.createElement('div');
+                    groupWrapper.className = `group-${title.replace(/\s+/g, '-')}`;
+                    groupWrapper.innerHTML = `<h4 class="article-group-title">${title}</h4>`;
+                    container.appendChild(groupWrapper);
+                }
 
-            const drafts = articles.filter(a => String(a.articleStatus) === '9');
-            const rejected = articles.filter(a => String(a.articleStatus) === '0');
-            const accepted = articles.filter(a => String(a.articleStatus) === '5');
-            const inProgress = articles.filter(a => !['0', '5', '9'].includes(String(a.articleStatus)));
+                articlesList.forEach(article => {
+                    const card = createCard(article);
+                    groupWrapper.appendChild(card);
+                });
+            };
 
-            renderGroup('پیش‌نویس‌ها', drafts, articlesContainer);
-            renderGroup('مقالات در حال پیگیری', inProgress, articlesContainer);
-            renderGroup('مقالات پذیرفته شده', accepted, articlesContainer);
-            renderGroup('مقالات رد شده', rejected, articlesContainer);
-
-            if (articlesContainer.innerHTML.trim() === '') {
-                articlesContainer.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-light);">مقاله‌ای برای نمایش یافت نشد.</p>';
-            }
-
-            loadMoreContainer.innerHTML = '';
-            if (hasMoreArticles) {
-                const loadMoreBtn = document.createElement('button');
-                loadMoreBtn.id = 'load-more-btn';
-                loadMoreBtn.innerHTML = '<span class="btn-text">بارگذاری موارد بیشتر</span>';
-                loadMoreBtn.onclick = () => {
-                    const user = getStoredUser();
-                    loadArticles(user.nationalId, true);
-                };
-                loadMoreContainer.appendChild(loadMoreBtn);
-            }
-        }
-
-        function renderGroup(title, articles, container) {
-            if (articles.length === 0) return;
-            const groupTitle = document.createElement('h4');
-            groupTitle.className = 'article-group-title';
-            groupTitle.textContent = title;
-            container.appendChild(groupTitle);
-            articles.forEach(article => {
+            const createCard = (article) => {
                 let supervisorStatusText, supervisorStatusColor;
                 if (article.supervisorStatus == 5) {
                     supervisorStatusText = `راهنما: ${article.supervisorName}`; supervisorStatusColor = '#198754';
@@ -1890,12 +1725,38 @@
                 card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
                 card.querySelector('.btn-history').onclick = (e) => { e.stopPropagation(); handleShowHistory(article.articleId, article.title, e.target.closest('button')); };
                 if (article.articleStatus == 2) { card.querySelector('.btn-rereview').onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); }; }
-                if (canBeDeleted) { card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); }; }
+                if (canBeDeleted) { card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId); }; }
                 if (article.articleStatus == 5) { card.querySelector('.btn-print').onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
-                container.appendChild(card);
-            });
-        }
+                return card;
+            }
 
+            const drafts = articles.filter(a => String(a.articleStatus) === '9');
+            const rejected = articles.filter(a => String(a.articleStatus) === '0');
+            const accepted = articles.filter(a => String(a.articleStatus) === '5');
+            const inProgress = articles.filter(a => !['0', '5', '9'].includes(String(a.articleStatus)));
+
+            renderGroup('پیش‌نویس‌ها', drafts, articlesContainer);
+            renderGroup('مقالات در حال پیگیری', inProgress, articlesContainer);
+            renderGroup('مقالات پذیرفته شده', accepted, articlesContainer);
+            renderGroup('مقالات رد شده', rejected, articlesContainer);
+            
+            if (articlesContainer.innerHTML.trim() === '' && !isAppending) {
+                articlesContainer.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-light);">مقاله‌ای برای نمایش یافت نشد.</p>';
+            }
+
+            loadMoreContainer.innerHTML = '';
+            if (hasMoreArticles) {
+                const loadMoreBtn = document.createElement('button');
+                loadMoreBtn.id = 'load-more-btn';
+                loadMoreBtn.innerHTML = '<span class="btn-text">بارگذاری موارد بیشتر</span>';
+                loadMoreBtn.onclick = () => {
+                    const user = getStoredUser();
+                    loadArticles(user.nationalId, { isLoadMore: true });
+                };
+                loadMoreContainer.appendChild(loadMoreBtn);
+            }
+        }
+       
         async function generatePdf(article, button) {
             button.classList.add('btn-loading');
             const { jsPDF } = window.jspdf;
@@ -1937,7 +1798,7 @@
                     const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId });
                     closeModal();
                     if (response?.status === 'success') {
-                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
+                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId));
                     } else {
                         showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
                     }
@@ -1972,107 +1833,113 @@
             return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join('');
         }
         
-        // --- New Article Wizard Implementation ---
         function showNewArticleModal() {
-            window.selectedSupervisor = null; // Reset selection
+            newArticleData = { supervisor: null }; // Reset data
             const modalContent = `
-            <div class="modal-body">
-                <div id="new-article-wizard">
-                    <!-- Step 1: Affiliation -->
-                    <div class="wizard-step active" data-step="1">
-                        <h4>مرحله ۱ از ۴: وابستگی سازمانی</h4>
-                        <div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد" required></div>
-                        <div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" placeholder="مثال: فقه و اصول" required></div>
-                        <div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" placeholder="مثال: مدرسه علمیه امام صادق(ع)" required></div>
-                        <div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" placeholder="مثال: قم، ایران" required></div>
-                    </div>
+                <div class="modal-body">
+                    <div id="new-article-wizard">
+                        <div class="wizard-step active" data-step="1">
+                            <h4>مرحله ۱ از ۴: وابستگی سازمانی</h4>
+                            <p>اطلاعات تحصیلی و سازمانی خود را وارد کنید.</p>
+                            <div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div>
+                            <div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" placeholder="مثال: فقه و اصول"></div>
+                            <div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div>
+                            <div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" placeholder="مثال: قم، ایران"></div>
+                        </div>
 
-                    <!-- Step 2: Title & Knowledge Area -->
-                    <div class="wizard-step" data-step="2">
-                        <h4>مرحله ۲ از ۴: اطلاعات مقاله</h4>
-                        <div class="form-group"><label for="new-article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="new-article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div>
-                        <div class="form-group"><label for="new-knowledge-area">حیطه دانشی</label><select id="new-knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div>
-                    </div>
+                        <div class="wizard-step" data-step="2">
+                            <h4>مرحله ۲ از ۴: عنوان و حیطه دانشی</h4>
+                            <p>عنوان دقیق مقاله و حیطه علمی مرتبط با آن را مشخص کنید.</p>
+                            <div class="form-group"><label for="new-article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="new-article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div>
+                            <div class="form-group"><label for="new-knowledge-area">حیطه دانشی</label><select id="new-knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div>
+                        </div>
 
-                    <!-- Step 3: Topic Reason -->
-                    <div class="wizard-step" data-step="3">
-                        <h4>مرحله ۳ از ۴: دلیل انتخاب موضوع</h4>
-                        <div class="form-group"><label for="new-topic-reason">توضیح دهید چرا این موضوع را برای تحقیق انتخاب کرده‌اید.</label><textarea id="new-topic-reason" rows="8" required></textarea></div>
-                    </div>
+                        <div class="wizard-step" data-step="3">
+                            <h4>مرحله ۳ از ۴: دلیل انتخاب موضوع</h4>
+                            <p>به طور خلاصه، علت و اهمیت انتخاب این موضوع را بیان کنید.</p>
+                            <div class="form-group"><label for="new-topic-reason">دلیل انتخاب موضوع</label><textarea id="new-topic-reason" rows="8" required></textarea></div>
+                        </div>
 
-                    <!-- Step 4: Supervisor & Submit -->
-                    <div class="wizard-step" data-step="4">
-                        <h4>مرحله ۴ از ۴: انتخاب استاد راهنما</h4>
-                        <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">برای «ثبت و ارسال نهایی»، انتخاب استاد الزامی است. برای «ذخیره پیش‌نویس» می‌توانید این مرحله را رد کنید.</p>
-                        <div id="new-supervisor-container"></div>
+                        <div class="wizard-step" data-step="4">
+                            <h4>مرحله ۴ از ۴: انتخاب استاد راهنما</h4>
+                            <small style="color:var(--text-light); margin-bottom: 15px; display:block;">برای «ثبت و ارسال»، انتخاب استاد الزامی است. برای «ذخیره پیش‌نویس» می‌توانید این بخش را خالی بگذارید.</small>
+                            <div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد..."><i class="fas fa-search search-icon"></i></div>
+                            <div class="supervisor-list" id="supervisor-list-results-modal"></div>
+                            <button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="wizard-nav">
-                <button id="wizard-back-btn" class="btn-secondary hidden"><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button>
-                <div id="wizard-final-actions" class="hidden" style="display:flex; gap:10px;">
-                    <button id="save-draft-btn" class="btn-secondary"><i class="fas fa-save"></i><span class="btn-text">ذخیره به عنوان پیش‌نویس</span></button>
-                    <button id="submit-new-article-btn"><span class="btn-text">ثبت و ارسال برای استاد</span><i class="fas fa-paper-plane"></i></button>
+                <div class="wizard-nav">
+                    <div id="final-submit-buttons" class="hidden">
+                         <button id="save-draft-btn" class="btn-secondary"><i class="fas fa-save"></i><span class="btn-text">ذخیره پیش‌نویس</span></button>
+                         <button id="submit-new-article-btn"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال برای استاد</span></button>
+                    </div>
+                    <div id="wizard-navigation-buttons" class="nav-buttons">
+                        <button class="wizard-prev-btn" style="display: none;"><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button>
+                        <button class="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button>
+                    </div>
                 </div>
-                <button id="wizard-next-icon" class="next-step-icon"><i class="fas fa-arrow-left"></i></button>
-            </div>`;
-            
+            `;
             renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
             
+            // Wizard Navigation Logic
+            const steps = document.querySelectorAll('.wizard-step');
+            const nextBtn = document.querySelector('.wizard-next-btn');
+            const prevBtn = document.querySelector('.wizard-prev-btn');
+            const wizardNavButtons = document.getElementById('wizard-navigation-buttons');
+            const finalSubmitButtons = document.getElementById('final-submit-buttons');
             let currentStep = 1;
-            const wizard = document.getElementById('new-article-wizard');
-            const steps = wizard.querySelectorAll('.wizard-step');
-            const backBtn = document.getElementById('wizard-back-btn');
-            const nextIcon = document.getElementById('wizard-next-icon');
-            const finalActions = document.getElementById('wizard-final-actions');
-            
-            const goToStep = (stepNum) => {
+
+            const goToStep = (stepNumber) => {
+                if (stepNumber < 1 || stepNumber > steps.length) return;
+                
+                // --- Validation ---
+                if (stepNumber > currentStep) {
+                     if (currentStep === 1) {
+                        const parts = [$('#aff-level').value, $('#aff-field').value, $('#aff-institute').value, $('#aff-location').value].filter(Boolean);
+                        if(parts.length < 4) return showCustomAlert('لطفا تمام فیلدهای وابستگی سازمانی را پر کنید.', 'error');
+                        newArticleData.affiliation = parts.join('، ');
+                    } else if (currentStep === 2) {
+                        if (!$('#new-article-title').value.trim()) return showCustomAlert('لطفا عنوان مقاله را وارد کنید.', 'error');
+                        if (!$('#new-knowledge-area').value) return showCustomAlert('لطفا حیطه دانشی را انتخاب کنید.', 'error');
+                        newArticleData.title = $('#new-article-title').value.trim();
+                        newArticleData.knowledgeArea = $('#new-knowledge-area').value;
+                    } else if (currentStep === 3) {
+                         if (!$('#new-topic-reason').value.trim()) return showCustomAlert('لطفا دلیل انتخاب موضوع را بنویسید.', 'error');
+                         newArticleData.topicReason = $('#new-topic-reason').value.trim();
+                    }
+                }
+                
+                currentStep = stepNumber;
                 steps.forEach(step => step.classList.remove('active'));
-                wizard.querySelector(`.wizard-step[data-step="${stepNum}"]`).classList.add('active');
-                currentStep = stepNum;
+                document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
 
-                backBtn.classList.toggle('hidden', currentStep === 1);
-                nextIcon.classList.toggle('hidden', currentStep === 4);
-                finalActions.classList.toggle('hidden', currentStep !== 4);
+                prevBtn.style.display = currentStep > 1 ? 'inline-flex' : 'none';
+                nextBtn.style.display = currentStep < steps.length ? 'inline-flex' : 'none';
+                
+                wizardNavButtons.classList.toggle('hidden', currentStep === steps.length);
+                finalSubmitButtons.classList.toggle('hidden', currentStep !== steps.length);
 
-                if (currentStep === 4 && !document.getElementById('new-supervisor-container').hasChildNodes()) {
-                    loadSupervisorSelector('new-supervisor-container', (supervisor) => {
-                        window.selectedSupervisor = supervisor;
-                    });
+                if(currentStep === 4) {
+                    setupSupervisorSelection();
                 }
             };
+
+            nextBtn.onclick = () => goToStep(currentStep + 1);
+            prevBtn.onclick = () => goToStep(currentStep - 1);
+            const $ = (selector) => document.querySelector(selector);
             
-            const validateStep = (stepNum) => {
-                if (stepNum === 1) {
-                    return ['aff-level', 'aff-field', 'aff-institute', 'aff-location'].every(id => document.getElementById(id).value.trim() !== '');
+            $('#suggest-title-btn').onclick = showSuggestedTitlesModal;
+            $('#save-draft-btn').onclick = (e) => handleNewArticleSubmit(e, true);
+            $('#submit-new-article-btn').onclick = (e) => {
+                if (!newArticleData.supervisor) {
+                    return showCustomAlert('لطفاً یک استاد راهنما برای ارسال نهایی انتخاب کنید.', 'error');
                 }
-                if (stepNum === 2) {
-                    return document.getElementById('new-article-title').value.trim() !== '' && document.getElementById('new-knowledge-area').value !== '';
-                }
-                if (stepNum === 3) {
-                    return document.getElementById('new-topic-reason').value.trim() !== '';
-                }
-                return true;
+                handleNewArticleSubmit(e, false);
             };
-
-            nextIcon.onclick = () => {
-                if (validateStep(currentStep)) {
-                    goToStep(currentStep + 1);
-                } else {
-                    showCustomAlert('لطفاً تمام فیلدهای این مرحله را تکمیل کنید.', 'error');
-                }
-            };
-            backBtn.onclick = () => goToStep(currentStep - 1);
-
-            document.getElementById('suggest-title-btn').onclick = showSuggestedTitlesModal;
-            document.getElementById('submit-new-article-btn').onclick = (e) => handleNewArticleSubmit(e, false);
-            document.getElementById('save-draft-btn').onclick = (e) => handleNewArticleSubmit(e, true);
         }
-        
-        function loadSupervisorSelector(containerId, onSelectCallback) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = `<div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div class="supervisor-list" id="supervisor-list-results-modal"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>`;
-            
+
+        function setupSupervisorSelection() {
             let currentPage = 1, currentSearchTerm = '';
             const searchInput = document.getElementById('supervisor-search-input-modal');
             const resultsContainer = document.getElementById('supervisor-list-results-modal');
@@ -2081,7 +1948,7 @@
             const fetchAndRender = async (reset = false) => {
                 if (reset) { currentPage = 1; resultsContainer.innerHTML = '<div class="list-loader"></div>'; }
                 const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
-                if (reset && resultsContainer.querySelector('.list-loader')) resultsContainer.innerHTML = '';
+                if (reset) resultsContainer.innerHTML = '';
 
                 if (res?.status === 'success') {
                     if (reset && res.supervisors.length === 0) {
@@ -2097,13 +1964,19 @@
                         if (!s.isActive) tags += '<span class="supervisor-tag tag-inactive">غیرفعال</span>';
                         if (s.isFull) tags += '<span class="supervisor-tag tag-full">تکمیل ظرفیت</span>';
 
-                        item.innerHTML = `<div class="supervisor-list-item-header"><strong>${s.name}</strong><div class="supervisor-tags">${tags}</div></div><p class="description">${s.description || 'توضیحات ثبت نشده است.'}</p>`;
-                        
+                        item.innerHTML = `
+                            <div class="supervisor-list-item-header">
+                                <strong>${s.name}</strong>
+                                <div class="supervisor-tags">${tags}</div>
+                            </div>
+                            <p class="description">${s.description || 'توضیحات ثبت نشده است.'}</p>`;
+
                         if (!isDisabled) {
                             item.onclick = () => {
-                                onSelectCallback(s);
-                                resultsContainer.querySelectorAll('.supervisor-list-item').forEach(el => el.classList.remove('selected'));
-                                item.classList.add('selected');
+                                newArticleData.supervisor = s;
+                                resultsContainer.querySelectorAll('.supervisor-list-item').forEach(el => el.style.backgroundColor = 'transparent');
+                                item.style.backgroundColor = 'var(--primary-light)';
+                                showCustomAlert(`استاد راهنما "${s.name}" انتخاب شد.`, 'success');
                             };
                         }
                         resultsContainer.appendChild(item);
@@ -2117,7 +1990,10 @@
             let debounceTimer;
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => { currentSearchTerm = e.target.value; fetchAndRender(true); }, 500);
+                debounceTimer = setTimeout(() => {
+                    currentSearchTerm = e.target.value;
+                    fetchAndRender(true);
+                }, 500);
             });
             loadMoreBtn.onclick = () => { currentPage++; fetchAndRender(); };
             fetchAndRender(true);
@@ -2153,141 +2029,6 @@
             }
         }
         
-        function setupTabCarousel() {
-            const wrapper = document.querySelector('.tab-nav-wrapper');
-            const nav = document.querySelector('.tab-nav');
-            const items = Array.from(document.querySelectorAll('.tab-nav-item'));
-            const contents = document.querySelectorAll('.tab-content');
-            const nextBtn = document.getElementById('nav-next');
-            const prevBtn = document.getElementById('nav-prev');
-            let activeIndex = 0;
-
-            const updateView = () => {
-                const activeItem = items[activeIndex];
-                
-                // Centering logic
-                const wrapperRect = wrapper.getBoundingClientRect();
-                const activeRect = activeItem.getBoundingClientRect();
-                const offset = activeRect.left - wrapperRect.left - (wrapperRect.width / 2) + (activeRect.width / 2);
-                wrapper.scrollBy({ left: offset, behavior: 'smooth' });
-
-                // Update classes
-                items.forEach((item, i) => {
-                    const tabNum = item.dataset.tab;
-                    item.classList.remove('active', 'prev-item', 'next-item');
-                    document.querySelector(`.tab-content[data-tab="${tabNum}"]`).classList.remove('active');
-                    if (i === activeIndex) {
-                        item.classList.add('active');
-                        document.querySelector(`.tab-content[data-tab="${tabNum}"]`).classList.add('active');
-                    } else if (i === activeIndex - 1) {
-                        item.classList.add('prev-item');
-                    } else if (i === activeIndex + 1) {
-                        item.classList.add('next-item');
-                    }
-                });
-                
-                // Update buttons
-                prevBtn.disabled = activeIndex === 0;
-                nextBtn.disabled = activeIndex === items.length - 1;
-            };
-
-            items.forEach((item, index) => {
-                item.addEventListener('click', () => {
-                    activeIndex = index;
-                    updateView();
-                });
-            });
-
-            nextBtn.addEventListener('click', () => {
-                if (activeIndex < items.length - 1) {
-                    activeIndex++;
-                    updateView();
-                }
-            });
-
-            prevBtn.addEventListener('click', () => {
-                if (activeIndex > 0) {
-                    activeIndex--;
-                    updateView();
-                }
-            });
-            
-            // Initial setup
-            updateView();
-        }
-
-        function showAffiliationModal(targetInputId, currentAffiliation = '') {
-            const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
-            const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
-            renderModal('تکمیل وابستگی سازمانی', modalContent, 'modal-sm', true);
-            document.getElementById('save-affiliation-btn').onclick = () => {
-                const parts = [document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value].filter(Boolean);
-                document.getElementById(targetInputId).value = parts.join('، ');
-                closeModalById('sub-modal');
-            };
-        }
-
-        function showSupervisorModal(targetInputId, onSelectCallback) {
-            const modalContent = `<div class="modal-body"><div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div class="supervisor-list" id="supervisor-list-results-modal"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button></div>`;
-            renderModal('انتخاب استاد راهنما', modalContent, 'modal-sm', true);
-            let currentPage = 1, currentSearchTerm = '';
-            const searchInput = document.getElementById('supervisor-search-input-modal');
-            const resultsContainer = document.getElementById('supervisor-list-results-modal');
-            const loadMoreBtn = document.getElementById('load-more-supervisors-modal');
-
-            const fetchAndRender = async (reset = false) => {
-                if (reset) { currentPage = 1; resultsContainer.innerHTML = '<div class="list-loader"></div>'; }
-                const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
-                if (reset) resultsContainer.innerHTML = '';
-
-                if (res?.status === 'success') {
-                    if (reset && res.supervisors.length === 0) {
-                        resultsContainer.innerHTML = '<p style="text-align:center; padding:20px;">استادی یافت نشد.</p>';
-                    }
-                    res.supervisors.forEach(s => {
-                        const item = document.createElement('div');
-                        item.className = 'supervisor-list-item';
-                        const isDisabled = !s.isActive || s.isFull;
-                        if (isDisabled) item.classList.add('disabled');
-
-                        let tags = '';
-                        if (!s.isActive) tags += '<span class="supervisor-tag tag-inactive">غیرفعال</span>';
-                        if (s.isFull) tags += '<span class="supervisor-tag tag-full">تکمیل ظرفیت</span>';
-
-                        item.innerHTML = `
-                            <div class="supervisor-list-item-header">
-                                <strong>${s.name}</strong>
-                                <div class="supervisor-tags">${tags}</div>
-                            </div>
-                            <p class="description">${s.description || 'توضیحات ثبت نشده است.'}</p>`;
-
-                        if (!isDisabled) {
-                            item.onclick = () => {
-                                onSelectCallback(s);
-                                document.getElementById(targetInputId).value = s.name;
-                                closeModalById('sub-modal');
-                            };
-                        }
-                        resultsContainer.appendChild(item);
-                    });
-                    loadMoreBtn.classList.toggle('hidden', !res.hasMore);
-                } else {
-                    resultsContainer.innerHTML = '<p style="text-align:center; padding:20px; color:var(--danger);">خطا در دریافت لیست اساتید.</p>';
-                }
-            };
-
-            let debounceTimer;
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    currentSearchTerm = e.target.value;
-                    fetchAndRender(true);
-                }, 500);
-            });
-            loadMoreBtn.onclick = () => { currentPage++; fetchAndRender(); };
-            fetchAndRender(true);
-        }
-
         function handleLogout() { localStorage.removeItem('currentUser'); window.location.reload(); }
         function renderModal(title, content, sizeClass = '', isSubModal = false) {
             const modalId = isSubModal ? 'sub-modal' : 'main-modal';
