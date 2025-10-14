@@ -14,20 +14,22 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
 
         :root {
-            --primary: #4a69bd; /* رنگ اصلی مدرن‌تر */
-            --primary-light: #eaf0fb;
-            --primary-dark: #3a539b;
-            --text-dark: #2c3e50; /* کمی ملایم‌تر از مشکی خالص */
-            --text-light: #7f8c8d;
-            --bg-main: #f5f7fa; /* پس‌زمینه اصلی کمی روشن‌تر */
+            /* دستور هفتم: مدرن‌سازی پالت رنگی */
+            --primary: #3B82F6; /* رنگ آبی مدرن‌تر */
+            --primary-light: #DBEAFE;
+            --primary-dark: #2563EB;
+            --text-dark: #1f2937; /* کمی ملایم‌تر از مشکی خالص */
+            --text-light: #6b7280;
+            --bg-main: #f9fafb; /* پس‌زمینه بسیار روشن و مدرن */
             --bg-card: #ffffff;
-            --border-color: #e0e6ed;
-            --success: #2ecc71;
-            --success-light: #eafaf1;
-            --danger: #e74c3c;
-            --warning: #f1c40f;
-            --info: #3498db;
-            --shadow: 0 6px 30px rgba(0, 0, 0, 0.07); /* سایه نرم‌تر */
+            --border-color: #e5e7eb;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #38bdf8;
+            /* دستور هفتم: مدرن‌سازی سایه‌ها */
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
             --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -38,7 +40,8 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
             margin: 0;
-            padding: 20px;
+            /* دستور هفتم: افزایش فاصله عمودی کلی صفحه */
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -53,6 +56,8 @@
         .container {
             width: 100%;
             max-width: 900px;
+            /* دستور اول: افزودن فاصله عمودی برای کانتینر اصلی */
+            margin: 2rem auto;
         }
 
         .card {
@@ -159,15 +164,15 @@
         }
 
         button.btn-danger:hover {
-            background-color: #c0392b;
+            background-color: #be123c;
         }
 
         button.btn-secondary {
-            background-color: #95a5a6;
+            background-color: #6c757d;
         }
 
         button.btn-secondary:hover {
-            background-color: #7f8c8d;
+            background-color: #5a6268;
         }
 
         button.btn-info {
@@ -176,7 +181,7 @@
         }
 
         button.btn-info:hover {
-            background-color: #2980b9;
+            background-color: #0ea5e9;
         }
 
         button.btn-success {
@@ -184,7 +189,7 @@
         }
 
         button.btn-success:hover {
-            background-color: #27ae60;
+            background-color: #059669;
         }
 
         .btn-loading .btn-text,
@@ -215,39 +220,56 @@
             }
         }
         
-        /* [دستور ششم] لودینگ جذاب‌تر برای محتوا */
         .content-loader-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 150px;
         }
+
+        /* دستور ششم: لودینگ جذاب‌تر و مدرن‌تر */
         .content-loader {
-            width: 50px;
-            height: 50px;
-            display: grid;
-            animation: spin-content-1 4s infinite;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          display: inline-block;
+          position: relative;
+          border: 3px solid;
+          border-color: var(--primary) var(--primary) transparent transparent;
+          box-sizing: border-box;
+          animation: spin-content 1.2s linear infinite;
         }
-        .content-loader::before,
-        .content-loader::after {    
-            content: "";
-            grid-area: 1/1;
-            border: 8px solid;
-            border-radius: 50%;
-            border-color: var(--primary) var(--primary) #0000 #0000;
-            mix-blend-mode: darken;
-            animation: spin-content-2 1s infinite linear;
+        .content-loader::after,
+        .content-loader::before {
+          content: '';
+          box-sizing: border-box;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          border: 3px solid;
+          border-color: transparent transparent var(--success) var(--success);
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          animation: spin-content-alt 1s linear infinite;
         }
-        .content-loader::after {
-            border-color: #0000 #0000 var(--success) var(--success);
-            animation-direction: reverse;
+        .content-loader::before {
+          width: 32px;
+          height: 32px;
+          border-color: var(--primary) var(--primary) transparent transparent;
+          animation: spin-content 1.5s linear infinite;
         }
-        @keyframes spin-content-1 { 
-            100% {transform: rotate(1turn)}
+
+        @keyframes spin-content {
+          to { transform: rotate(360deg); }
         }
-        @keyframes spin-content-2 { 
-            100% {transform: rotate(0.5turn)}
+        @keyframes spin-content-alt {
+          to { transform: rotate(-360deg); }
         }
+
 
         .dashboard-header {
             display: flex;
@@ -297,11 +319,6 @@
             border-right: 5px solid var(--primary);
             box-shadow: var(--shadow);
             transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100px; /* برای یکسان‌سازی ارتفاع */
         }
 
         .summary-card:hover {
@@ -315,6 +332,10 @@
             color: var(--text-dark);
             display: block;
             margin-bottom: 8px;
+            min-height: 42px; /* برای جلوگیری از پرش صفحه هنگام لود شدن */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .summary-card .label {
@@ -331,19 +352,16 @@
             border-right-color: var(--danger);
         }
         
-        /* [دستور پنجم] لودینگ کوچک برای کارت‌های آمار */
-        .summary-card .small-loader {
-            width: 30px;
-            height: 30px;
+        /* دستور پنجم: استایل لودینگ کوچک برای کارت‌های آمار */
+        .mini-loader {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--primary-light);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            display: inline-block;
-            border-top: 3px solid var(--primary);
-            border-right: 3px solid transparent;
-            box-sizing: border-box;
             animation: spin-center 1s linear infinite;
+            display: inline-block;
         }
-        .summary-card.accepted .small-loader { border-top-color: var(--success); }
-        .summary-card.rejected .small-loader { border-top-color: var(--danger); }
 
         .dashboard-controls {
             display: flex;
@@ -354,7 +372,6 @@
             margin-bottom: 25px;
         }
         
-        /* [دستور سوم] بهبود فیلد جستجو */
         .search-field-wrapper {
             position: relative;
             flex-grow: 1;
@@ -375,7 +392,6 @@
             transform: translateY(-50%);
             color: var(--text-light);
             font-size: 1.3rem;
-            transition: opacity 0.2s;
         }
         
         .search-loader {
@@ -388,12 +404,7 @@
             margin-left: -40px; 
             margin-right: 15px;
             z-index: 3;
-            opacity: 0;
-            transition: opacity 0.2s;
         }
-        
-        .search-field-wrapper.searching .search-icon { opacity: 0; }
-        .search-field-wrapper.searching .search-loader { opacity: 1; }
         
         .article-card {
             background: var(--bg-card);
@@ -481,10 +492,10 @@
         .supervisor-rejection-notice {
             margin-top: 15px;
             padding: 12px;
-            background-color: #fbeae9;
+            background-color: #fee2e2;
             border: 1px solid var(--danger);
             border-right: 4px solid var(--danger);
-            color: #58151c;
+            color: #991b1b;
             border-radius: var(--radius-md);
             font-size: 0.9rem;
             font-weight: 500;
@@ -548,17 +559,17 @@
         .editor-feedback-notice {
             margin-top: 15px;
             padding: 12px 15px;
-            background-color: #fef8e7;
+            background-color: #fef3c7;
             border-right: 4px solid var(--warning);
-            color: #664d03;
+            color: #92400e;
             border-radius: var(--radius-md);
             font-size: 0.9rem;
         }
 
         .editor-feedback-notice.rejected {
-            background-color: #fbeae9;
+            background-color: #fee2e2;
             border-right-color: var(--danger);
-            color: #58151c;
+            color: #991b1b;
         }
 
         .editor-feedback-notice strong {
@@ -570,9 +581,9 @@
         .supervisor-cancellation-notice {
             margin-top: 15px;
             padding: 12px 15px;
-            background-color: #fffbeb;
-            border-right: 4px solid #ffc107;
-            color: #664d03;
+            background-color: #fef3c7;
+            border-right: 4px solid var(--warning);
+            color: #92400e;
             border-radius: var(--radius-md);
             font-size: 0.9rem;
             font-weight: 500;
@@ -638,11 +649,8 @@
             overflow-y: auto;
             flex-grow: 1;
             overflow-x: hidden;
-            /* [دستور اول] اعمال فاصله داخلی به بدنه مودال */
-            padding: 10px;
         }
         
-        /* --- Content Writing Window Navigation Improvements --- */
         .wizard-header-nav {
             display: flex;
             align-items: center;
@@ -703,18 +711,13 @@
             gap: 10px;
         }
         
-        /* [دستور اول و دوم] New Article Wizard Styles */
         .wizard-step {
             display: none;
-            /* [دستور اول] کاهش ارتفاع غیرضروری و ایجاد فاصله بهتر */
-            padding: 15px 5px; 
-            min-height: 350px;
-            display: flex;
-            flex-direction: column;
+            /* دستور اول: افزودن فاصله داخلی برای محتوای هر مرحله */
+            padding: 1.5rem 0.5rem;
         }
-
         .wizard-step.active {
-            display: flex;
+            display: block;
             animation: fadeIn 0.4s ease-in-out;
         }
 
@@ -723,27 +726,13 @@
         .wizard-nav {
             display: flex;
             flex-wrap: wrap;
+            /* دستور دوم: وسط‌چین کردن دکمه‌ها و فلش */
+            justify-content: center;
+            align-items: center;
             margin-top: 25px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
-            gap: 15px;
-            /* [دستور دوم] فلش در وسط */
-            justify-content: center; 
-            align-items: center;
-        }
-
-        .wizard-nav .btn-secondary, .wizard-nav .next-step-icon {
-            order: 2; /* دکمه قبلی و بعدی در وسط */
-        }
-        
-        .wizard-nav #wizard-final-actions {
-            order: 3; /* دکمه‌های نهایی در سمت چپ */
-            margin-right: auto;
-        }
-        
-        .wizard-nav #wizard-back-btn {
-            order: 1; /* دکمه قبلی در سمت راست */
-            margin-left: auto;
+            gap: 20px; /* افزایش فاصله بین دکمه‌ها */
         }
 
         .wizard-nav .next-step-icon {
@@ -788,7 +777,6 @@
                 justify-content: flex-end;
             }
 
-            /* [دستور دوم] بازآرایی دکمه‌ها در موبایل */
             .wizard-nav {
                 flex-direction: column-reverse;
                 gap: 15px;
@@ -796,11 +784,6 @@
             }
 
             .wizard-nav button {
-                width: 100%;
-                margin: 0 !important;
-            }
-             .wizard-nav #wizard-final-actions {
-                flex-direction: column-reverse;
                 width: 100%;
             }
         }
@@ -900,19 +883,25 @@
             min-height: 280px;
             max-height: 280px;
             overflow-y: auto;
-            border: 1px solid var(--border-color);
+            border: none; /* دستور چهارم: حذف بردر اصلی لیست */
             border-radius: var(--radius-md);
             position: relative;
+            padding: 5px;
         }
 
-        /* [دستور چهارم] مرتب‌سازی صفحه انتخاب استاد */
+        /* دستور چهارم: استایل کارت-مانند برای هر آیتم استاد */
         .supervisor-list-item,
         .suggestion-list-item {
             padding: 15px;
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: background-color 0.2s, border-right-color 0.3s;
-            border-right: 4px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .supervisor-list-item:last-child {
+            margin-bottom: 0;
         }
 
         .supervisor-list-item.disabled {
@@ -927,22 +916,21 @@
 
         .supervisor-list-item.disabled:hover {
             background-color: #f8f9fa;
+            border-color: var(--border-color);
+            box-shadow: none;
         }
         
         .supervisor-list-item.selected {
             background-color: var(--success-light);
-            border-right-color: var(--success);
+            border-color: var(--success);
+            border-right: 4px solid var(--success);
         }
 
         .supervisor-list-item:hover:not(.disabled),
         .suggestion-list-item:hover {
             background-color: var(--primary-light);
-            border-right-color: var(--primary);
-        }
-
-        .supervisor-list-item:last-child,
-        .suggestion-list-item:last-child {
-            border-bottom: none;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .supervisor-list-item-header {
@@ -962,7 +950,6 @@
         .supervisor-tags {
             display: flex;
             gap: 6px;
-            flex-shrink: 0;
         }
 
         .supervisor-tag {
@@ -974,13 +961,13 @@
         }
 
         .tag-inactive {
-            background-color: #f8d7da;
-            color: #58151c;
+            background-color: #fee2e2;
+            color: #991b1b;
         }
 
         .tag-full {
-            background-color: #fff3cd;
-            color: #664d03;
+            background-color: #fef3c7;
+            color: #92400e;
         }
 
         .supervisor-list-item .description {
@@ -1340,10 +1327,10 @@
             <div id="dashboard-content">
                 <div id="summary-dashboard" class="summary-grid"></div>
                 <div class="dashboard-controls">
-                    <div class="search-field-wrapper" id="search-wrapper">
+                    <div class="search-field-wrapper">
                         <input type="text" id="article-search-input"
                             placeholder="جستجو در مقالات...">
-                        <div class="search-loader"></div>
+                        <div id="search-loader-container"></div>
                         <i class="fas fa-search search-icon"></i>
                     </div>
                     <button id="add-new-article-btn"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله
@@ -1440,54 +1427,49 @@
             document.getElementById('logout-btn').onclick = handleLogout;
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
+            // دستور پنجم: نمایش کارت‌های آمار با لودینگ‌های کوچک در ابتدای کار
+            const summaryContainer = document.getElementById('summary-dashboard');
+            summaryContainer.innerHTML = `
+                <div class="summary-card"><span class="count"><div class="mini-loader"></div></span><span class="label">در حال پیگیری</span></div>
+                <div class="summary-card accepted"><span class="count"><div class="mini-loader"></div></span><span class="label">پذیرفته شده</span></div>
+                <div class="summary-card rejected"><span class="count"><div class="mini-loader"></div></span><span class="label">رد شده</span></div>
+            `;
+            
             let searchDebounce;
             const searchInput = document.getElementById('article-search-input');
-            const searchWrapper = document.getElementById('search-wrapper');
+            const searchLoaderContainer = document.getElementById('search-loader-container');
 
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchDebounce);
-                // [دستور سوم] نمایش لودر فقط هنگام جستجو
-                searchWrapper.classList.add('searching');
+                searchLoaderContainer.innerHTML = '<div class="search-loader"></div>'; 
                 searchDebounce = setTimeout(() => {
                     currentSearchTerm = e.target.value.trim();
-                    // [دستور سوم] فراخوانی تابع با پارامتر isSearch=true
-                    loadArticles(user.nationalId, { isSearch: true }).finally(() => {
-                         searchWrapper.classList.remove('searching');
+                    loadArticles(user.nationalId, false).finally(() => {
+                         searchLoaderContainer.innerHTML = ''; 
                     });
                 }, 500);
             });
-            // اولین بارگذاری
-            loadArticles(user.nationalId);
+            loadArticles(user.nationalId, false);
         }
 
-        // [دستور سوم و پنجم] بازنویسی تابع برای مدیریت حالت‌های مختلف بارگذاری
-        async function loadArticles(nationalId, options = {}) {
-            const { isLoadMore = false, isSearch = false } = options;
-
+        async function loadArticles(nationalId, isLoadMore = false) {
             if (isLoading) return;
             isLoading = true;
 
             const loadMoreContainer = document.getElementById('load-more-container');
-            const summaryContainer = document.getElementById('summary-dashboard');
             const articlesContainer = document.getElementById('articles-container');
 
-            if (isLoadMore) {
-                 if (loadMoreContainer.querySelector('button')) {
-                    loadMoreContainer.querySelector('button').classList.add('btn-loading');
-                }
-            } else if (isSearch) {
-                // [دستور سوم] هنگام جستجو، فقط بخش مقالات لودر داشته باشد
+            if (!isLoadMore) {
                 currentPage = 1;
                 allUserArticles = [];
                 hasMoreArticles = true;
+                // دستور سوم: هنگام جستجو، لودر کلی آمار نمایش داده نمی‌شود
+                // دستور پنجم: لودر آمار فقط در بارگذاری اولیه نمایش داده می‌شود که در showDashboard مدیریت شد
                 articlesContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
             } else {
-                // بارگذاری اولیه صفحه
-                currentPage = 1;
-                allUserArticles = [];
-                hasMoreArticles = true;
-                renderSummarySkeleton(); // [دستور پنجم] نمایش اسکلت آمار با لودینگ
-                articlesContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
+                if (loadMoreContainer.querySelector('button')) {
+                    loadMoreContainer.querySelector('button').classList.add('btn-loading');
+                }
             }
 
             const response = await callApi('getArticles', {
@@ -1495,26 +1477,22 @@
                 searchTerm: currentSearchTerm,
                 page: currentPage
             });
-            
-             if (isLoadMore && loadMoreContainer.querySelector('button')) {
+
+            if (isLoadMore && loadMoreContainer.querySelector('button')) {
                 loadMoreContainer.querySelector('button').classList.remove('btn-loading');
             }
 
             if (response?.status === 'success') {
-                if (isLoadMore) {
-                    allUserArticles.push(...response.articles);
-                } else {
-                    allUserArticles = response.articles;
-                }
-                
+                allUserArticles.push(...response.articles);
                 hasMoreArticles = response.hasMore;
                 currentPage++;
-                
-                renderArticles(allUserArticles);
 
-                // [دستور سوم] آمار فقط در بارگذاری اولیه و غیرجستجو آپدیت شود
-                if (!isLoadMore && !isSearch) {
-                    updateSummaryDashboard(allUserArticles);
+                renderArticles(allUserArticles);
+                
+                // به‌روزرسانی آمارها پس از هر بار دریافت اطلاعات (چه جستجو چه بارگذاری اولیه)
+                updateSummaryDashboard(response.summary || allUserArticles);
+                
+                if (!isLoadMore) {
                     document.getElementById('menu-user-score').textContent = response.score;
                     const user = getStoredUser();
                     if (user) {
@@ -1524,7 +1502,7 @@
                 }
             } else {
                  if (!isLoadMore) {
-                    summaryContainer.innerHTML = '<p style="color:var(--danger); text-align: center;">خطا در بارگذاری آمار</p>';
+                    // دستور سوم: خطای آمار نباید نمایش داده شود چون در حال لود نیست
                     articlesContainer.innerHTML = '<p style="color:var(--danger); text-align: center;">خطا در بارگذاری مقالات</p>';
                  }
                 if (response.isNetworkError) {
@@ -1535,25 +1513,28 @@
             isLoading = false;
         }
 
-        // [دستور پنجم] تابع جدید برای نمایش لودینگ‌های کوچک در بخش آمار
-        function renderSummarySkeleton() {
+        function updateSummaryDashboard(articlesOrSummary) {
             const container = document.getElementById('summary-dashboard');
-            container.innerHTML = `
-                <div class="summary-card"><div class="small-loader"></div><span class="label">در حال پیگیری</span></div>
-                <div class="summary-card accepted"><div class="small-loader"></div><span class="label">پذیرفته شده</span></div>
-                <div class="summary-card rejected"><div class="small-loader"></div><span class="label">رد شده</span></div>`;
-        }
-        
-        function updateSummaryDashboard(articles) {
-            const container = document.getElementById('summary-dashboard');
-            const inProgress = articles.filter(a => ![0, 5, 9, '0', '5', '9'].includes(a.articleStatus)).length;
-            const accepted = articles.filter(a => String(a.articleStatus) === '5').length;
-            const rejected = articles.filter(a => String(a.articleStatus) === '0').length;
+            let inProgress, accepted, rejected;
+
+            if (Array.isArray(articlesOrSummary)) {
+                // Fallback if summary object is not provided
+                inProgress = articlesOrSummary.filter(a => ![0, 5, 9, '0', '5', '9'].includes(a.articleStatus)).length;
+                accepted = articlesOrSummary.filter(a => String(a.articleStatus) === '5').length;
+                rejected = articlesOrSummary.filter(a => String(a.articleStatus) === '0').length;
+            } else {
+                // Use summary object if provided by the API
+                inProgress = articlesOrSummary.inProgress;
+                accepted = articlesOrSummary.accepted;
+                rejected = articlesOrSummary.rejected;
+            }
+            
             container.innerHTML = `
                 <div class="summary-card"><span class="count">${inProgress}</span><span class="label">در حال پیگیری</span></div>
                 <div class="summary-card accepted"><span class="count">${accepted}</span><span class="label">پذیرفته شده</span></div>
                 <div class="summary-card rejected"><span class="count">${rejected}</span><span class="label">رد شده</span></div>`;
         }
+
 
         function showCustomAlert(message, type = 'info', onClose = null) {
             const alertContainer = document.getElementById('alert-container');
@@ -1603,7 +1584,7 @@
                     const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
                     closeModal();
                     if (response?.status === 'success') {
-                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId));
+                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
                     } else {
                         showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'), 'error');
                     }
@@ -1637,7 +1618,7 @@
                     closeAllModals();
                     // Full reload to reflect changes
                     const user = getStoredUser();
-                    await loadArticles(user.nationalId);
+                    await loadArticles(user.nationalId, false);
                 });
             } else {
                 showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + (response.message || 'خطای نامشخص'), 'error');
@@ -1881,7 +1862,7 @@
                 if (res?.status === 'success') {
                     showCustomAlert(res.message, 'success', () => {
                         closeModalById('main-modal');
-                        loadArticles(user.nationalId);
+                        loadArticles(user.nationalId, false);
                     });
                 } else {
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
@@ -1901,7 +1882,7 @@
                     if (response?.status === 'success') {
                         showCustomAlert(response.message, 'success', () => {
                             closeAllModals();
-                            loadArticles(user.nationalId);
+                            loadArticles(user.nationalId, false);
                         });
                     } else {
                         showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
@@ -1936,7 +1917,7 @@
                 loadMoreBtn.innerHTML = '<span class="btn-text">بارگذاری موارد بیشتر</span>';
                 loadMoreBtn.onclick = () => {
                     const user = getStoredUser();
-                    loadArticles(user.nationalId, { isLoadMore: true });
+                    loadArticles(user.nationalId, true);
                 };
                 loadMoreContainer.appendChild(loadMoreBtn);
             }
@@ -1953,7 +1934,7 @@
                 if (article.supervisorStatus == 5) {
                     supervisorStatusText = `راهنما: ${article.supervisorName}`; supervisorStatusColor = '#198754';
                 } else if (article.supervisorStatus == 1) {
-                    supervisorStatusText = 'بررسی پذیرش توسط استاد'; supervisorStatusColor = '#f1c40f';
+                    supervisorStatusText = 'بررسی پذیرش توسط استاد'; supervisorStatusColor = '#ffc107';
                 } else if (article.supervisorStatus == 0) {
                     supervisorStatusText = 'نپذیرفته'; supervisorStatusColor = '#dc3545';
                 } else {
@@ -2038,7 +2019,7 @@
                     const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId });
                     closeModal();
                     if (response?.status === 'success') {
-                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId));
+                        showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
                     } else {
                         showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
                     }
@@ -2105,17 +2086,17 @@
                     <div class="wizard-step" data-step="4">
                         <h4>مرحله ۴ از ۴: انتخاب استاد راهنما</h4>
                         <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">برای «ثبت و ارسال نهایی»، انتخاب استاد الزامی است. برای «ذخیره پیش‌نویس» می‌توانید این مرحله را رد کنید.</p>
-                        <div id="new-supervisor-container" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+                        <div id="new-supervisor-container"></div>
                     </div>
                 </div>
             </div>
             <div class="wizard-nav">
                 <button id="wizard-back-btn" class="btn-secondary hidden"><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button>
-                <button id="wizard-next-icon" class="next-step-icon"><i class="fas fa-arrow-left"></i></button>
                 <div id="wizard-final-actions" class="hidden" style="display:flex; gap:10px;">
                     <button id="save-draft-btn" class="btn-secondary"><i class="fas fa-save"></i><span class="btn-text">ذخیره به عنوان پیش‌نویس</span></button>
                     <button id="submit-new-article-btn"><span class="btn-text">ثبت و ارسال برای استاد</span><i class="fas fa-paper-plane"></i></button>
                 </div>
+                <button id="wizard-next-icon" class="next-step-icon"><i class="fas fa-arrow-left"></i></button>
             </div>`;
             
             renderModal('ثبت مقاله جدید', modalContent, 'modal-lg');
@@ -2133,19 +2114,8 @@
                 currentStep = stepNum;
 
                 backBtn.classList.toggle('hidden', currentStep === 1);
-                // [دستور دوم] دکمه فلش فقط در مراحل میانی نمایش داده شود
-                nextIcon.classList.toggle('hidden', currentStep === 4); 
-                // [دستور دوم] دکمه‌های نهایی فقط در مرحله آخر
+                nextIcon.classList.toggle('hidden', currentStep === 4);
                 finalActions.classList.toggle('hidden', currentStep !== 4);
-                
-                // جابجایی دکمه‌ها بر اساس منطق جدید CSS
-                if(currentStep === 4){
-                    backBtn.style.marginLeft = 'auto';
-                    finalActions.style.marginRight = 'auto';
-                } else {
-                    backBtn.style.marginLeft = '0';
-                    finalActions.style.marginRight = '0';
-                }
 
                 if (currentStep === 4 && !document.getElementById('new-supervisor-container').hasChildNodes()) {
                     loadSupervisorSelector('new-supervisor-container', (supervisor) => {
@@ -2183,7 +2153,7 @@
         
         function loadSupervisorSelector(containerId, onSelectCallback) {
             const container = document.getElementById(containerId);
-            container.innerHTML = `<div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div class="supervisor-list" id="supervisor-list-results-modal" style="flex-grow: 1;"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>`;
+            container.innerHTML = `<div class="search-wrapper"><input type="text" id="supervisor-search-input-modal" class="form-input" placeholder="جستجوی استاد با نام یا کد ملی..."><i class="fas fa-search search-icon"></i></div><div class="supervisor-list" id="supervisor-list-results-modal"></div><button id="load-more-supervisors-modal" class="hidden" style="width:100%; margin-top:15px;"><span class="btn-text">بارگذاری بیشتر</span></button>`;
             
             let currentPage = 1, currentSearchTerm = '';
             const searchInput = document.getElementById('supervisor-search-input-modal');
