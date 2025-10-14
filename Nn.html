@@ -116,7 +116,7 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
         .modal-header h3 { margin: 0; font-size: 1.3rem; }
         .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; }
-        .modal-body { overflow-y: auto; flex-grow: 1; max-height: 70vh; overflow-x: hidden; position: relative; }
+        .modal-body { overflow-y: auto; flex-grow: 1; max-height: 70vh; overflow-x: hidden; }
         .wizard-step { display: none; padding: 10px 5px; } .wizard-step.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .wizard-nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); }
@@ -153,7 +153,7 @@
         .supervisor-list-item strong { display: block; font-weight: 700; color: var(--text-dark); font-size: 1.1rem; }
         .supervisor-list-item span { font-size: 0.9rem; color: var(--text-light); }
 
-        .list-loader { position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; border: 4px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin-center 1s linear infinite; transform: translate(-50%, -50%); }
+        .list-loader { position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; border: 4px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin-center 1s linear infinite; }
         .ref-manager-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
         .reference-list { list-style-type: none; padding: 0; margin-top: 20px; border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 250px; overflow-y: auto; }
         .reference-list li { padding: 10px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -263,56 +263,57 @@
         overlay.className = 'custom-alert-overlay';
         const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
         const iconClass = icons[type] || 'fa-info-circle';
-        overlay.innerHTML = `<div class="custom-alert-box"><i class="fas ${iconClass} custom-alert-icon ${type}"></i><p class="custom-alert-message">${message}</p><div class="custom-alert-actions"><button id="alert-ok-btn" class="btn-primary" style="min-width: 100px;"><span class="btn-text">تایید</span></button></div></div>`;
+        overlay.innerHTML = `<div class="custom-alert-box"><i class="fas ${iconClass} custom-alert-icon ${type}"></i><p class="custom-alert-message">${message}</p><div class="custom-alert-actions"><button id="alert-ok-btn" class="btn-primary" style="min-width: 100px;">تایید</button></div></div>`;
         alertContainer.appendChild(overlay);
         setTimeout(() => overlay.classList.add('visible'), 10);
         const closeAlert = () => { overlay.classList.remove('visible'); overlay.addEventListener('transitionend', () => { overlay.remove(); if (onClose) onClose(); }); };
         overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
     }
-
-    // [ویرایش شده] - این تابع برای مدیریت صحیح لودینگ دکمه پاپ‌آپ اصلاح شد
+    
+    // [ویرایش شده] - منطق لودینگ به داخل این تابع منتقل شد
     function showCustomConfirm(message, onConfirm, confirmText = 'بله', cancelText = 'خیر') {
         const alertContainer = document.getElementById('alert-container');
         const overlay = document.createElement('div');
         overlay.className = 'custom-alert-overlay';
         overlay.innerHTML = `<div class="custom-alert-box"><i class="fas fa-question-circle custom-alert-icon confirm"></i><p class="custom-alert-message">${message}</p><div class="custom-alert-actions"><button id="confirm-yes-btn" class="btn-primary"><span class="btn-text">${confirmText}</span></button><button id="confirm-no-btn" class="btn-secondary"><span class="btn-text">${cancelText}</span></button></div></div>`;
         alertContainer.appendChild(overlay);
-
+        
         const confirmBtn = overlay.querySelector('#confirm-yes-btn');
         const cancelBtn = overlay.querySelector('#confirm-no-btn');
 
-        const close = (callback) => {
+        const closeModal = () => {
             overlay.classList.remove('visible');
-            overlay.addEventListener('transitionend', () => {
-                overlay.remove();
-                if (callback) callback();
-            });
-        };
-
-        confirmBtn.onclick = async () => {
-            await onConfirm(true, confirmBtn, () => close());
-        };
-        cancelBtn.onclick = () => {
-            onConfirm(false, null, () => close());
+            overlay.addEventListener('transitionend', () => overlay.remove());
         };
         
+        confirmBtn.onclick = () => {
+            confirmBtn.disabled = true;
+            cancelBtn.disabled = true;
+            confirmBtn.classList.add('btn-loading');
+            onConfirm(true, confirmBtn, closeModal);
+        };
+
+        cancelBtn.onclick = () => {
+            onConfirm(false, null, closeModal);
+        };
+
         setTimeout(() => overlay.classList.add('visible'), 10);
     }
-    
-    // [ویرایش شده] - این تابع برای هماهنگی با showCustomConfirm جدید اصلاح شد
-    function handleDeleteArticle(articleId) { 
-        showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ تمام سوابق آن نیز پاک خواهد شد.', async (confirmed, button, closeCallback) => { 
+
+    async function handleDeleteArticle(articleId, button) { 
+        showCustomConfirm('آیا از حذف این مقاله اطمینان دارید؟ تمام سوابق آن نیز پاک خواهد شد.', async (confirmed, confirmBtn, closeModal) => { 
             if (confirmed) { 
                 const user = getStoredUser(); 
-                const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId }, button);
-                closeCallback();
+                // دکمه confirmBtn را به callApi پاس نمی‌دهیم چون لودینگ در showCustomConfirm مدیریت می‌شود
+                const response = await callApi('deleteArticle', { articleId: articleId, nationalId: user.nationalId });
+                closeModal();
                 if (response?.status === 'success') { 
                     showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId)); 
                 } else { 
                     showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در حذف مقاله: ' + (response.message || 'خطای نامشخص'), 'error'); 
                 } 
             } else {
-                if(closeCallback) closeCallback();
+                closeModal();
             }
         }, 'بله، حذف کن', 'لغو'); 
     }
@@ -321,7 +322,7 @@
     
     function showEditArticleWizard(article) {
         const isReadOnly = article.articleStatus == 5 || article.articleStatus == 6 || article.articleStatus == 8;
-        const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length; const countKeywords = (str) => str.trim().split(/[,،]/).filter(s => s.trim() !== "").length; const referenceManagerHTML = `<h4>مرحله ۶: منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;"><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`; const modalContent = `<div class="modal-body"><div class="wizard-progress"><div class="progress-step active" data-step="1">اطلاعات کلی</div><div class="progress-step" data-step="2">چکیده</div><div class="progress-step" data-step="3">مقدمه</div><div class="progress-step" data-step="4">بدنه</div><div class="progress-step" data-step="5">نتیجه‌گیری</div><div class="progress-step" data-step="6">منابع</div></div><div class="wizard-step active" data-step="1"></div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%"><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="introduction" style="width:100%"><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="body" style="width:100%"><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="conclusion" style="width:100%"><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6">${referenceManagerHTML}</div></div><div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`; renderModal(`مشاهده مقاله: ${article.title}`, modalContent, 'modal-lg');
+        const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length; const countKeywords = (str) => str.trim().split(/[,،]/).filter(s => s.trim() !== "").length; const referenceManagerHTML = `<h4>مرحله ۶: منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;" ${isReadOnly ? 'disabled' : ''}><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`; const modalContent = `<div class="modal-body"><div class="wizard-progress"><div class="progress-step active" data-step="1">اطلاعات کلی</div><div class="progress-step" data-step="2">چکیده</div><div class="progress-step" data-step="3">مقدمه</div><div class="progress-step" data-step="4">بدنه</div><div class="progress-step" data-step="5">نتیجه‌گیری</div><div class="progress-step" data-step="6">منابع</div></div><div class="wizard-step active" data-step="1"></div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6">${referenceManagerHTML}</div></div><div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`; renderModal(`مشاهده مقاله: ${article.title}`, modalContent, 'modal-lg');
         
         if (String(article.supervisorStatus) === '0' || String(article.supervisorStatus) === '1') {
             document.querySelector('.wizard-progress').style.display = 'none';
@@ -342,7 +343,7 @@
 
         const setupCounter = (inputId, counterId, validationFn, min, max, isKeyword = false) => { const input = document.getElementById(inputId); const counter = document.getElementById(counterId); const update = () => { const count = isKeyword ? countKeywords(input.value) : countWords(input.value); counter.textContent = count; counter.classList.toggle('invalid', !isReadOnly && (count < min || count > max)); }; input.addEventListener('input', update); update(); }; setupCounter('edit-abstract', 'abstract-counter', countWords, 150, 300); setupCounter('edit-keywords', 'keywords-counter', countKeywords, 3, 5, true); setupCounter('edit-introduction', 'intro-counter', countWords, 350, 500); setupCounter('edit-body', 'body-counter', countWords, 700, 3000); setupCounter('edit-conclusion', 'conclusion-counter', countWords, 100, 500); document.querySelectorAll('.save-section-btn').forEach(btn => { btn.onclick = async (e) => { if(isReadOnly) return; const user = getStoredUser(); const section = e.target.closest('button').dataset.section; let content; const getStorageKey = (sec) => `autosave-${user.nationalId}-${article.articleId}-${sec}`; if (section === 'keywords_abstract') { const abstractText = document.getElementById('edit-abstract').value; const keywordsText = document.getElementById('edit-keywords').value; if (countWords(abstractText) < 150 || countWords(abstractText) > 300) return showCustomAlert('تعداد کلمات چکیده معتبر نیست.', 'error'); if (countKeywords(keywordsText) < 3 || countKeywords(keywordsText) > 5) return showCustomAlert('تعداد کلیدواژه‌ها معتبر نیست.', 'error'); content = { keywords: keywordsText, abstract: abstractText }; } else if(section === 'references') { content = document.getElementById('edit-references-hidden').value; if (document.getElementById('reference-list-container').children.length < 5 || document.getElementById('reference-list-container').children.length > 40) return showCustomAlert('تعداد منابع معتبر نیست.', 'error'); } else { const text = document.getElementById(`edit-${section}`).value; const wordCount = countWords(text); if (section === 'introduction' && (wordCount < 350 || wordCount > 500)) return showCustomAlert('تعداد کلمات مقدمه معتبر نیست.', 'error'); if (section === 'body' && (wordCount < 700 || wordCount > 3000)) return showCustomAlert('تعداد کلمات بدنه مقاله معتبر نیست.', 'error'); if (section === 'conclusion' && (wordCount < 100 || wordCount > 500)) return showCustomAlert('تعداد کلمات نتیجه‌گیری معتبر نیست.', 'error'); content = text; } const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target); if(res?.status === 'success') { showCustomAlert(res.message, 'success'); if (section === 'keywords_abstract') { localStorage.removeItem(getStorageKey('abstract')); localStorage.removeItem(getStorageKey('keywords')); } else { localStorage.removeItem(getStorageKey(section)); } } else { showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error'); } }; });
         const fieldsToAutoSave = [ { id: 'edit-abstract', section: 'abstract' }, { id: 'edit-keywords', section: 'keywords' }, { id: 'edit-introduction', section: 'introduction' }, { id: 'edit-body', section: 'body' }, { id: 'edit-conclusion', section: 'conclusion' }, { id: 'edit-references-hidden', section: 'references'} ];
-        fieldsToAutoSave.forEach(field => { const element = document.getElementById(field.id); if (!element || isReadOnly) return; const user = getStoredUser(); const storageKey = `autosave-${user.nationalId}-${article.articleId}-${field.section}`; const savedContent = localStorage.getItem(storageKey); if (savedContent && savedContent.trim() !== (element.value || '').trim()) { showCustomConfirm('یک نسخه پشتیبان از این بخش پیدا شد. آیا مایل به بازیابی آن هستید؟', (confirmed, closeCallback) => { if (confirmed) { element.value = savedContent; element.dispatchEvent(new Event('input')); } localStorage.removeItem(storageKey); closeCallback(); }, 'بله، بازیابی کن', 'نه، حذف کن'); }
+        fieldsToAutoSave.forEach(field => { const element = document.getElementById(field.id); if (!element || isReadOnly) return; const user = getStoredUser(); const storageKey = `autosave-${user.nationalId}-${article.articleId}-${field.section}`; const savedContent = localStorage.getItem(storageKey); if (savedContent && savedContent.trim() !== (element.value || '').trim()) { showCustomConfirm('یک نسخه پشتیبان از این بخش پیدا شد. آیا مایل به بازیابی آن هستید؟', (confirmed, closeModal) => { if (confirmed) { element.value = savedContent; element.dispatchEvent(new Event('input')); } localStorage.removeItem(storageKey); closeModal(); }, 'بله، بازیابی کن', 'نه، حذف کن'); }
             let debounceTimer; element.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { localStorage.setItem(storageKey, element.value); }, 2000); });
         });
         const refTypeSelect = document.getElementById('ref-type'); const fields = { book: document.getElementById('ref-book-fields'), journal: document.getElementById('ref-journal-fields'), website: document.getElementById('ref-website-fields') }; const addRefBtn = document.getElementById('add-ref-btn'); const refListContainer = document.getElementById('reference-list-container'); const hiddenRefTextarea = document.getElementById('edit-references-hidden'); const refCounter = document.getElementById('ref-counter'); const updateRefList = () => { const items = Array.from(refListContainer.children).map(li => li.querySelector('span').textContent); hiddenRefTextarea.value = items.join('\n'); hiddenRefTextarea.dispatchEvent(new Event('input')); const count = items.length; refCounter.textContent = count; refCounter.classList.toggle('invalid', !isReadOnly && (count < 5 || count > 40)); }; const renderInitialRefs = () => { refListContainer.innerHTML = ''; hiddenRefTextarea.value.split('\n').filter(Boolean).forEach(refText => { const li = document.createElement('li'); li.innerHTML = `<span>${refText}</span><button class="ref-delete-btn" title="حذف منبع" ${isReadOnly ? 'disabled style="display:none;"' : ''}><i class="fas fa-times"></i></button>`; if (!isReadOnly) { li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); }; } refListContainer.appendChild(li); }); updateRefList(); }; refTypeSelect.onchange = () => Object.keys(fields).forEach(key => fields[key].classList.toggle('hidden', refTypeSelect.value !== key)); addRefBtn.onclick = () => { if(isReadOnly) return; let formattedRef = '', inputsToClear = []; if (refTypeSelect.value === 'book') { const lname = document.getElementById('ref-book-lname').value.trim(), fname = document.getElementById('ref-book-fname').value.trim(), year = document.getElementById('ref-book-year').value.trim(), title = document.getElementById('ref-book-title').value.trim(), publisher = document.getElementById('ref-book-publisher').value.trim(); if (!lname || !fname || !year || !title || !publisher) return showCustomAlert('تمام فیلدهای کتاب باید پر شوند.', 'error'); formattedRef = `${lname}، ${fname} (${year}). *${title}*. ${publisher}.`; inputsToClear = ['ref-book-lname', 'ref-book-fname', 'ref-book-year', 'ref-book-title', 'ref-book-publisher']; } else if (refTypeSelect.value === 'journal') { const lname = document.getElementById('ref-journal-lname').value.trim(), fname = document.getElementById('ref-journal-fname').value.trim(), year = document.getElementById('ref-journal-year').value.trim(), title = document.getElementById('ref-journal-title').value.trim(), journal = document.getElementById('ref-journal-name').value.trim(); if (!lname || !fname || !year || !title || !journal) return showCustomAlert('تمام فیلدهای مقاله باید پر شوند.', 'error'); formattedRef = `${lname}، ${fname} (${year}). "${title}". *${journal}*.`; inputsToClear = ['ref-journal-lname', 'ref-journal-fname', 'ref-journal-year', 'ref-journal-title', 'ref-journal-name']; } else { const author = document.getElementById('ref-web-author').value.trim(), year = document.getElementById('ref-web-year').value.trim(), title = document.getElementById('ref-web-title').value.trim(), url = document.getElementById('ref-web-url').value.trim(); if (!year || !title || !url) return showCustomAlert('سال، عنوان و آدرس اینترنتی الزامی است.', 'error'); const authorPart = author ? `${author} ` : ''; formattedRef = `${authorPart}(${year}). *${title}*. بازیابی شده از: ${url}`; inputsToClear = ['ref-web-author', 'ref-web-year', 'ref-web-title', 'ref-web-url']; } const li = document.createElement('li'); li.innerHTML = `<span>${formattedRef}</span><button class="ref-delete-btn" title="حذف منبع"><i class="fas fa-times"></i></button>`; li.querySelector('.ref-delete-btn').onclick = () => { li.remove(); updateRefList(); }; refListContainer.appendChild(li); updateRefList(); inputsToClear.forEach(id => document.getElementById(id).value = ''); }; renderInitialRefs(); let currentStep = 1; const totalSteps = 6; const progressSteps = document.querySelectorAll('.progress-step'); const navigateWizard = (dir) => { const newStep = currentStep + dir; if (newStep > 0 && newStep <= totalSteps) { document.querySelector(`.wizard-step.active`).classList.remove('active'); document.querySelector(`.wizard-step[data-step="${newStep}"]`).classList.add('active'); currentStep = newStep; document.getElementById('wizard-prev-btn').disabled = currentStep === 1; document.getElementById('wizard-next-btn').disabled = currentStep === totalSteps; progressSteps.forEach((step, index) => { step.classList.remove('active', 'completed'); if (index < currentStep - 1) { step.classList.add('completed'); } else if (index === currentStep - 1) { step.classList.add('active'); } }); } }; document.getElementById('wizard-next-btn').onclick = () => navigateWizard(1); document.getElementById('wizard-prev-btn').onclick = () => navigateWizard(-1);
@@ -392,12 +393,12 @@
             if (article.articleStatus == 4) {
                 supervisorCancellationNotice = `<div class="supervisor-cancellation-notice">استاد از بررسی مقاله شما انصراف داده است. لطفاً از بخش ویرایش، استاد راهنمای مقاله را تغییر دهید.</div>`;
             }
-            const reReviewButtonHTML = article.articleStatus == 2 ? `<button class="btn-rereview btn-info" data-article-id="${article.articleId}"><span class="btn-text">ارسال جهت بررسی مجدد</span></button>` : '';
+            const reReviewButtonHTML = article.articleStatus == 2 ? `<button class="btn-rereview btn-info" data-article-id="${article.articleId}">ارسال جهت بررسی مجدد</button>` : '';
             const supervisorRejectionNotice = article.supervisorStatus == 0 ? `<div class="supervisor-rejection-notice">استاد راهنما این درخواست را نپذیرفته است. لطفاً از بخش ویرایش، استاد راهنمای دیگری انتخاب کنید.</div>` : '';
             const requestDateFormatted = article.requestDate ? new Date(article.requestDate).toLocaleDateString('fa-IR') : 'نامشخص';
             const acceptanceDateFormatted = article.acceptanceDate ? new Date(article.acceptanceDate).toLocaleDateString('fa-IR') : 'نامشخص';
             const acceptanceInfo = (article.articleStatus == 5) ? `<div><strong>تاریخ پذیرش:</strong> <span>${acceptanceDateFormatted}</span></div><div><strong>شماره مجله:</strong> <span>${article.issueNumber || 'نامشخص'}</span></div>` : '';
-            card.innerHTML = `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${supervisorStatusColor};">${supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName}</span></div><div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${reReviewButtonHTML}<button class="btn-view"><span class="btn-text">${isReadOnly ? 'مشاهده' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل')}</span></button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+            card.innerHTML = `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${supervisorStatusColor};">${supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName}</span></div><div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل')}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
             card.querySelector('.article-header-clickable').onclick = () => { card.classList.toggle('expanded'); };
             card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
             card.querySelector('.btn-history').onclick = (e) => { e.stopPropagation(); handleShowHistory(article.articleId, article.title, e.target.closest('button')); };
@@ -405,33 +406,33 @@
                 card.querySelector('.btn-rereview').onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); };
             }
             if (canBeDeleted) {
-                card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId); };
+                card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); };
             }
             container.appendChild(card);
         });
     }
     
-    function handleRequestReReviewClick(button) {
+    async function handleRequestReReviewClick(button) {
         const articleId = button.dataset.articleId;
-        showCustomConfirm('آیا از ارسال مقاله برای بررسی مجدد اطمینان دارید؟', async (confirmed, btn, closeModalCallback) => {
+        showCustomConfirm('آیا از ارسال مقاله برای بررسی مجدد اطمینان دارید؟', async (confirmed, btn, closeModal) => {
             if (confirmed) {
                 const user = getStoredUser();
-                const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId }, btn);
-                closeModalCallback();
+                const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId });
+                closeModal();
                 if (response?.status === 'success') {
                     showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId)); 
                 } else {
                     showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
                 }
             } else {
-                if(closeModalCallback) closeModalCallback();
+                closeModal();
             }
         }, 'بله، ارسال کن', 'لغو');
     }
 
-    function handleShowHistory(articleId, articleTitle, button) {
+    async function handleShowHistory(articleId, articleTitle, button) {
         const modalBodyId = 'history-modal-body';
-        renderModal(`تاریخچه مقاله: ${articleTitle}`, `<div id="${modalBodyId}" class="modal-body" style="text-align:center; min-height: 200px; display: flex; align-items: center; justify-content: center;"><div class="list-loader"></div></div>`, 'modal-sm');
+        renderModal(`تاریخچه مقاله: ${articleTitle}`, `<div id="${modalBodyId}" class="modal-body" style="text-align:center; position:relative; min-height: 150px;"><div class="list-loader"></div></div>`, 'modal-sm');
         const user = getStoredUser();
         const response = await callApi('getArticleHistory', { nationalId: user.nationalId, articleId }, button);
         const modalBody = document.getElementById(modalBodyId);
@@ -441,7 +442,6 @@
                 modalBody.innerHTML = '<p>هیچ سابقه‌ای برای این مقاله ثبت نشده است.</p>';
                 return;
             }
-            modalBody.style.display = 'block';
             modalBody.style.textAlign = 'right';
             modalBody.innerHTML = `<ul class="history-timeline">${response.history.map(formatHistoryEntry).join('')}</ul>`;
         } else {
@@ -450,7 +450,7 @@
     }
 
     function formatHistoryEntry(entry) {
-        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود به سیستم', icon: 'fa-sign-in-alt' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوای مقاله', icon: 'fa-save' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات کلی', icon: 'fa-edit' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' }, 'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' }, 'SUGGESTED_TITLE_TAKEN': { text: 'انتخاب عنوان پیشنهادی', icon: 'fa-check-circle' } };
+        const actionMap = { 'LOGIN_SUCCESS': { text: 'ورود به سیستم', icon: 'fa-sign-in-alt' }, 'SUBMIT_ARTICLE_SUCCESS': { text: 'ثبت اولیه مقاله', icon: 'fa-file-medical' }, 'UPDATE_SECTION_SUCCESS': { text: 'به‌روزرسانی محتوا', icon: 'fa-save' }, 'UPDATE_DETAILS_SUCCESS': { text: 'به‌روزرسانی اطلاعات', icon: 'fa-edit' }, 'REQUEST_REREVIEW_SUCCESS': { text: 'ارسال برای بررسی مجدد', icon: 'fa-paper-plane' }, 'DELETE_ARTICLE_SUCCESS': { text: 'حذف مقاله', icon: 'fa-trash' }, 'VIEW_HISTORY_SUCCESS': { text: 'مشاهده تاریخچه', icon: 'fa-history' }, 'SUGGESTED_TITLE_TAKEN': { text: 'انتخاب عنوان پیشنهادی', icon: 'fa-check-circle' }, 'SUGGESTED_TITLE_RELEASED': { text: 'آزادسازی عنوان پیشنهادی', icon: 'fa-undo' } };
         const formattedDate = new Date(entry.timestamp).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
         const actionInfo = actionMap[entry.action] || { text: entry.action.replace(/_/g, ' ').toLowerCase(), icon: 'fa-info-circle' };
         
@@ -480,7 +480,7 @@
     async function showSuggestedTitlesModal(e) {
         const button = e.target.closest('button');
         const modalBodyId = 'suggested-titles-body';
-        renderModal('انتخاب از عناوین پیشنهادی', `<div id="${modalBodyId}" class="modal-body" style="text-align:center; min-height: 280px; display: flex; align-items: center; justify-content: center;"><div class="list-loader"></div></div>`, 'modal-sm', true);
+        renderModal('انتخاب از عناوین پیشنهادی', `<div id="${modalBodyId}" class="modal-body" style="text-align:center; position:relative; min-height: 280px;"><div class="list-loader"></div></div>`, 'modal-sm', true);
 
         const response = await callApi('getSuggestedTitles', {}, button);
         const modalBody = document.getElementById(modalBodyId);
@@ -490,7 +490,6 @@
                 modalBody.innerHTML = '<p>در حال حاضر عنوان پیشنهادی وجود ندارد.</p>';
                 return;
             }
-            modalBody.style.display = 'block';
             modalBody.style.textAlign = 'right';
             const list = document.createElement('div');
             list.className = 'suggestion-list';
