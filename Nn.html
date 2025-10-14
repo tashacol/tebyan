@@ -1,3 +1,4 @@
+با کمال میل، هر دو ویرایش درخواستی شما با دقت کامل انجام شد. لودینگ کنار فیلد جستجو حذف گردید و فاصله اضافی از بالای صفحه نیز اصلاح شد تا محتوا به نمایشگر نزدیک‌تر باشد.
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -14,13 +15,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
 
         :root {
-            /* دستور هفتم: مدرن‌سازی پالت رنگی */
-            --primary: #3B82F6; /* رنگ آبی مدرن‌تر */
+            --primary: #3B82F6; 
             --primary-light: #DBEAFE;
             --primary-dark: #2563EB;
-            --text-dark: #1f2937; /* کمی ملایم‌تر از مشکی خالص */
+            --text-dark: #1f2937;
             --text-light: #6b7280;
-            --bg-main: #f9fafb; /* پس‌زمینه بسیار روشن و مدرن */
+            --bg-main: #f9fafb;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
             --success: #10b981;
@@ -28,7 +28,6 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #38bdf8;
-            /* دستور هفتم: مدرن‌سازی سایه‌ها */
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
@@ -40,8 +39,8 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
             margin: 0;
-            /* دستور هفتم: افزایش فاصله عمودی کلی صفحه */
-            padding: 40px 20px;
+            /* دستور دوم: کاهش فاصله از بالای صفحه */
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -56,8 +55,8 @@
         .container {
             width: 100%;
             max-width: 900px;
-            /* دستور اول: افزودن فاصله عمودی برای کانتینر اصلی */
-            margin: 2rem auto;
+            /* دستور دوم: حذف فاصله عمودی اضافه برای فیت شدن با بالا */
+            margin: 0 auto;
         }
 
         .card {
@@ -227,7 +226,6 @@
             min-height: 150px;
         }
 
-        /* دستور ششم: لودینگ جذاب‌تر و مدرن‌تر */
         .content-loader {
           width: 48px;
           height: 48px;
@@ -332,7 +330,7 @@
             color: var(--text-dark);
             display: block;
             margin-bottom: 8px;
-            min-height: 42px; /* برای جلوگیری از پرش صفحه هنگام لود شدن */
+            min-height: 42px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -352,7 +350,6 @@
             border-right-color: var(--danger);
         }
         
-        /* دستور پنجم: استایل لودینگ کوچک برای کارت‌های آمار */
         .mini-loader {
             width: 28px;
             height: 28px;
@@ -394,17 +391,7 @@
             font-size: 1.3rem;
         }
         
-        .search-loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--primary-light);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin-center 0.8s linear infinite;
-            margin-left: -40px; 
-            margin-right: 15px;
-            z-index: 3;
-        }
+        /* دستور اول: حذف استایل لودینگ جستجو */
         
         .article-card {
             background: var(--bg-card);
@@ -713,7 +700,6 @@
         
         .wizard-step {
             display: none;
-            /* دستور اول: افزودن فاصله داخلی برای محتوای هر مرحله */
             padding: 1.5rem 0.5rem;
         }
         .wizard-step.active {
@@ -726,13 +712,12 @@
         .wizard-nav {
             display: flex;
             flex-wrap: wrap;
-            /* دستور دوم: وسط‌چین کردن دکمه‌ها و فلش */
             justify-content: center;
             align-items: center;
             margin-top: 25px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
-            gap: 20px; /* افزایش فاصله بین دکمه‌ها */
+            gap: 20px;
         }
 
         .wizard-nav .next-step-icon {
@@ -883,13 +868,12 @@
             min-height: 280px;
             max-height: 280px;
             overflow-y: auto;
-            border: none; /* دستور چهارم: حذف بردر اصلی لیست */
+            border: none;
             border-radius: var(--radius-md);
             position: relative;
             padding: 5px;
         }
 
-        /* دستور چهارم: استایل کارت-مانند برای هر آیتم استاد */
         .supervisor-list-item,
         .suggestion-list-item {
             padding: 15px;
@@ -1330,7 +1314,7 @@
                     <div class="search-field-wrapper">
                         <input type="text" id="article-search-input"
                             placeholder="جستجو در مقالات...">
-                        <div id="search-loader-container"></div>
+                        <!-- دستور اول: حذف کانتینر لودر جستجو -->
                         <i class="fas fa-search search-icon"></i>
                     </div>
                     <button id="add-new-article-btn"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله
@@ -1427,7 +1411,6 @@
             document.getElementById('logout-btn').onclick = handleLogout;
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
-            // دستور پنجم: نمایش کارت‌های آمار با لودینگ‌های کوچک در ابتدای کار
             const summaryContainer = document.getElementById('summary-dashboard');
             summaryContainer.innerHTML = `
                 <div class="summary-card"><span class="count"><div class="mini-loader"></div></span><span class="label">در حال پیگیری</span></div>
@@ -1437,16 +1420,13 @@
             
             let searchDebounce;
             const searchInput = document.getElementById('article-search-input');
-            const searchLoaderContainer = document.getElementById('search-loader-container');
-
+            
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchDebounce);
-                searchLoaderContainer.innerHTML = '<div class="search-loader"></div>'; 
+                // دستور اول: حذف کامل نمایش لودینگ
                 searchDebounce = setTimeout(() => {
                     currentSearchTerm = e.target.value.trim();
-                    loadArticles(user.nationalId, false).finally(() => {
-                         searchLoaderContainer.innerHTML = ''; 
-                    });
+                    loadArticles(user.nationalId, false);
                 }, 500);
             });
             loadArticles(user.nationalId, false);
@@ -1463,8 +1443,6 @@
                 currentPage = 1;
                 allUserArticles = [];
                 hasMoreArticles = true;
-                // دستور سوم: هنگام جستجو، لودر کلی آمار نمایش داده نمی‌شود
-                // دستور پنجم: لودر آمار فقط در بارگذاری اولیه نمایش داده می‌شود که در showDashboard مدیریت شد
                 articlesContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
             } else {
                 if (loadMoreContainer.querySelector('button')) {
@@ -1489,7 +1467,6 @@
 
                 renderArticles(allUserArticles);
                 
-                // به‌روزرسانی آمارها پس از هر بار دریافت اطلاعات (چه جستجو چه بارگذاری اولیه)
                 updateSummaryDashboard(response.summary || allUserArticles);
                 
                 if (!isLoadMore) {
@@ -1502,7 +1479,6 @@
                 }
             } else {
                  if (!isLoadMore) {
-                    // دستور سوم: خطای آمار نباید نمایش داده شود چون در حال لود نیست
                     articlesContainer.innerHTML = '<p style="color:var(--danger); text-align: center;">خطا در بارگذاری مقالات</p>';
                  }
                 if (response.isNetworkError) {
@@ -1518,12 +1494,10 @@
             let inProgress, accepted, rejected;
 
             if (Array.isArray(articlesOrSummary)) {
-                // Fallback if summary object is not provided
                 inProgress = articlesOrSummary.filter(a => ![0, 5, 9, '0', '5', '9'].includes(a.articleStatus)).length;
                 accepted = articlesOrSummary.filter(a => String(a.articleStatus) === '5').length;
                 rejected = articlesOrSummary.filter(a => String(a.articleStatus) === '0').length;
             } else {
-                // Use summary object if provided by the API
                 inProgress = articlesOrSummary.inProgress;
                 accepted = articlesOrSummary.accepted;
                 rejected = articlesOrSummary.rejected;
@@ -1616,7 +1590,6 @@
                     : response.message;
                 showCustomAlert(message, 'success', async () => {
                     closeAllModals();
-                    // Full reload to reflect changes
                     const user = getStoredUser();
                     await loadArticles(user.nationalId, false);
                 });
@@ -1677,7 +1650,6 @@
         `;
             renderModal(`ویرایش مقاله: ${article.title}`, modalContent, 'modal-lg');
             
-            // Carousel Tab functionality
             setupTabCarousel();
 
             if (isDraft) {
@@ -2054,13 +2026,11 @@
             return areas.map(area => `<option value="${area}" ${selectedValue === area ? 'selected' : ''}>${area}</option>`).join('');
         }
         
-        // --- New Article Wizard Implementation ---
         function showNewArticleModal() {
-            window.selectedSupervisor = null; // Reset selection
+            window.selectedSupervisor = null;
             const modalContent = `
             <div class="modal-body">
                 <div id="new-article-wizard">
-                    <!-- Step 1: Affiliation -->
                     <div class="wizard-step active" data-step="1">
                         <h4>مرحله ۱ از ۴: وابستگی سازمانی</h4>
                         <div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد" required></div>
@@ -2069,20 +2039,17 @@
                         <div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" placeholder="مثال: قم، ایران" required></div>
                     </div>
 
-                    <!-- Step 2: Title & Knowledge Area -->
                     <div class="wizard-step" data-step="2">
                         <h4>مرحله ۲ از ۴: اطلاعات مقاله</h4>
                         <div class="form-group"><label for="new-article-title">عنوان مقاله</label><div class="title-input-wrapper"><input type="text" id="new-article-title" required><button type="button" id="suggest-title-btn" class="suggest-title-btn" title="عناوین پیشنهادی"><i class="fas fa-lightbulb"></i></button></div></div>
                         <div class="form-group"><label for="new-knowledge-area">حیطه دانشی</label><select id="new-knowledge-area" required><option value="" disabled selected>یک مورد را انتخاب کنید...</option>${getKnowledgeAreaOptions()}</select></div>
                     </div>
 
-                    <!-- Step 3: Topic Reason -->
                     <div class="wizard-step" data-step="3">
                         <h4>مرحله ۳ از ۴: دلیل انتخاب موضوع</h4>
                         <div class="form-group"><label for="new-topic-reason">توضیح دهید چرا این موضوع را برای تحقیق انتخاب کرده‌اید.</label><textarea id="new-topic-reason" rows="8" required></textarea></div>
                     </div>
 
-                    <!-- Step 4: Supervisor & Submit -->
                     <div class="wizard-step" data-step="4">
                         <h4>مرحله ۴ از ۴: انتخاب استاد راهنما</h4>
                         <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">برای «ثبت و ارسال نهایی»، انتخاب استاد الزامی است. برای «ذخیره پیش‌نویس» می‌توانید این مرحله را رد کنید.</p>
@@ -2247,13 +2214,11 @@
             const updateView = () => {
                 const activeItem = items[activeIndex];
                 
-                // Centering logic
                 const wrapperRect = wrapper.getBoundingClientRect();
                 const activeRect = activeItem.getBoundingClientRect();
                 const offset = activeRect.left - wrapperRect.left - (wrapperRect.width / 2) + (activeRect.width / 2);
                 wrapper.scrollBy({ left: offset, behavior: 'smooth' });
 
-                // Update classes
                 items.forEach((item, i) => {
                     const tabNum = item.dataset.tab;
                     item.classList.remove('active', 'prev-item', 'next-item');
@@ -2268,7 +2233,6 @@
                     }
                 });
                 
-                // Update buttons
                 prevBtn.disabled = activeIndex === 0;
                 nextBtn.disabled = activeIndex === items.length - 1;
             };
@@ -2294,7 +2258,6 @@
                 }
             });
             
-            // Initial setup
             updateView();
         }
 
