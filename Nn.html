@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -555,6 +556,53 @@
             overflow-y: auto;
             flex-grow: 1;
             overflow-x: hidden;
+        }
+        
+        /* IMPROVEMENT: Styles for the new tab-based wizard */
+        .tab-nav {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 25px;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        .tab-nav::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+
+        .tab-nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+            position: relative;
+        }
+        .tab-nav-item:hover {
+            color: var(--text-dark);
+        }
+        .tab-nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 700;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s;
+        }
+        .modal-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
 
         .wizard-step {
@@ -1505,35 +1553,85 @@
             }
         }
 
+        // IMPROVEMENT: Replaced the wizard with a cleaner tab-based interface
         function showEditArticleWizard(article) {
-            const isReadOnly = article.articleStatus == 5 || article.articleStatus == 6 || article.articleStatus == 8;
-            const isDraft = article.articleStatus == 9;
-            const countWords = (str) => str.trim().split(/\s+/).filter(Boolean).length;
-            const countKeywords = (str) => str.trim().split(/[,،]/).filter(s => s.trim() !== "").length;
-            const referenceManagerHTML = `<h4>مرحله ۶: منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;" ${isReadOnly ? 'disabled' : ''}><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`;
-            const submitForReviewButton = isDraft ? `<button id="submit-draft-btn" class="btn-success" style="margin-top:15px; width:100%;"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال نهایی برای استاد راهنما</span></button>` : '';
-            const modalContent = `<div class="modal-body"><div class="wizard-progress"><div class="progress-step active" data-step="1">اطلاعات کلی</div><div class="progress-step" data-step="2">چکیده</div><div class="progress-step" data-step="3">مقدمه</div><div class="progress-step" data-step="4">بدنه</div><div class="progress-step" data-step="5">نتیجه‌گیری</div><div class="progress-step" data-step="6">منابع</div></div><div class="wizard-step active" data-step="1"></div><div class="wizard-step" data-step="2"><h4>مرحله ۲: چکیده و کلیدواژه‌ها</h4><div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div><div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button></div><div class="wizard-step" data-step="3"><h4>مرحله ۳: مقدمه</h4><div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button></div><div class="wizard-step" data-step="4"><h4>مرحله ۴: بدنه مقاله</h4><div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button></div><div class="wizard-step" data-step="5"><h4>مرحله ۵: نتیجه‌گیری</h4><div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div><button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button></div><div class="wizard-step" data-step="6">${referenceManagerHTML}</div></div>${submitForReviewButton}<div class="wizard-nav"><button id="wizard-prev-btn" class="btn-secondary" disabled><i class="fas fa-arrow-right"></i><span class="btn-text">قبلی</span></button><button id="wizard-next-btn"><span class="btn-text">بعدی</span><i class="fas fa-arrow-left"></i></button></div>`;
-            renderModal(`مشاهده مقاله: ${article.title}`, modalContent, 'modal-lg');
+            const isReadOnly = [5, 6, 8].includes(Number(article.articleStatus));
+            const isDraft = Number(article.articleStatus) === 9;
+            const countWords = (str) => str ? str.trim().split(/\s+/).filter(Boolean).length : 0;
+            const countKeywords = (str) => str ? str.trim().split(/[,،]/).filter(s => s.trim() !== "").length : 0;
+
+            const referenceManagerHTML = `<h4>منابع</h4><div class="form-group"><label for="ref-type">نوع منبع</label><select id="ref-type" ${isReadOnly ? 'disabled' : ''}><option value="book">کتاب</option><option value="journal">مقاله مجله</option><option value="website">وب‌سایت/اینترنتی</option></select></div><div id="ref-book-fields"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-book-lname" placeholder="مثال: طباطبایی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-book-fname" placeholder="مثال: سید محمدحسین" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-book-year" type="number" placeholder="مثال: 1374" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان کتاب</label><input id="ref-book-title" placeholder="مثال: المیزان فی تفسیر القرآن" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>انتشارات</label><input id="ref-book-publisher" placeholder="مثال: دفتر انتشارات اسلامی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-journal-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نام خانوادگی نویسنده</label><input id="ref-journal-lname" placeholder="مثال: مطهری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام نویسنده</label><input id="ref-journal-fname" placeholder="مثال: مرتضی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال نشر</label><input id="ref-journal-year" type="number" placeholder="مثال: 1368" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان مقاله</label><input id="ref-journal-title" placeholder="مثال: مساله شناخت" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>نام مجله</label><input id="ref-journal-name" placeholder="مثال: مقالات فلسفی" ${isReadOnly ? 'disabled' : ''}></div></div></div><div id="ref-website-fields" class="hidden"><div class="ref-manager-grid"><div class="form-group"><label>نویسنده (اختیاری)</label><input id="ref-web-author" placeholder="مثال: علی اکبری" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>سال انتشار</label><input id="ref-web-year" type="number" placeholder="مثال: 1402" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>عنوان صفحه</label><input id="ref-web-title" placeholder="مثال: مبانی فلسفه اسلامی" ${isReadOnly ? 'disabled' : ''}></div><div class="form-group"><label>آدرس اینترنتی (URL)</label><input id="ref-web-url" type="url" placeholder="https://example.com/page" ${isReadOnly ? 'disabled' : ''}></div></div></div><button id="add-ref-btn" class="btn-secondary" style="width:100%;" ${isReadOnly ? 'disabled' : ''}><i class="fas fa-plus"></i><span class="btn-text">افزودن منبع به لیست</span></button><div class="validation-note"><span>حداقل ۵ و حداکثر ۴۰ منبع</span><span id="ref-counter" class="counter"></span></div><ul class="reference-list" id="reference-list-container"></ul><textarea id="edit-references-hidden" class="hidden">${article.references || ''}</textarea><button class="save-section-btn" data-section="references" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره منابع</span></button>`;
+
+            const modalContent = `
+        <div class="modal-body">
+            <div class="tab-nav">
+                <div class="tab-nav-item active" data-tab="1">اطلاعات کلی</div>
+                <div class="tab-nav-item" data-tab="2">چکیده</div>
+                <div class="tab-nav-item" data-tab="3">مقدمه</div>
+                <div class="tab-nav-item" data-tab="4">بدنه</div>
+                <div class="tab-nav-item" data-tab="5">نتیجه‌گیری</div>
+                <div class="tab-nav-item" data-tab="6">منابع</div>
+            </div>
+            <div class="tab-content active" data-tab="1"></div>
+            <div class="tab-content" data-tab="2">
+                <h4>چکیده و کلیدواژه‌ها</h4>
+                <div class="form-group"><label for="edit-abstract">چکیده</label><textarea id="edit-abstract" rows="8" ${isReadOnly ? 'disabled' : ''}>${article.abstract || ''}</textarea><div class="validation-note"><span>حداقل ۱۵۰ و حداکثر ۳۰۰ کلمه</span><span id="abstract-counter" class="counter">0</span></div></div>
+                <div class="form-group"><label for="edit-keywords">کلیدواژه‌ها (جدا شده با ویرگول ،)</label><input type="text" id="edit-keywords" value="${article.keywords || ''}" ${isReadOnly ? 'disabled' : ''}><div class="validation-note"><span>حداقل ۳ و حداکثر ۵ کلیدواژه</span><span id="keywords-counter" class="counter">0</span></div></div>
+                <button class="save-section-btn" data-section="keywords_abstract" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره</span></button>
+            </div>
+            <div class="tab-content" data-tab="3">
+                <h4>مقدمه</h4>
+                <div class="form-group"><textarea id="edit-introduction" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.introduction || ''}</textarea><div class="validation-note"><span>حداقل ۳۵۰ و حداکثر ۵۰۰ کلمه</span><span id="intro-counter" class="counter">0</span></div></div>
+                <button class="save-section-btn" data-section="introduction" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره مقدمه</span></button>
+            </div>
+            <div class="tab-content" data-tab="4">
+                <h4>بدنه مقاله</h4>
+                <div class="form-group"><textarea id="edit-body" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.body || ''}</textarea><div class="validation-note"><span>حداقل ۷۰۰ و حداکثر ۳۰۰۰ کلمه</span><span id="body-counter" class="counter">0</span></div></div>
+                <button class="save-section-btn" data-section="body" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره بدنه</span></button>
+            </div>
+            <div class="tab-content" data-tab="5">
+                <h4>نتیجه‌گیری</h4>
+                <div class="form-group"><textarea id="edit-conclusion" rows="15" ${isReadOnly ? 'disabled' : ''}>${article.conclusion || ''}</textarea><div class="validation-note"><span>حداقل ۱۰۰ و حداکثر ۵۰۰ کلمه</span><span id="conclusion-counter" class="counter">0</span></div></div>
+                <button class="save-section-btn" data-section="conclusion" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره نتیجه‌گیری</span></button>
+            </div>
+            <div class="tab-content" data-tab="6">${referenceManagerHTML}</div>
+        </div>
+        ${isDraft ? `<div class="modal-footer"><button id="submit-draft-btn" class="btn-success"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال نهایی برای استاد</span></button></div>` : ''}
+    `;
+            renderModal(`ویرایش مقاله: ${article.title}`, modalContent, 'modal-lg');
+
+            // Tab functionality
+            const tabItems = document.querySelectorAll('.tab-nav-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabItems.forEach(item => {
+                item.onclick = () => {
+                    tabItems.forEach(i => i.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    item.classList.add('active');
+                    document.querySelector(`.tab-content[data-tab="${item.dataset.tab}"]`).classList.add('active');
+                };
+            });
+
             if (isDraft) {
                 document.getElementById('submit-draft-btn').onclick = (e) => handleSubmitDraft(e, article.articleId, article.supervisorName);
             }
-            if (!isDraft && (String(article.supervisorStatus) === '0' || String(article.supervisorStatus) === '1')) {
-                document.querySelector('.wizard-progress').style.display = 'none';
-                document.querySelector('.wizard-nav').style.display = 'none';
-                const step1Container = document.querySelector('.wizard-step[data-step="1"]');
+
+            if (!isDraft && [0, 1].includes(Number(article.supervisorStatus))) {
+                const step1Container = document.querySelector('.tab-content[data-tab="1"]');
                 const notice = document.createElement('div');
                 notice.className = 'supervisor-rejection-notice';
                 notice.style.backgroundColor = 'var(--primary-light)';
                 notice.style.borderColor = 'var(--primary)';
                 notice.style.color = 'var(--primary-dark)';
                 notice.innerHTML = 'تا زمان تایید استاد راهنما، امکان ویرایش بخش‌های دیگر مقاله وجود ندارد.';
-                if (String(article.supervisorStatus) === '0') {
+                if (Number(article.supervisorStatus) === 0) {
                     notice.innerHTML = 'استاد راهنما درخواست شما را نپذیرفته است. لطفاً از این بخش، استاد راهنمای دیگری انتخاب کنید.';
                     notice.className = 'supervisor-rejection-notice';
                 }
                 step1Container.prepend(notice);
             }
-            const setupCounter = (inputId, counterId, validationFn, min, max, isKeyword = false) => {
+            
+            const setupCounter = (inputId, counterId, min, max, isKeyword = false) => {
                 const input = document.getElementById(inputId);
                 const counter = document.getElementById(counterId);
                 const update = () => {
@@ -1544,11 +1642,12 @@
                 input.addEventListener('input', update);
                 update();
             };
-            setupCounter('edit-abstract', 'abstract-counter', countWords, 150, 300);
-            setupCounter('edit-keywords', 'keywords-counter', countKeywords, 3, 5, true);
-            setupCounter('edit-introduction', 'intro-counter', countWords, 350, 500);
-            setupCounter('edit-body', 'body-counter', countWords, 700, 3000);
-            setupCounter('edit-conclusion', 'conclusion-counter', countWords, 100, 500);
+            setupCounter('edit-abstract', 'abstract-counter', 150, 300);
+            setupCounter('edit-keywords', 'keywords-counter', 3, 5, true);
+            setupCounter('edit-introduction', 'intro-counter', 350, 500);
+            setupCounter('edit-body', 'body-counter', 700, 3000);
+            setupCounter('edit-conclusion', 'conclusion-counter', 100, 500);
+
             document.querySelectorAll('.save-section-btn').forEach(btn => {
                 btn.onclick = async (e) => {
                     if (isReadOnly) return;
@@ -1667,30 +1766,12 @@
                 inputsToClear.forEach(id => document.getElementById(id).value = '');
             };
             renderInitialRefs();
-            let currentStep = 1;
-            const totalSteps = 6;
-            const progressSteps = document.querySelectorAll('.progress-step');
-            const navigateWizard = (dir) => {
-                const newStep = currentStep + dir;
-                if (newStep > 0 && newStep <= totalSteps) {
-                    document.querySelector(`.wizard-step.active`).classList.remove('active');
-                    document.querySelector(`.wizard-step[data-step="${newStep}"]`).classList.add('active');
-                    currentStep = newStep;
-                    document.getElementById('wizard-prev-btn').disabled = currentStep === 1;
-                    document.getElementById('wizard-next-btn').disabled = currentStep === totalSteps;
-                    progressSteps.forEach((step, index) => {
-                        step.classList.remove('active', 'completed');
-                        if (index < currentStep - 1) { step.classList.add('completed'); }
-                        else if (index === currentStep - 1) { step.classList.add('active'); }
-                    });
-                }
-            };
-            document.getElementById('wizard-next-btn').onclick = () => navigateWizard(1);
-            document.getElementById('wizard-prev-btn').onclick = () => navigateWizard(-1);
+
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
             const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--warning); text-align: center;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
-            const step1 = document.querySelector('.wizard-step[data-step="1"]');
-            step1.innerHTML = `<h4>مرحله ۱: ویرایش اطلاعات کلی</h4><div class="form-group"><label>عنوان مقاله</label><input type="text" value="${article.title}" disabled></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
+            const step1 = document.querySelector('.tab-content[data-tab="1"]');
+            step1.innerHTML = `<h4>اطلاعات کلی</h4><div class="form-group"><label>عنوان مقاله</label><input type="text" value="${article.title}" disabled></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
+            
             if (!isReadOnly) {
                 document.getElementById('edit-affiliation').onclick = () => showAffiliationModal('edit-affiliation', article.affiliation);
             }
@@ -1795,7 +1876,7 @@
                 const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
                 const isDraft = String(article.articleStatus) === '9';
                 const cardBorderColor = (isDraft || article.articleStatus == 5 || article.articleStatus == 0 || article.articleStatus == 4) ? articleStatusColor : supervisorStatusColor;
-                const isReadOnly = article.articleStatus == 5 || article.articleStatus == 6 || article.articleStatus == 8;
+                const isReadOnly = [5, 6, 8].includes(Number(article.articleStatus));
                 const card = document.createElement('div');
                 card.className = 'article-card';
                 card.style.borderTopColor = cardBorderColor;
