@@ -1,129 +1,116 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل کاربری اساتید - نسخه پیشرفته</title>
+    <title>پنل کاربری اساتید - نسخه مدرن</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         :root {
-            --primary-color: #4f46e5; --primary-light: #e0e7ff; --primary-dark: #3730a3;
-            --text-dark: #111827; --text-main: #374151; --text-light: #6b7280;
-            --bg-main: #f8fafc; --bg-card: #ffffff; --border-color: #e5e7eb;
-            --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b; --info-color: #38bdf8;
+            --primary: #3B82F6; --primary-light: #EFF6FF; --primary-dark: #2563EB;
+            --text-dark: #1f2937; --text-light: #6b7280; --bg-main: #f8f9fc;
+            --bg-card: #ffffff; --border-color: #e5e7eb; --success: #10b981;
+            --danger: #ef4444; --warning: #f59e0b; --info: #38bdf8; --purple: #8B5CF6;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --radius-md: 8px; --radius-lg: 16px;
-            --transition-main: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-lg: 16px; --radius-md: 12px; --radius-sm: 8px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-main);
-            margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+            font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-dark);
+            margin: 0; padding: 24px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
         }
         .hidden { display: none !important; }
         .container { width: 100%; max-width: 1100px; }
-        .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 2rem; }
-        h1, h2, h3, h4 { color: var(--text-dark); font-weight: 700; margin-top: 0; }
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.9rem; }
+        .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 32px; }
+        h1, h2, h3, h4 { color: var(--text-dark); font-weight: 700; margin: 0 0 1rem; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem; }
         input, select, textarea {
-            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); background-color: #f9fafb;
-            border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; transition: var(--transition-main);
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; transition: var(--transition); background-color: var(--bg-main);
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); outline: none; }
         button {
-            font-family: inherit; padding: 0.75rem 1.25rem; background-color: var(--primary-color); color: white;
+            font-family: inherit; padding: 12px 24px; background-color: var(--primary); color: white;
             border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 500;
-            cursor: pointer; transition: var(--transition-main); display: inline-flex;
-            align-items: center; justify-content: center; gap: 0.5rem; position: relative;
+            cursor: pointer; transition: var(--transition); display: inline-flex;
+            align-items: center; justify-content: center; gap: 8px; min-height: 48px; position: relative;
         }
-        button:hover:not(:disabled) { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        button:disabled { background-color: #d1d5db; cursor: not-allowed; }
-        .btn-success { background-color: var(--success-color); } .btn-success:hover:not(:disabled) { background-color: #059669; }
-        .btn-danger { background-color: var(--danger-color); } .btn-danger:hover:not(:disabled) { background-color: #dc2626; }
-        .btn-warning { background-color: var(--warning-color); color: var(--text-dark); } .btn-warning:hover:not(:disabled) { background-color: #d97706; }
-        .btn-secondary { background-color: #f3f4f6; color: var(--text-main); border: 1px solid var(--border-color); } .btn-secondary:hover:not(:disabled) { background-color: #e5e7eb; }
-        .btn-icon { padding: 0.6rem; width: 40px; height: 40px; font-size: 1rem; }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow); }
+        button:disabled { background-color: #ced4da; cursor: not-allowed; opacity: 0.7; }
+        .btn-icon { padding: 10px; min-width: 40px; width: 40px; height: 40px; font-size: 1rem; }
+        .btn-success { background-color: var(--success); } .btn-success:hover:not(:disabled) { background-color: #059669; }
+        .btn-danger { background-color: var(--danger); } .btn-danger:hover:not(:disabled) { background-color: #dc2626; }
+        .btn-warning { background-color: var(--warning); color: #1f2937; } .btn-warning:hover:not(:disabled) { background-color: #d97706; }
+        .btn-secondary { background-color: #64748b; } .btn-secondary:hover:not(:disabled) { background-color: #475569; }
+        .btn-subtle { background-color: var(--primary-light); color: var(--primary-dark); }
+        .btn-subtle:hover:not(:disabled) { background-color: #dbeafe; }
         .btn-loading .btn-text, .btn-loading .fas { visibility: hidden; }
-        .btn-loading::after {
-            content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
-            margin-top: -10px; margin-left: -10px;
-            border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%;
-            animation: spin-anim 0.8s linear infinite;
-        }
-        .dashboard-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding-bottom: 1.25rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); }
-        .stat-icon { font-size: 1.5rem; width: 50px; height: 50px; display: grid; place-items: center; border-radius: 50%; }
-        .stat-icon.warning { background-color: #fffbeb; color: #f59e0b; } .stat-icon.info { background-color: #f0f9ff; color: #38bdf8; } .stat-icon.success { background-color: #f0fdf4; color: #10b981; }
+        .btn-loading::after { content: ''; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin-center 0.8s linear infinite; }
+        @keyframes spin-center { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .dashboard-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+        .header-actions { display: flex; gap: 12px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 24px; display: flex; flex-direction: column; gap: 8px; border-left: 5px solid var(--primary); box-shadow: var(--shadow-sm); }
+        .stat-content { display: flex; justify-content: space-between; align-items: center; }
         .stat-number { font-size: 2rem; font-weight: 700; line-height: 1; }
-        .stat-label { font-size: 0.9rem; color: var(--text-light); }
-        .stat-loader { width: 20px; height: 20px; border: 2px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin-anim 1s linear infinite; }
-        .toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-label { font-size: 1rem; color: var(--text-light); }
+        .stat-icon { font-size: 1.5rem; color: var(--primary); }
+        .stat-card.warning { border-left-color: var(--warning); } .stat-card.warning .stat-icon { color: var(--warning); }
+        .stat-card.success { border-left-color: var(--success); } .stat-card.success .stat-icon { color: var(--success); }
+        .stat-loader { width: 24px; height: 24px; border-radius: 50%; border: 3px solid var(--border-color); border-top-color: var(--primary); animation: spin-content 1s linear infinite; }
+        .toolbar { display: flex; gap: 16px; margin-bottom: 24px; }
         .search-box { flex-grow: 1; position: relative; }
-        .search-box input { padding-left: 3rem; height: 50px; }
-        .search-box .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-        .article-group-title { font-size: 1.5rem; color: var(--text-dark); margin: 2rem 0 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); }
-        .article-card { background: var(--bg-card); border-radius: var(--radius-lg); margin-bottom: 1rem; padding: 1.5rem; transition: var(--transition-main); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); position: relative; }
-        .article-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
-        .article-main-content { cursor: pointer; }
-        .article-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
-        .article-title { font-size: 1.25rem; font-weight: 700; flex-grow: 1; }
-        .article-meta { font-size: 0.9rem; color: var(--text-light); }
-        .article-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
-        .status-badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; color: white; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .status-badge .badge-loader { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin-anim 1s linear infinite; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(5px); opacity: 0; transition: opacity 0.3s; }
+        .search-box input { padding-right: 45px; height: 48px; background-color: white; }
+        .search-box .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .article-group-title { font-size: 1.5rem; color: var(--text-dark); margin: 32px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .article-card { background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 16px; padding: 20px; transition: var(--transition); border: 1px solid var(--border-color); border-right: 4px solid var(--primary); display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+        .article-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+        .article-info { cursor: pointer; }
+        .article-title { font-size: 1.2rem; font-weight: 700; }
+        .article-meta { margin-top: 10px; font-size: 0.9rem; color: var(--text-light); display: flex; gap: 16px; }
+        .article-actions { display: flex; flex-direction: column; gap: 8px; }
+        .status-badge { padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 120px; }
+        .status-badge.loading { background-color: #6c757d !important; } .status-badge.loading span { visibility: hidden; }
+        .status-badge.loading::after { content: ''; position: absolute; width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin-center 0.8s linear infinite; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(5px); opacity: 0; transition: opacity var(--transition); }
         .modal-overlay.visible { opacity: 1; }
-        .modal-box { background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 4rem); transform: scale(0.95); transition: transform 0.3s; }
+        .modal-box { background: var(--bg-card); padding: 0; border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 48px); transform: scale(0.95); transition: transform var(--transition); }
         .modal-overlay.visible .modal-box { transform: scale(1); }
-        .modal-box.modal-lg { max-width: 900px; } .modal-box.modal-sm { max-width: 500px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-        .modal-header h3 { margin: 0; font-size: 1.5rem; }
-        .modal-close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-light); }
-        .modal-body { overflow-y: auto; flex-grow: 1; padding: 0 0.5rem; }
-        .modal-footer { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem; }
-        
-        /* Accordion Styles (Instruction 6) */
-        .article-accordion details { border-bottom: 1px solid var(--border-color); }
-        .article-accordion details:last-of-type { border-bottom: none; }
-        .article-accordion summary {
-            padding: 1.25rem 1rem; font-size: 1.1rem; font-weight: 700; cursor: pointer; list-style: none;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; background-color: var(--bg-card);
-        }
-        .article-accordion summary::-webkit-details-marker { display: none; }
-        .article-accordion summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.2s; }
-        .article-accordion details[open] summary::after { transform: rotate(180deg); }
-        .article-accordion-content { padding: 1rem 1.5rem 1.5rem; line-height: 1.8; white-space: pre-wrap; background-color: var(--bg-main); }
-        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; font-size: 0.95rem; }
-        .details-grid div { display: flex; flex-direction: column; gap: 0.25rem; }
-
-        .custom-alert-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); }
-        .custom-alert-overlay.visible { opacity: 1; }
-        .custom-alert-box { background: var(--bg-card); padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 90%; max-width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.2s; }
-        .custom-alert-overlay.visible .custom-alert-box { transform: scale(1); }
+        .modal-box.modal-lg { max-width: 900px; } .modal-box.modal-md { max-width: 600px; }
+        .modal-header { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .modal-header h3 { margin: 0; font-size: 1.3rem; }
+        .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); transition: var(--transition); }
+        .modal-close-btn:hover { color: var(--text-dark); transform: rotate(90deg); }
+        .modal-body { overflow-y: auto; flex-grow: 1; padding: 28px; }
+        .modal-footer { padding: 20px 28px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; background-color: var(--bg-main); border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
+        .content-accordion details { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 12px; overflow: hidden; }
+        .content-accordion details summary { list-style: none; padding: 16px; cursor: pointer; background-color: var(--bg-main); font-weight: 700; display: flex; justify-content: space-between; align-items: center; position: sticky; top: -1px; z-index: 10; }
+        .content-accordion details summary::after { content: '\\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s; }
+        .content-accordion details[open] summary { background-color: var(--primary-light); color: var(--primary-dark); }
+        .content-accordion details[open] summary::after { transform: rotate(180deg); }
+        .accordion-content { padding: 20px; line-height: 1.8; white-space: pre-wrap; }
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+        .details-grid div { display: flex; flex-direction: column; gap: 4px; background-color: #f8f9fc; padding: 12px; border-radius: var(--radius-sm); }
+        .details-grid strong { color: var(--text-dark); } .details-grid span { color: var(--text-light); word-break: break-word; }
+        .info-box { padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; border: 1px solid; display: flex; justify-content: space-between; align-items: center; }
+        .info-box.warning { background-color: #fffbeb; border-color: var(--warning); }
+        .info-box.info { background-color: var(--primary-light); border-color: var(--primary); }
         #loader { text-align:center; padding: 50px; }
-        @keyframes spin-anim { to { transform: rotate(360deg); } }
-
-        /* Suggested Titles Modal (Instruction 1) */
-        .titles-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); }
-        .titles-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
-        .titles-list li:last-child { border-bottom: none; }
-        .title-status { font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 999px; }
+        .content-loader { width: 48px; height: 48px; border-radius: 50%; display: inline-block; border: 4px solid var(--border-color); border-top-color: var(--primary); animation: spin-content 1s linear infinite; }
+        @keyframes spin-content { to { transform: rotate(360deg); } }
+        /* استایل‌های مدیریت عناوین پیشنهادی */
+        .titles-list { list-style: none; padding: 0; max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); }
+        .titles-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+        .titles-list li:not(:last-child) { border-bottom: 1px solid var(--border-color); }
+        .title-text { flex-grow: 1; }
+        .title-status { padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; }
         .title-status.free { background-color: var(--primary-light); color: var(--primary-dark); }
-        .title-status.taken { background-color: #f0fdf4; color: #059669; }
-
-        /* Editable Feedback (Instruction 11) */
-        .editable-feedback { padding: 1rem; background-color: #f9fafb; border-radius: var(--radius-md); }
-        .feedback-display { display: flex; justify-content: space-between; align-items: flex-start; }
-        .feedback-display p { margin: 0; flex-grow: 1; }
-        .feedback-edit-icon { cursor: pointer; color: var(--text-light); padding: 0.5rem; }
-        .feedback-edit-icon:hover { color: var(--primary-color); }
-        
+        .title-status.taken { background-color: #E8F5E9; color: #388E3C; }
     </style>
 </head>
 <body>
@@ -131,613 +118,120 @@
     <div id="alert-container"></div>
     <div class="container">
 
+        <!-- ============== صفحه ورود ============== -->
         <div id="login-page">
-            <div class="card" style="max-width: 450px; margin: 5rem auto;">
-                <h1 style="text-align: center;"><i class="fas fa-microscope" style="margin-left: 10px; color: var(--primary-color);"></i>پنل اساتید و داوران</h1>
-                <p style="text-align: center; color: var(--text-light); margin-bottom: 2rem;">لطفا برای ورود اطلاعات خود را وارد نمایید.</p>
+            <div class="card" style="max-width: 450px; margin: 80px auto;">
+                <h1 style="text-align: center;"><i class="fas fa-chalkboard-teacher" style="color: var(--primary); margin-left: 10px;"></i>پنل اساتید</h1>
                 <form id="login-form">
                     <div class="form-group"><label for="national-id">کد ملی</label><input type="text" id="national-id" required></div>
                     <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password" required></div>
                     <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود به پنل</span></button>
-                    <p id="login-error" style="color: var(--danger-color); margin-top: 1rem; text-align: center;"></p>
+                    <p id="login-error" style="color: var(--danger); margin-top: 15px; text-align: center; min-height: 20px;"></p>
                 </form>
             </div>
         </div>
 
+        <!-- ============== صفحه داشبورد ============== -->
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
                 <h3 id="professor-welcome"></h3>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button id="manage-titles-btn" class="btn-secondary"><i class="fas fa-lightbulb"></i><span class="btn-text">عناوین پیشنهادی</span></button>
-                    <button id="profile-btn" class="btn-secondary"><i class="fas fa-user-cog"></i><span class="btn-text">پروفایل</span></button>
+                <div class="header-actions">
+                    <button id="manage-titles-btn" class="btn-subtle"><i class="fas fa-lightbulb"></i><span class="btn-text">عناوین پیشنهادی</span></button>
+                    <button id="profile-btn" class="btn-subtle"><i class="fas fa-user-cog"></i><span class="btn-text">پروفایل</span></button>
                     <button id="logout-btn" class="btn-danger"><i class="fas fa-sign-out-alt"></i><span class="btn-text">خروج</span></button>
                 </div>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon warning"><i class="fas fa-inbox"></i></div>
-                    <div><div id="stat-new-requests" class="stat-number"></div><div class="stat-label">درخواست جدید</div></div>
+                <div class="stat-card warning">
+                    <div class="stat-label">درخواست جدید</div>
+                    <div class="stat-content">
+                        <div id="stat-new-requests" class="stat-number"><!-- JS: لودینگ یا عدد --></div>
+                        <i class="fas fa-inbox stat-icon"></i>
+                    </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon info"><i class="fas fa-tasks"></i></div>
-                    <div><div id="stat-needs-review" class="stat-number"></div><div class="stat-label">نیازمند بازبینی</div></div>
+                    <div class="stat-label">نیازمند بازبینی</div>
+                    <div class="stat-content">
+                        <div id="stat-needs-review" class="stat-number"><!-- JS: لودینگ یا عدد --></div>
+                        <i class="fas fa-tasks stat-icon"></i>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon success"><i class="fas fa-users"></i></div>
-                    <div><div id="stat-capacity" class="stat-number"></div><div class="stat-label">ظرفیت پذیرش فعال</div></div>
+                <div class="stat-card success">
+                    <div class="stat-label">ظرفیت پذیرش فعال</div>
+                     <div class="stat-content">
+                        <div id="stat-capacity" class="stat-number"><!-- JS: لودینگ یا عدد --></div>
+                        <i class="fas fa-users stat-icon"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="toolbar">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان مقاله، نام محقق یا کد مقاله...">
+                    <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان مقاله یا نام محقق...">
                     <i class="fas fa-search search-icon"></i>
                 </div>
             </div>
 
             <div id="dashboard-content">
                  <div id="articles-container"></div>
-                 <div id="no-articles-msg" class="hidden" style="text-align: center; padding: 4rem; color: var(--text-light); background: var(--bg-card); border-radius:var(--radius-lg)">
-                    <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                    <p>مقاله‌ای برای نمایش وجود ندارد.</p>
-                 </div>
+                 <div id="no-articles-msg" class="hidden" style="text-align: center; padding: 40px; color: var(--text-light);"><i class="fas fa-folder-open fa-2x"></i><p>مقاله‌ای برای نمایش وجود ندارد.</p></div>
             </div>
             <div id="loader" class="hidden"><div class="content-loader"></div></div>
         </div>
     </div>
     
+    <!-- نگهدارنده مودال‌ها -->
     <div id="modal-container"></div>
 
+    <!-- قالب‌های HTML (برای کپی توسط جاوااسکریپت) -->
+    <template id="article-card-template">
+        <div class="article-card">
+            <div class="article-info">
+                <div class="article-title"></div>
+                <div class="article-meta">
+                    <span><i class="fas fa-user" style="margin-left: 5px;"></i><span class="researcher-name"></span></span>
+                    <span><i class="fas fa-calendar-alt" style="margin-left: 5px;"></i><span class="request-date"></span></span>
+                </div>
+                 <div class="status-badge-container" style="margin-top: 12px;">
+                    <span class="status-badge"><span></span></span>
+                 </div>
+            </div>
+            <div class="article-actions">
+                 <!-- دکمه‌ها بر اساس وضعیت مقاله توسط JS اینجا اضافه می‌شوند -->
+            </div>
+        </div>
+    </template>
+
 <script>
-    // !مهم: این آدرس باید با آدرس اسکریپت دیپلوی شده شما جایگزین شود
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm40432lrIkCtE6ZUb6wUQ6cQOJEByi3RLh6G_wnKwwxQIjiFtQZclNDFytd8jWGk/exec'; 
+    // !مهم: آدرس دیپلوی اسکریپت باید اینجا قرار گیرد
+    const GOOGLE_SCRIPT_URL = 'YOUR_PROFESSOR_PANEL_SCRIPT_URL_HERE'; 
     let allArticles = [];
     let currentProfessor = null;
 
-    const DOM = {
-        loginPage: document.getElementById('login-page'),
-        dashboardPage: document.getElementById('dashboard-page'),
-        loginForm: document.getElementById('login-form'),
-        modalContainer: document.getElementById('modal-container'),
-        articlesContainer: document.getElementById('articles-container'),
-        loader: document.getElementById('loader'),
-        noArticlesMsg: document.getElementById('no-articles-msg'),
-        statNewRequests: document.getElementById('stat-new-requests'),
-        statNeedsReview: document.getElementById('stat-needs-review'),
-        statCapacity: document.getElementById('stat-capacity')
-    };
+    // ==========================================================
+    // ==   کد جاوا اسکریپت در مرحله بعد ویرایش خواهد شد.     ==
+    // ==   این ساختار HTML آماده دریافت دستورات جدید است.   ==
+    // ==========================================================
 
-    // --- API Call Wrapper ---
-    async function callApi(action, params = {}, button = null) {
-        if (button) button.classList.add('btn-loading');
-        try {
-            const payload = { action, params, professorNid: currentProfessor?.nationalId, professorName: currentProfessor?.name };
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', mode: 'cors', body: JSON.stringify(payload)
-            });
-            if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
-            const data = await response.json();
-            if (data.status === 'error' && !data.isNetworkError) {
-                showCustomAlert(data.message, 'error');
-            }
-            return data;
-        } catch (error) {
-            console.error('API Call Failed:', error);
-            showCustomAlert('خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.', 'error');
-            return { status: 'error', isNetworkError: true };
-        } finally {
-            if (button) button.classList.remove('btn-loading');
-        }
-    }
-
-    // --- Initializer & Auth ---
     document.addEventListener('DOMContentLoaded', () => {
-        currentProfessor = getStoredUser();
-        if (currentProfessor) {
-            showDashboard(currentProfessor);
-        }
-        DOM.loginForm.addEventListener('submit', handleLogin);
-        document.getElementById('logout-btn').onclick = handleLogout;
-        document.getElementById('profile-btn').onclick = showProfileModal;
-        document.getElementById('manage-titles-btn').onclick = showTitlesModal;
-        let searchDebounce;
-        document.getElementById('search-input').addEventListener('input', e => {
-            clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(() => renderArticles(allArticles, e.target.value), 300);
-        });
+        // ... کد فعلی جاوااسکریپت شما اینجا قرار می‌گیرد ...
+        // ... و باید برای کار با ساختار جدید ویرایش شود. ...
+        console.log("DOM Loaded. Ready for updated JavaScript logic.");
+
+        // نمونه نمایش لودر در آمارها
+        document.getElementById('stat-new-requests').innerHTML = '<div class="stat-loader"></div>';
+        document.getElementById('stat-needs-review').innerHTML = '<div class="stat-loader"></div>';
+        document.getElementById('stat-capacity').innerHTML = '<div class="stat-loader"></div>';
+
+        // این قسمت فقط برای نمایش است و بعدا باید توسط JS واقعی کنترل شود
+        setTimeout(() => {
+            document.getElementById('stat-new-requests').textContent = '۳';
+            document.getElementById('stat-needs-review').textContent = '۵';
+            document.getElementById('stat-capacity').textContent = '۸/۱۰';
+        }, 1500);
     });
 
-    async function handleLogin(e) {
-        e.preventDefault();
-        const loginError = document.getElementById('login-error');
-        loginError.textContent = '';
-        const response = await callApi('loginProfessor', {
-            nationalId: document.getElementById('national-id').value,
-            password: document.getElementById('password').value
-        }, document.getElementById('login-btn'));
-        if (response?.status === 'success') {
-            storeUser(response.user);
-            currentProfessor = response.user;
-            showDashboard(response.user);
-        } else if(response?.message) {
-            loginError.textContent = response.message;
-        }
-    }
-
-    function handleLogout() {
-        showCustomConfirm('آیا برای خروج از حساب کاربری خود اطمینان دارید؟', (confirmed) => {
-            if (confirmed) {
-                localStorage.removeItem('currentProfessor');
-                window.location.reload();
-            }
-        }, 'خروج', 'لغو');
-    }
-
-    // --- Dashboard & Rendering ---
-    async function showDashboard(user) {
-        DOM.loginPage.classList.add('hidden');
-        DOM.dashboardPage.classList.remove('hidden');
-        document.getElementById('professor-welcome').textContent = `سلام، استاد ${user.name}`;
-        await loadDashboardData();
-    }
-    
-    async function loadDashboardData(showLoader = true) {
-        if(showLoader) {
-            DOM.loader.classList.remove('hidden');
-            DOM.articlesContainer.innerHTML = '';
-        }
-        // دستور سوم: نمایش لودینگ در باکس آمار
-        DOM.statNewRequests.innerHTML = '<div class="stat-loader"></div>';
-        DOM.statNeedsReview.innerHTML = '<div class="stat-loader"></div>';
-        DOM.statCapacity.innerHTML = '<div class="stat-loader"></div>';
-
-        const response = await callApi('getProfessorDashboard');
-        
-        if(showLoader) DOM.loader.classList.add('hidden');
-
-        if (response?.status === 'success') {
-            allArticles = response.articles || [];
-            renderArticles(response.articles);
-            updateStats(response.stats);
-        } else {
-            // Handle error case, maybe show an error message
-            DOM.statNewRequests.textContent = '-';
-            DOM.statNeedsReview.textContent = '-';
-            DOM.statCapacity.textContent = '-';
-        }
-    }
-
-    function renderArticles(articles, searchTerm = '') {
-        const term = searchTerm.toLowerCase();
-        let filtered = term
-            ? articles.filter(a => 
-                (a.title || '').toLowerCase().includes(term) || 
-                (a.researcher_name || '').toLowerCase().includes(term) ||
-                (a.article_id || '').toLowerCase().includes(term)
-            )
-            : articles;
-        
-        const groups = {
-            newRequests: filtered.filter(a => String(a.supervisor_status) === '1'),
-            inProgress: filtered.filter(a => String(a.supervisor_status) === '5' && !['5', '0', '4'].includes(String(a.article_status))),
-            completed: filtered.filter(a => String(a.supervisor_status) === '5' && ['5', '0', '4'].includes(String(a.article_status)))
-        };
-
-        DOM.articlesContainer.innerHTML = '';
-        renderGroup('درخواست‌های جدید راهنمایی', groups.newRequests);
-        renderGroup('مقالات در حال بررسی', groups.inProgress);
-        renderGroup('مقالات تکمیل شده', groups.completed);
-        
-        DOM.noArticlesMsg.classList.toggle('hidden', filtered.length > 0);
-    }
-    
-    function renderGroup(title, articles) {
-        if (!articles || articles.length === 0) return;
-        
-        let groupHTML = `<h4 class="article-group-title">${title}</h4>`;
-        articles.forEach(article => {
-            const { text, color } = getStatusInfo(article);
-            
-            // دستور ششم (دوم)، نهم: انتقال دکمه‌ها به کارت مقاله
-            let actionsHTML = '';
-            const supervisorStatus = String(article.supervisor_status);
-            const articleStatus = String(article.article_status);
-
-            if (supervisorStatus === '5' && !['0', '5', '4'].includes(articleStatus)) {
-                // دستور پنجم: شرط نمایش دکمه تایید و ارسال
-                const showApproveButton = articleStatus === '11';
-
-                actionsHTML = `
-                    <div class="article-actions">
-                        <button class="btn-secondary btn-icon" title="مشاهده سوابق" onclick="event.stopPropagation(); showHistoryModal('${article.article_id}', this)"><i class="fas fa-history"></i></button>
-                        <button class="btn-danger btn-icon" title="انصراف از راهنمایی" onclick="event.stopPropagation(); promptCancelSupervision('${article.article_id}', this)"><i class="fas fa-user-slash"></i></button>
-                        ${showApproveButton ? `<button class="btn-success" title="تایید و ارسال به نشریه" onclick="event.stopPropagation(); promptApproveAndSend('${article.article_id}', this)"><i class="fas fa-check-double"></i><span class="btn-text">تایید و ارسال</span></button>` : ''}
-                    </div>`;
-            } else if (supervisorStatus === '1') {
-                 actionsHTML = `
-                    <div class="article-actions">
-                         <button class="btn-danger" onclick="event.stopPropagation(); showRejectionReasonModal('${article.article_id}')"><i class="fas fa-times"></i><span class="btn-text">عدم پذیرش</span></button>
-                         <button class="btn-success" onclick="event.stopPropagation(); handleGuidanceRequest(this, '${article.article_id}', true)"><i class="fas fa-check"></i><span class="btn-text">پذیرش راهنمایی</span></button>
-                    </div>`;
-            }
-
-
-            groupHTML += `
-                <div class="article-card" id="article-card-${article.article_id}">
-                     <div class="article-main-content" onclick="showReviewModal('${article.article_id}')">
-                        <div class="article-header">
-                            <span class="article-title">${article.title}</span>
-                            <span class="status-badge" id="status-badge-${article.article_id}" style="background-color: ${color}">${text}</span>
-                        </div>
-                        <div class="article-meta">
-                            <span>محقق: ${article.researcher_name}</span> | <span>کد مقاله: ${article.article_id}</span> | <span>تاریخ: ${new Date(article.request_date).toLocaleDateString('fa-IR')}</span>
-                        </div>
-                     </div>
-                    ${actionsHTML}
-                </div>`;
-        });
-        DOM.articlesContainer.innerHTML += groupHTML;
-    }
-
-    function getStatusInfo(article) {
-        if (String(article.supervisor_status) === '1') return { text: 'نیازمند تصمیم‌گیری', color: 'var(--warning-color)' };
-        const status = String(article.article_status);
-        const map = {
-            '0': { text: 'رد شده توسط نشریه', color: 'var(--danger-color)' },
-            '1': { text: 'در انتظار تکمیل محقق', color: 'var(--primary-color)' },
-            '2': { text: 'ارسال شده برای ویرایش', color: '#fd7e14' },
-            '4': { text: 'انصراف استاد', color: 'var(--danger-color)' },
-            '5': { text: 'تایید نهایی و منتشر شده', color: 'var(--success-color)' },
-            '6': { text: 'منتظر بررسی نهایی نشریه', color: 'var(--info-color)' },
-            '8': { text: 'در حال بررسی مجدد توسط استاد', color: '#6f42c1' },
-            '11': { text: 'نسخه نهایی محقق (آماده ارسال)', color: '#0d6efd' },
-             // دستور دهم: وضعیت جدید
-            '12': { text: 'دریافت ویرایش جدید از محقق', color: '#db3e6e' }
-        };
-        return map[status] || { text: 'نامشخص', color: 'var(--text-light)' };
-    }
-
-    function updateStats(stats) {
-        DOM.statNewRequests.textContent = stats.newRequests || 0;
-        DOM.statNeedsReview.textContent = stats.needsReview || 0;
-        DOM.statCapacity.textContent = `${stats.currentLoad || 0}/${stats.capacity || '∞'}`;
-    }
-    
-    // --- Modals & Actions ---
-    function showReviewModal(articleId) {
-        const article = allArticles.find(a => a.article_id == articleId);
-        if (!article) return;
-        
-        // دستور ششم: ساختار آکاردئونی
-        // دستور یازدهم: نمایش و ویرایش بازخورد
-        let feedbackSection = '';
-        if (String(article.supervisor_status) === '5' && !['0', '5', '4'].includes(String(article.article_status))) {
-            if (String(article.article_status) === '2') { // ارسال شده برای ویرایش
-                feedbackSection = `<hr style="border-top:1px solid var(--border-color); margin: 2rem 0 1.5rem;">
-                <h4>بازخورد ثبت شده برای ویرایش</h4>
-                <div class="editable-feedback" id="feedback-container-${article.article_id}">
-                    <div class="feedback-display">
-                        <p id="feedback-text">${article.rejection_reason || 'بازخوردی ثبت نشده است.'}</p>
-                        <i class="fas fa-pencil-alt feedback-edit-icon" title="ویرایش بازخورد" onclick="toggleFeedbackEdit('${article.article_id}', true)"></i>
-                    </div>
-                </div>`;
-            } else if (String(article.article_status) !== '11') {
-                feedbackSection = `<hr style="border-top:1px solid var(--border-color); margin: 2rem 0 1.5rem;"><h4>فرم داوری و ارسال بازخورد</h4>
-                <div class="form-group">
-                    <label for="review-feedback">توضیحات (برای ارسال جهت ویرایش، این فیلد اجباری است)</label>
-                    <textarea id="review-feedback" rows="4"></textarea>
-                    <button id="revision-btn" class="btn-warning" style="margin-top:1rem;"><i class="fas fa-edit"></i><span class="btn-text">ارسال برای ویرایش</span></button>
-                </div>`;
-            }
-        }
-        
-        // دستور دهم: نمایش داده ستون J در صورت وضعیت 12
-        let researcherUpdateInfo = '';
-        if (String(article.article_status) === '12' && article.rejection_reason) {
-             researcherUpdateInfo = `<div class="article-accordion-content" style="background-color: #fffbeb; border: 1px solid #fde68a;"><strong>توضیحات محقق:</strong> ${article.rejection_reason}</div>`;
-        }
-
-        const content = `<div class="modal-body">
-                <div class="article-accordion">
-                    <details open>
-                        <summary>اطلاعات کلی</summary>
-                        <div class="article-accordion-content">
-                            <div class="details-grid">
-                                <div><strong>محقق:</strong> <span>${article.researcher_name}</span></div>
-                                <div><strong>وابستگی سازمانی:</strong> <span>${article.affiliation}</span></div>
-                                <div><strong>حیطه دانشی:</strong> <span>${article.knowledge_area}</span></div>
-                            </div>
-                            <h4 style="margin: 1.5rem 0 0.5rem;">دلیل انتخاب موضوع</h4>
-                            <p>${article.topic_reason || 'ثبت نشده'}</p>
-                        </div>
-                    </details>
-                    <details><summary>چکیده و کلیدواژگان</summary><div class="article-accordion-content">${researcherUpdateInfo}<strong>چکیده:</strong><br>${article.abstract || 'ثبت نشده'}<br><br><strong>کلیدواژگان:</strong> ${article.keywords || 'ثبت نشده'}</div></details>
-                    <details><summary>مقدمه</summary><div class="article-accordion-content">${article.introduction || 'ثبت نشده'}</div></details>
-                    <details><summary>بدنه اصلی</summary><div class="article-accordion-content">${article.body || 'ثبت نشده'}</div></details>
-                    <details><summary>نتیجه‌گیری</summary><div class="article-accordion-content">${article.conclusion || 'ثبت نشده'}</div></details>
-                    <details><summary>منابع</summary><div class="article-accordion-content">${(article.references || 'ثبت نشده')}</div></details>
-                </div>
-                ${feedbackSection}
-            </div>`;
-            
-        renderModal(`بررسی مقاله: ${article.title}`, content, 'modal-lg');
-
-        const revisionBtn = document.getElementById('revision-btn');
-        if (revisionBtn) revisionBtn.onclick = e => submitReview(e, article.article_id, 'revision');
-    }
-
-    async function handleGuidanceRequest(button, articleId, accepted, reason = '') {
-        updateArticleStatusUI(articleId, 'در حال پردازش...');
-        const res = await callApi('handleGuidanceRequest', { articleId, accepted, reason }, button);
-        if (res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
-        } else {
-             loadDashboardData(false); // Revert UI on failure
-        }
-    }
-
-    function showRejectionReasonModal(articleId) {
-        const content = `<div class="modal-body"><p>برای رد درخواست، ارائه دلیل الزامی است.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="rejection-reason">دلیل عدم پذیرش (برای محقق ارسال می‌شود)</label>
-                    <textarea id="rejection-reason" rows="3" required></textarea>
-                </div></div>
-            <div class="modal-footer">
-                <button onclick="closeAllModals()" class="btn-secondary">لغو</button>
-                <button id="confirm-reject-btn" class="btn-danger"><i class="fas fa-times"></i><span class="btn-text">تایید و ارسال</span></button>
-            </div>`;
-        renderModal('عدم پذیرش راهنمایی', content, 'modal-sm');
-        document.getElementById('confirm-reject-btn').onclick = e => {
-            const reason = document.getElementById('rejection-reason').value;
-            if (!reason) return showCustomAlert('لطفاً دلیل عدم پذیرش را وارد کنید.', 'error');
-            handleGuidanceRequest(e.target, articleId, false, reason);
-        };
-    }
-    
-    // دستور هفتم: دریافت دلیل برای انصراف
-    function promptCancelSupervision(articleId, button) {
-         const content = `<div class="modal-body"><p>لطفا دلیل انصراف از راهنمایی این مقاله را ذکر کنید. این دلیل برای مدیر سیستم و محقق قابل مشاهده خواهد بود.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="cancel-reason">دلیل انصراف</label>
-                    <textarea id="cancel-reason" rows="3" required></textarea>
-                </div></div>
-            <div class="modal-footer">
-                <button onclick="closeAllModals()" class="btn-secondary">لغو</button>
-                <button id="confirm-cancel-btn" class="btn-danger"><i class="fas fa-user-slash"></i><span class="btn-text">ثبت انصراف</span></button>
-            </div>`;
-        renderModal('انصراف از راهنمایی', content, 'modal-sm');
-        document.getElementById('confirm-cancel-btn').onclick = async e => {
-            const reason = document.getElementById('cancel-reason').value;
-            if (!reason) return showCustomAlert('لطفاً دلیل انصراف را وارد کنید.', 'error');
-            updateArticleStatusUI(articleId, 'در حال ثبت...');
-            closeAllModals();
-            const res = await callApi('cancelSupervision', { articleId, reason }, button);
-            if(res.status === 'success') {
-                showCustomAlert(res.message, 'success');
-            }
-            loadDashboardData(false);
-        };
-    }
-
-    // دستور هشتم: دریافت توضیحات هنگام ارسال به نشریه
-    function promptApproveAndSend(articleId, button) {
-        const content = `<div class="modal-body"><p>شما در حال تایید نهایی و ارسال مقاله به نشریه هستید. در صورت نیاز می‌توانید توضیحات تکمیلی برای سردبیر نشریه بنویسید.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="approval-comments">توضیحات (اختیاری)</label>
-                    <textarea id="approval-comments" rows="3"></textarea>
-                </div></div>
-            <div class="modal-footer">
-                <button onclick="closeAllModals()" class="btn-secondary">لغو</button>
-                <button id="confirm-approve-btn" class="btn-success"><i class="fas fa-check-double"></i><span class="btn-text">تایید و ارسال</span></button>
-            </div>`;
-        renderModal('تایید و ارسال به نشریه', content, 'modal-sm');
-        document.getElementById('confirm-approve-btn').onclick = e => {
-            const comments = document.getElementById('approval-comments').value;
-            submitReview(e.target, articleId, 'final_approval', comments, button); // Pass original button
-        }
-    }
-
-    async function submitReview(button, articleId, decision, feedback = null, originalCardButton = null) {
-        if (feedback === null) {
-            feedback = document.getElementById('review-feedback')?.value || '';
-        }
-        if (!feedback && decision === 'revision') {
-            return showCustomAlert('برای ارسال جهت ویرایش، نوشتن توضیحات الزامی است.', 'error');
-        }
-        updateArticleStatusUI(articleId, 'در حال ثبت...');
-        closeAllModals();
-        const res = await callApi('submitArticleReview', { articleId, decision, feedback }, (button || originalCardButton));
-        if(res.status === 'success') {
-            showCustomAlert(res.message, 'success');
-        }
-        loadDashboardData(false);
-    }
-    
-    // دستور یازدهم: توابع ویرایش بازخورد
-    function toggleFeedbackEdit(articleId, isEditing) {
-        const container = document.getElementById(`feedback-container-${articleId}`);
-        const currentText = document.getElementById('feedback-text').innerText;
-
-        if(isEditing) {
-            container.innerHTML = `
-                <textarea id="feedback-textarea" class="form-control" rows="4">${currentText}</textarea>
-                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
-                    <button class="btn-success" onclick="saveFeedbackEdit('${articleId}')"><span class="btn-text">ذخیره</span></button>
-                    <button class="btn-secondary" onclick="toggleFeedbackEdit('${articleId}', false)"><span class="btn-text">لغو</span></button>
-                </div>
-            `;
-        } else {
-             container.innerHTML = `
-                <div class="feedback-display">
-                    <p id="feedback-text">${allArticles.find(a=>a.article_id == articleId)?.rejection_reason || ''}</p>
-                    <i class="fas fa-pencil-alt feedback-edit-icon" title="ویرایش بازخورد" onclick="toggleFeedbackEdit('${articleId}', true)"></i>
-                </div>
-            `;
-        }
-    }
-    
-    async function saveFeedbackEdit(articleId) {
-        const newFeedback = document.getElementById('feedback-textarea').value;
-        const button = event.target;
-        const res = await callApi('updateReviewFeedback', { articleId, feedback: newFeedback }, button);
-        if(res.status === 'success') {
-            // Update local data and UI
-            const article = allArticles.find(a=>a.article_id == articleId);
-            if(article) article.rejection_reason = newFeedback;
-            toggleFeedbackEdit(articleId, false);
-            showCustomAlert(res.message, 'success');
-        }
-    }
-
-
-    // --- Profile & Titles Modals ---
-    async function showProfileModal() {
-        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="content-loader"></div></div>', 'modal-sm');
-        const res = await callApi('getProfessorProfile');
-        if (res.status === 'success') {
-            const profile = res.profile;
-            document.getElementById('profile-body').innerHTML = `
-                <div class="form-group">
-                    <label>وضعیت حضور</label>
-                    <select id="profile-status" class="form-control">
-                        <option value="5" ${profile.status == 5 ? 'selected' : ''}>فعال (پذیرش درخواست جدید)</option>
-                        <option value="0" ${profile.status == 0 ? 'selected' : ''}>غیرفعال (عدم پذیرش موقت)</option>
-                    </select>
-                </div>
-                <!-- دستور دوم: افزودن فیلد ظرفیت داوری -->
-                <div class="form-group">
-                    <label for="profile-capacity">تعداد ظرفیت راهنمایی همزمان</label>
-                    <input type="number" id="profile-capacity" min="0" value="${profile.capacity || 0}">
-                </div>
-                <div class="form-group">
-                    <label>اطلاعات تماس (برای نمایش به محقق)</label>
-                    <input type="text" id="profile-contact" value="${profile.contactInfo || ''}">
-                </div>
-                <div class="form-group">
-                    <label>توضیحات و تخصص‌ها</label>
-                    <textarea id="profile-desc" rows="3">${profile.description || ''}</textarea>
-                </div>
-            `;
-            const footer = `<div class="modal-footer"><button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button></div>`;
-            document.getElementById('profile-body').insertAdjacentHTML('afterend', footer);
-            document.getElementById('save-profile-btn').onclick = e => handleUpdateProfile(e);
-        }
-    }
-    
-    async function handleUpdateProfile(event) {
-        const profileData = {
-            status: document.getElementById('profile-status').value,
-            capacity: document.getElementById('profile-capacity').value, // دستور دوم
-            contactInfo: document.getElementById('profile-contact').value,
-            description: document.getElementById('profile-desc').value
-        };
-        const res = await callApi('updateProfessorProfile', { profileData }, event.target);
-        if (res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
-        }
-    }
-
-    async function showTitlesModal() {
-         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="content-loader"></div></div>', 'modal-sm');
-         const res = await callApi('getSuggestedTitles');
-         if (res.status === 'success') {
-             // دستور اول: چیدمان مرتب عناوین
-             const titlesHTML = res.titles.length > 0 ? res.titles.map(t => {
-                const isTaken = String(t.status) === '5';
-                return `<li>
-                    <span>${t.title}</span>
-                    <span class="title-status ${isTaken ? 'taken' : 'free'}">${isTaken ? `پذیرفته شده` : 'آزاد'}</span>
-                </li>`
-            }).join('') : '<li>عنوانی ثبت نشده است.</li>';
-             
-             document.getElementById('titles-body').innerHTML = `
-                <h4>لیست عناوین پیشنهادی شما</h4>
-                <ul class="titles-list">${titlesHTML}</ul>
-                <hr style="margin: 1.5rem 0;">
-                <h4>افزودن عنوان جدید</h4>
-                <div class="form-group"><input type="text" id="new-title-input" placeholder="عنوان جدید را وارد کنید..."></div>
-             `;
-             const footer = `<div class="modal-footer"><button id="add-title-btn" class="btn-success"><i class="fas fa-plus"></i><span class="btn-text">افزودن</span></button></div>`;
-             document.getElementById('titles-body').insertAdjacentHTML('afterend', footer);
-             document.getElementById('add-title-btn').onclick = e => handleAddTitle(e);
-         }
-    }
-
-    async function handleAddTitle(event) {
-        const title = document.getElementById('new-title-input').value;
-        if (!title) return showCustomAlert('لطفاً یک عنوان وارد کنید.', 'error');
-        const res = await callApi('addSuggestedTitle', { title }, event.target);
-        if(res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => showTitlesModal());
-        }
-    }
-    
-    // --- Utility Functions ---
-    // دستور چهارم: بروزرسانی UI وضعیت مقاله
-    function updateArticleStatusUI(articleId, tempText) {
-        const badge = document.getElementById(`status-badge-${articleId}`);
-        if(badge) {
-            badge.innerHTML = `<div class="badge-loader"></div> ${tempText}`;
-            badge.style.backgroundColor = 'var(--text-light)';
-        }
-    }
-
-    function renderModal(title, content, sizeClass = '', isSubModal = false) {
-        const modalId = isSubModal ? 'sub-modal' : 'main-modal';
-        if (isSubModal) { closeModalById('sub-modal'); } else { closeAllModals(); }
-        const modalWrapper = document.createElement('div');
-        modalWrapper.id = modalId;
-        modalWrapper.className = 'modal-overlay';
-        modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button class="modal-close-btn">&times;</button></div>${content}</div>`;
-        DOM.modalContainer.appendChild(modalWrapper);
-        setTimeout(() => modalWrapper.classList.add('visible'), 10);
-        modalWrapper.querySelector('.modal-close-btn').onclick = () => closeModalById(modalId);
-    }
-    function closeModalById(modalId) { 
-        const modal = document.getElementById(modalId); 
-        if (modal) {
-            modal.classList.remove('visible');
-            modal.addEventListener('transitionend', () => modal.remove(), { once: true });
-        }
-    }
-    function closeAllModals() { 
-        document.querySelectorAll('.modal-overlay').forEach(modal => closeModalById(modal.id));
-    }
-    function showCustomAlert(message, type = 'info', onClose = null) {
-        const alertContainer = document.getElementById('alert-container');
-        const overlay = document.createElement('div');
-        overlay.className = 'custom-alert-overlay';
-        const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
-        const colors = { success: 'var(--success-color)', error: 'var(--danger-color)', info: 'var(--info-color)' };
-        overlay.innerHTML = `<div class="custom-alert-box"><i class="fas ${icons[type]}" style="font-size:3rem; margin-bottom:1rem; color:${colors[type]}"></i><p style="font-size:1.1rem; margin-bottom:1.5rem;">${message}</p><div class="custom-alert-actions"><button id="alert-ok-btn" style="min-width: 100px;">تایید</button></div></div>`;
-        alertContainer.appendChild(overlay);
-        setTimeout(() => overlay.classList.add('visible'), 10);
-        overlay.querySelector('#alert-ok-btn').classList.add(type === 'error' ? 'btn-danger' : 'btn-success');
-        const closeAlert = () => {
-            overlay.classList.remove('visible');
-            overlay.addEventListener('transitionend', () => { overlay.remove(); if (onClose) onClose(); }, { once: true });
-        };
-        overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
-    }
-    function showCustomConfirm(message, onConfirm, confirmText = 'بله', cancelText = 'خیر') {
-        const alertContainer = document.getElementById('alert-container');
-        const overlay = document.createElement('div');
-        overlay.className = 'custom-alert-overlay';
-        overlay.innerHTML = `<div class="custom-alert-box"><i class="fas fa-question-circle" style="font-size:3rem; margin-bottom:1rem; color:var(--warning-color)"></i><p style="font-size:1.1rem; margin-bottom:1.5rem;">${message}</p><div class="custom-alert-actions"><button id="confirm-no-btn" class="btn-secondary"><span class="btn-text">${cancelText}</span></button><button id="confirm-yes-btn" class="btn-danger"><span class="btn-text">${confirmText}</span></button></div></div>`;
-        alertContainer.appendChild(overlay);
-        setTimeout(() => overlay.classList.add('visible'), 10);
-        const confirmBtn = overlay.querySelector('#confirm-yes-btn');
-        const cancelBtn = overlay.querySelector('#confirm-no-btn');
-        const closeModal = () => {
-            overlay.classList.remove('visible');
-            overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
-        };
-        confirmBtn.onclick = () => { onConfirm(true); closeModal(); };
-        cancelBtn.onclick = () => { onConfirm(false); closeModal(); };
-    }
-    function storeUser(user) { localStorage.setItem('currentProfessor', JSON.stringify(user)); }
-    function getStoredUser() { return JSON.parse(localStorage.getItem('currentProfessor')); }
 </script>
 </body>
 </html>
