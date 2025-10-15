@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF--8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل کاربری اساتید</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -12,15 +12,17 @@
             --text-dark: #1f2937; --text-light: #6b7280; --bg-main: #f3f4f6;
             --bg-card: #ffffff; --border-color: #e5e7eb; --success: #10b981;
             --danger: #ef4444; --warning: #f59e0b; --info: #38bdf8;
+            --purple: #8b5cf6;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius-lg: 16px; --radius-md: 12px; --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-lg: 16px; --radius-md: 12px; --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         body {
             font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-dark);
             margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
         }
         .hidden { display: none !important; }
-        .container { width: 100%; max-width: 950px; }
+        .container { width: 100%; max-width: 1000px; }
         .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 30px; }
         h1, h2, h3, h4 { color: var(--text-dark); font-weight: 700; margin-top: 0; }
         .form-group { margin-bottom: 20px; }
@@ -28,80 +30,75 @@
         input, select, textarea {
             width: 100%; box-sizing: border-box; padding: 12px 15px; border: 1px solid var(--border-color);
             border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; transition: var(--transition);
+            background-color: #f9fafb;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
         button {
             font-family: inherit; padding: 12px 20px; background-color: var(--primary); color: white;
             border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 500;
             cursor: pointer; transition: var(--transition); display: inline-flex;
             align-items: center; justify-content: center; gap: 8px; min-height: 48px; position: relative;
         }
-        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
         button:disabled { background-color: #ced4da; cursor: not-allowed; }
-        .btn-success { background-color: var(--success); } .btn-success:hover:not(:disabled) { background-color: #059669; }
-        .btn-danger { background-color: var(--danger); } .btn-danger:hover:not(:disabled) { background-color: #be123c; }
-        .btn-warning { background-color: var(--warning); color: var(--text-dark); } .btn-warning:hover:not(:disabled) { background-color: #d97706; }
-        .btn-secondary { background-color: #6c757d; } .btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
+        button.btn-success { background-color: var(--success); } button.btn-success:hover:not(:disabled) { background-color: #059669; }
+        button.btn-danger { background-color: var(--danger); } button.btn-danger:hover:not(:disabled) { background-color: #be123c; }
+        button.btn-warning { background-color: var(--warning); color: var(--text-dark); } button.btn-warning:hover:not(:disabled) { background-color: #d97706; }
+        button.btn-secondary { background-color: var(--bg-main); color: var(--text-dark); border: 1px solid var(--border-color); } button.btn-secondary:hover:not(:disabled) { background-color: #e5e7eb; }
         .btn-loading .btn-text, .btn-loading .fas { visibility: hidden; }
         .btn-loading::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 20px; height: 20px;
+            content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin-top: -10px; margin-left: -10px;
             border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%;
             animation: spin-center 0.8s linear infinite;
         }
-        @keyframes spin-center { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .btn-secondary.btn-loading::after { border-top-color: var(--primary); }
+        @keyframes spin-center { to { transform: rotate(360deg); } }
         .dashboard-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); }
         .header-actions { display: flex; gap: 10px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; text-align: center; border-right: 5px solid var(--primary); box-shadow: var(--shadow); }
-        .stat-card .stat-number { font-size: 2.2rem; font-weight: 700; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-        .stat-card .stat-label { font-size: 1rem; color: var(--text-light); }
-        .stat-card.warning { border-right-color: var(--warning); }
-        .stat-card.success { border-right-color: var(--success); }
-        .toolbar { display: flex; gap: 15px; margin-bottom: 20px; }
-        .search-box { flex-grow: 1; position: relative; }
-        .search-box input { padding-left: 45px; height: 48px; }
-        .search-box .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
-        .article-group-title { font-size: 1.4rem; color: var(--text-dark); margin: 25px 0 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
-        .article-card { background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 15px; border-right: 4px solid var(--primary); transition: var(--transition); border: 1px solid var(--border-color); }
-        .article-card-main { padding: 20px; cursor: pointer; }
-        .article-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); transform: translateY(-3px); }
-        .article-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; text-align: center; border-right: 5px solid var(--primary); box-shadow: var(--shadow); transition: var(--transition); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .stat-number { font-size: 2.2rem; font-weight: 700; height: 44px; display: flex; align-items: center; justify-content: center;}
+        .stat-label { font-size: 1rem; color: var(--text-light); }
+        .stat-card.warning { border-right-color: var(--warning); } .stat-card.success { border-right-color: var(--success); }
+        .article-group-title { font-size: 1.4rem; color: var(--text-dark); margin: 30px 0 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+        .article-card { display: flex; flex-direction: column; background: var(--bg-card); border-radius: var(--radius-md); margin-bottom: 15px; border: 1px solid var(--border-color); transition: var(--transition); }
+        .article-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+        .article-main { padding: 20px; cursor: pointer; flex-grow: 1; }
+        .article-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
         .article-title { font-size: 1.2rem; font-weight: 700; flex-grow: 1; }
         .article-meta { margin-top: 10px; font-size: 0.9rem; color: var(--text-light); }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 120px; height: 28px; }
-        .article-footer { padding: 10px 20px; border-top: 1px solid var(--border-color); background-color: var(--bg-main); display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
-        .icon-btn { background: none; color: var(--text-light); border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; min-height: auto; }
-        .icon-btn:hover { color: var(--primary); }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(4px); }
-        .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow); display: flex; flex-direction: column; max-height: calc(100vh - 4rem); }
+        .article-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 12px 20px; background-color: var(--bg-main); border-top: 1px solid var(--border-color); border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); }
+        .btn-icon { padding: 0; width: 36px; height: 36px; min-height: 36px; font-size: 1rem; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; color: white; display: inline-flex; align-items: center; gap: 5px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
+        .modal-box { background: var(--bg-card); padding: 30px; border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 4rem); animation: slideIn 0.3s; }
         .modal-box.modal-lg { max-width: 800px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
         .modal-header h3 { margin: 0; font-size: 1.3rem; }
-        .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); }
-        .modal-body { overflow-y: auto; flex-grow: 1; padding: 0 10px; }
+        .modal-close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-light); transition: var(--transition); } .modal-close-btn:hover { color: var(--text-dark); transform: rotate(90deg); }
+        .modal-body { overflow-y: auto; flex-grow: 1; padding: 0 10px;}
         .modal-footer { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-        details { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 10px; }
-        summary { cursor: pointer; padding: 15px; font-weight: 700; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        summary::-webkit-details-marker { display: none; }
-        summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.2s; }
-        details[open] > summary { border-bottom: 1px solid var(--border-color); }
-        details[open] > summary::after { transform: rotate(180deg); }
-        .details-content { padding: 20px; line-height: 1.8; }
-        .custom-alert-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); pointer-events: none; }
-        .custom-alert-overlay.visible { opacity: 1; pointer-events: auto; }
-        .custom-alert-box { background: var(--bg-card); padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow); width: 90%; max-width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.2s; }
-        .custom-alert-overlay.visible .custom-alert-box { transform: scale(1); }
-        .custom-alert-icon { font-size: 3rem; margin-bottom: 15px; } .custom-alert-icon.success { color: var(--success); } .custom-alert-icon.error { color: var(--danger); } .custom-alert-icon.confirm { color: var(--warning); }
-        #loader { text-align:center; padding: 50px; }
-        .content-loader, .inline-loader { width: 48px; height: 48px; border-radius: 50%; display: inline-block; position: relative; border: 3px solid; border-color: var(--primary) var(--primary) transparent transparent; box-sizing: border-box; animation: spin-content 1.2s linear infinite; }
-        .inline-loader { width: 24px; height: 24px; border-width: 2px; }
-        @keyframes spin-content { to { transform: rotate(360deg); } }
-        .history-timeline { list-style: none; padding: 0; }
-        .timeline-item { padding: 10px; border-bottom: 1px dashed var(--border-color); } .timeline-item:last-child { border-bottom: none; }
-        .title-list { list-style: none; padding: 0; }
-        .title-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 8px; border-bottom: 1px solid var(--border-color); }
-        .title-item:last-child { border: none; }
-        .title-status { font-size: 0.9rem; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Accordion Styles */
+        .accordion-item { border-bottom: 1px solid var(--border-color); }
+        .accordion-item:last-child { border-bottom: none; }
+        .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 18px 5px; font-size: 1.1rem; font-weight: 500; position: sticky; top: -1px; background: var(--bg-card); }
+        .accordion-header i { transition: transform 0.3s; }
+        .accordion-content { padding: 0 5px 20px; line-height: 1.8; color: var(--text-light); max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
+        .accordion-item.open .accordion-header i { transform: rotate(180deg); }
+        .accordion-item.open .accordion-content { max-height: 1000px; } /* Adjust as needed */
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; font-size: 0.95rem; }
+        .details-grid div { display: flex; flex-direction: column; gap: 4px; background-color: var(--bg-main); padding: 10px 12px; border-radius: var(--radius-md); }
+        .details-grid strong { color: var(--text-dark); } .details-grid span { color: var(--text-light); word-break: break-word; }
+        /* Loader styles */
+        .tiny-loader { width: 20px; height: 20px; border-radius: 50%; display: inline-block; border: 2px solid; border-color: var(--primary) var(--primary) transparent transparent; box-sizing: border-box; animation: spin-content 1s linear infinite; }
+        .badge-loader { width: 14px; height: 14px; margin-left: 5px; border-color: white white transparent transparent; }
+        /* Titles Modal Table */
+        .titles-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .titles-table th, .titles-table td { padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
+        .titles-table th { background-color: var(--bg-main); font-weight: 500; }
     </style>
 </head>
 <body>
@@ -111,7 +108,8 @@
 
         <div id="login-page">
             <div class="card" style="max-width: 400px; margin: 50px auto;">
-                <h1><i class="fas fa-user-shield" style="margin-left: 10px;"></i>پنل اساتید و داوران</h1>
+                <h1><i class="fas fa-user-shield" style="margin-left: 10px; color: var(--primary);"></i>پنل اساتید و داوران</h1>
+                <p style="color: var(--text-light); margin-top: -10px; margin-bottom: 25px;">برای ورود به حساب کاربری خود، اطلاعات زیر را وارد کنید.</p>
                 <form id="login-form">
                     <div class="form-group"><label for="national-id">کد ملی</label><input type="text" id="national-id" required></div>
                     <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password" required></div>
@@ -136,55 +134,37 @@
                 <div class="stat-card"><div id="stat-needs-review" class="stat-number"></div><div class="stat-label">نیازمند بازبینی</div></div>
                 <div class="stat-card success"><div id="stat-capacity" class="stat-number"></div><div class="stat-label">ظرفیت پذیرش فعال</div></div>
             </div>
-
-            <div class="toolbar">
-                <div class="search-box">
-                    <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان یا نام محقق...">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                 <button onclick="loadDashboardData()" id="refresh-btn"><i class="fas fa-sync-alt"></i></button>
-            </div>
-
+            
             <div id="dashboard-content">
                  <div id="articles-container"></div>
-                 <div id="no-articles-msg" class="hidden" style="text-align: center; padding: 40px; color: var(--text-light);">مقاله‌ای برای نمایش وجود ندارد.</div>
+                 <div id="no-articles-msg" class="hidden" style="text-align: center; padding: 40px; color: var(--text-light); background: var(--bg-card); border-radius: var(--radius-md);">مقاله‌ای برای نمایش وجود ندارد.</div>
             </div>
-            <div id="loader" class="hidden"><div class="content-loader"></div></div>
         </div>
     </div>
     
     <div id="modal-container"></div>
 
 <script>
-    // !مهم: آدرس دیپلوی جدید اسکریپت بازنویسی شده اساتید را اینجا قرار دهید
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm40432lrIkCtE6ZUb6wUQ6cQOJEByi3RLh6G_wnKwwxQIjiFtQZclNDFytd8jWGk/exec'; 
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm40432lrIkCtE6ZUb6wUQ6cQOJEByi3RLh6G_wnKwwxQIjiFtQZclNDFytd8jWGk/exec'; // <--- !مهم: آدرس دیپلوی جدید اسکریپت را اینجا قرار دهید
     let allArticles = [];
     let currentProfessor = null;
 
-    // --- DOM Elements ---
-    const loginPage = document.getElementById('login-page');
-    const dashboardPage = document.getElementById('dashboard-page');
-    const loginForm = document.getElementById('login-form');
-    const modalContainer = document.getElementById('modal-container');
-    const articlesContainer = document.getElementById('articles-container');
+    const E = (id) => document.getElementById(id);
+    const loginPage = E('login-page'), dashboardPage = E('dashboard-page'), articlesContainer = E('articles-container');
 
     // --- API Call Wrapper ---
     async function callApi(action, params = {}, button = null) {
         if (button) button.classList.add('btn-loading');
         try {
             const payload = { action, params, professorNid: currentProfessor?.nationalId, professorName: currentProfessor?.name };
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', body: JSON.stringify(payload)
-            });
+            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) });
             if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
             const data = await response.json();
-            if (data.status === 'error' && !data.isNetworkError) {
-                showCustomAlert(data.message, 'error');
-            }
+            if (data.status === 'error') showCustomAlert(data.message, 'error');
             return data;
         } catch (error) {
             console.error('API Call Failed:', error);
-            showCustomAlert('خطا در ارتباط با سرور.', 'error');
+            showCustomAlert('خطا در ارتباط با سرور. لطفاً اتصال اینترنت خود را بررسی کنید.', 'error');
             return { status: 'error', isNetworkError: true };
         } finally {
             if (button) button.classList.remove('btn-loading');
@@ -193,31 +173,27 @@
 
     // --- Initializer & Auth ---
     document.addEventListener('DOMContentLoaded', () => {
-        currentProfessor = getStoredUser();
+        currentProfessor = JSON.parse(localStorage.getItem('currentProfessor'));
         if (currentProfessor) {
             showDashboard(currentProfessor);
         }
-        loginForm.addEventListener('submit', handleLogin);
-        document.getElementById('logout-btn').onclick = handleLogout;
-        document.getElementById('profile-btn').onclick = showProfileModal;
-        document.getElementById('manage-titles-btn').onclick = showTitlesModal;
-        let searchDebounce;
-        document.getElementById('search-input').addEventListener('input', e => {
-            clearTimeout(searchDebounce);
-            searchDebounce = setTimeout(() => renderArticles(allArticles, e.target.value), 300);
-        });
+        E('login-form').addEventListener('submit', handleLogin);
+        E('logout-btn').onclick = handleLogout;
+        E('profile-btn').onclick = showProfileModal;
+        E('manage-titles-btn').onclick = showTitlesModal;
+        articlesContainer.addEventListener('click', handleArticleCardClick);
     });
 
     async function handleLogin(e) {
         e.preventDefault();
-        const loginError = document.getElementById('login-error');
+        const loginError = E('login-error');
         loginError.textContent = '';
         const response = await callApi('loginProfessor', {
-            nationalId: document.getElementById('national-id').value,
-            password: document.getElementById('password').value
-        }, document.getElementById('login-btn'));
+            nationalId: E('national-id').value,
+            password: E('password').value
+        }, E('login-btn'));
         if (response?.status === 'success') {
-            storeUser(response.user);
+            localStorage.setItem('currentProfessor', JSON.stringify(response.user));
             currentProfessor = response.user;
             showDashboard(response.user);
         } else if(response?.message) {
@@ -234,23 +210,15 @@
     async function showDashboard(user) {
         loginPage.classList.add('hidden');
         dashboardPage.classList.remove('hidden');
-        document.getElementById('professor-welcome').textContent = `سلام، استاد ${user.name}`;
+        E('professor-welcome').textContent = `سلام، استاد ${user.name}`;
         await loadDashboardData();
     }
     
     async function loadDashboardData(showLoader = true) {
-        // دستور سوم: نمایش لودینگ در آمار
-        if(showLoader) {
-            document.getElementById('loader').classList.remove('hidden');
-            articlesContainer.innerHTML = '';
-            document.getElementById('stat-new-requests').innerHTML = `<div class="inline-loader"></div>`;
-            document.getElementById('stat-needs-review').innerHTML = `<div class="inline-loader"></div>`;
-            document.getElementById('stat-capacity').innerHTML = `<div class="inline-loader"></div>`;
+        if (showLoader) {
+            ['stat-new-requests', 'stat-needs-review', 'stat-capacity'].forEach(id => E(id).innerHTML = '<div class="tiny-loader"></div>');
         }
-        const response = await callApi('getProfessorDashboard', {}, document.getElementById('refresh-btn'));
-        if(showLoader) {
-            document.getElementById('loader').classList.add('hidden');
-        }
+        const response = await callApi('getProfessorDashboard');
         if (response?.status === 'success') {
             allArticles = response.articles;
             renderArticles(response.articles);
@@ -258,17 +226,11 @@
         }
     }
 
-    function renderArticles(articles, searchTerm = '') {
-        let filtered = searchTerm 
-            ? articles.filter(a => 
-                (a.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                (a.researcher_name || '').toLowerCase().includes(searchTerm.toLowerCase()))
-            : articles;
-        
+    function renderArticles(articles) {
         const groups = {
-            newRequests: filtered.filter(a => String(a.supervisor_status) === '1'),
-            inProgress: filtered.filter(a => String(a.supervisor_status) === '5' && !['5', '0'].includes(String(a.article_status))),
-            completed: filtered.filter(a => String(a.supervisor_status) === '5' && ['5', '0'].includes(String(a.article_status)))
+            newRequests: articles.filter(a => String(a.supervisor_status) === '1'),
+            inProgress: articles.filter(a => String(a.supervisor_status) === '5' && !['5', '0', '4'].includes(String(a.article_status))),
+            completed: articles.filter(a => String(a.supervisor_status) !== '1' && ['5', '0', '4'].includes(String(a.article_status)))
         };
 
         articlesContainer.innerHTML = '';
@@ -276,18 +238,36 @@
         renderGroup('مقالات در حال بررسی', groups.inProgress);
         renderGroup('مقالات تکمیل شده', groups.completed);
         
-        document.getElementById('no-articles-msg').classList.toggle('hidden', filtered.length > 0);
+        E('no-articles-msg').classList.toggle('hidden', articles.length > 0);
     }
-
+    
     function renderGroup(title, articles) {
         if (!articles || articles.length === 0) return;
         
         let groupHTML = `<h4 class="article-group-title">${title}</h4>`;
         articles.forEach(article => {
             const { text, color } = getStatusInfo(article);
+            
+            // دستورات ششم و نهم: دکمه‌ها روی کارت
+            let buttonsHTML = '';
+            if (String(article.supervisor_status) === '1') {
+                 buttonsHTML = `<button class="btn-danger" data-action="reject" data-id="${article.article_id}"><i class="fas fa-times"></i><span class="btn-text">رد</span></button>
+                                <button class="btn-success" data-action="accept" data-id="${article.article_id}"><i class="fas fa-check"></i><span class="btn-text">پذیرش</span></button>`;
+            } else if (String(article.supervisor_status) === '5') {
+                 // دستور پنجم: شرط نمایش دکمه تایید
+                 if (String(article.article_status) === '11') {
+                    buttonsHTML += `<button class="btn-success" data-action="approve" data-id="${article.article_id}"><i class="fas fa-check-double"></i><span class="btn-text">ارسال به نشریه</span></button>`;
+                 }
+                 // دکمه‌های دیگر برای مقالات در حال پیشرفت
+                 if (!['5', '0', '4'].includes(String(article.article_status))) {
+                     buttonsHTML += `<button class="btn-warning" data-action="revision" data-id="${article.article_id}"><i class="fas fa-edit"></i><span class="btn-text">ارسال برای ویرایش</span></button>
+                                   <button class="btn-danger" data-action="cancel" data-id="${article.article_id}"><i class="fas fa-user-slash"></i><span class="btn-text">انصراف</span></button>`;
+                 }
+            }
+            
             groupHTML += `
-                <div class="article-card" style="border-right-color: ${color}" data-article-id="${article.article_id}">
-                    <div class="article-card-main" onclick="showReviewModal('${article.article_id}')">
+                <div class="article-card" data-article-id="${article.article_id}">
+                    <div class="article-main" data-action="view" data-id="${article.article_id}">
                         <div class="article-header">
                             <span class="article-title">${article.title}</span>
                             <span class="status-badge" style="background-color: ${color}">${text}</span>
@@ -296,10 +276,9 @@
                             <span>محقق: ${article.researcher_name}</span> | <span>تاریخ درخواست: ${new Date(article.request_date).toLocaleDateString('fa-IR')}</span>
                         </div>
                     </div>
-                    <!-- دستور ششم (بخش دوم) و نهم: انتقال دکمه‌ها -->
                     <div class="article-footer">
-                        <button class="icon-btn" title="انصراف از راهنمایی" onclick="event.stopPropagation(); showCancelSupervisionModal('${article.article_id}');"><i class="fas fa-user-slash"></i></button>
-                        <button class="icon-btn" title="سوابق مقاله" onclick="event.stopPropagation(); showHistoryModal('${article.article_id}', this);"><i class="fas fa-history"></i></button>
+                        <button class="btn-secondary btn-icon" data-action="history" data-id="${article.article_id}" title="سوابق مقاله"><i class="fas fa-history"></i></button>
+                        ${buttonsHTML}
                     </div>
                 </div>`;
         });
@@ -310,223 +289,171 @@
         if (String(article.supervisor_status) === '1') return { text: 'نیازمند تصمیم‌گیری', color: 'var(--warning)' };
         const status = String(article.article_status);
         const map = {
-            '0': { text: 'رد شده توسط نشریه', color: 'var(--danger)' }, 
-            '1': { text: 'در انتظار تکمیل محقق', color: 'var(--primary)' },
-            '2': { text: 'ارسال شده برای ویرایش', color: '#fd7e14' }, 
-            '4': { text: 'انصراف استاد', color: 'var(--danger)' },
-            '5': { text: 'تایید نهایی شده', color: 'var(--success)' }, 
-            '6': { text: 'منتظر بررسی نهایی', color: 'var(--info)' },
-            '8': { text: 'در حال بررسی مجدد', color: '#6f42c1' },
-            '11': { text: 'نسخه نهایی محقق', color: '#0d6efd' }, // دستور پنجم
-            '12': { text: 'ویرایش جدید دریافت شد', color: '#0dcaf0' } // دستور دهم
+            '0': { text: 'رد شده توسط نشریه', color: 'var(--danger)' }, '1': { text: 'در انتظار تکمیل محقق', color: 'var(--primary)' },
+            '2': { text: 'ارسال شده برای ویرایش', color: '#fd7e14' }, '4': { text: 'انصراف استاد', color: 'var(--danger)' },
+            '5': { text: 'پذیرفته و منتشر شده', color: 'var(--success)' }, '6': { text: 'منتظر بررسی نهایی', color: 'var(--info)' },
+            '8': { text: 'در حال بررسی مجدد', color: var(--purple) },
+            '11': { text: 'آماده ارسال به نشریه', color: 'var(--success)' }, // دستور پنجم
+            '12': { text: 'ویرایش جدید دریافت شد', color: 'var(--purple)' } // دستور دهم
         };
         return map[status] || { text: 'نامشخص', color: 'var(--text-light)' };
     }
 
     function updateStats(stats) {
-        document.getElementById('stat-new-requests').textContent = stats.newRequests || 0;
-        document.getElementById('stat-needs-review').textContent = stats.needsReview || 0;
-        document.getElementById('stat-capacity').textContent = `${stats.currentLoad || 0}/${stats.capacity || '∞'}`;
+        E('stat-new-requests').textContent = stats.newRequests || 0;
+        E('stat-needs-review').textContent = stats.needsReview || 0;
+        E('stat-capacity').textContent = `${stats.currentLoad || 0}/${stats.capacity || '∞'}`;
     }
 
-    // --- Modals & Actions ---
-    function showReviewModal(articleId) {
-        const article = allArticles.find(a => a.article_id == articleId);
+    // --- Event Handling for Article Cards ---
+    function handleArticleCardClick(e) {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        
+        const { action, id } = target.dataset;
+        const article = allArticles.find(a => a.article_id == id);
         if (!article) return;
-        
-        const isUnderReview = String(article.supervisor_status) === '5';
-        const articleStatus = String(article.article_status);
-        let footerHTML = '';
 
-        if (String(article.supervisor_status) === '1') {
-            footerHTML = `<button id="reject-btn" class="btn-danger"><i class="fas fa-times"></i><span class="btn-text">عدم پذیرش</span></button>
-                          <button id="accept-btn" class="btn-success"><i class="fas fa-check"></i><span class="btn-text">پذیرش راهنمایی</span></button>`;
-        } else if (isUnderReview) {
-            // دستور پنجم: دکمه تایید فقط برای وضعیت 11
-            if (articleStatus === '11') {
-                 footerHTML += `<button id="approve-btn" class="btn-success"><i class="fas fa-check-double"></i><span class="btn-text">تایید و ارسال به نشریه</span></button>`;
-            }
-            // دستور یازدهم: اگر وضعیت 2 است، دکمه ارسال برای ویرایش را نشان نده
-            if (articleStatus !== '2') {
-                footerHTML += `<button id="revision-btn" class="btn-warning"><i class="fas fa-edit"></i><span class="btn-text">ارسال برای ویرایش</span></button>`;
-            }
+        switch (action) {
+            case 'view': showReviewModal(article); break;
+            case 'history': showHistoryModal(id, target); break;
+            case 'accept': handleGuidanceRequest(target, id, true); break;
+            case 'reject': showInputModal('دلیل عدم پذیرش راهنمایی', 'لطفاً دلیل خود برای رد این درخواست را وارد کنید.', (reason, btn) => handleGuidanceRequest(btn, id, false, reason)); break;
+            case 'cancel': showInputModal('دلیل انصراف از راهنمایی', 'لطفاً دلیل خود برای انصراف را وارد کنید (این پیام برای محقق ارسال می‌شود).', (reason, btn) => cancelSupervision(btn, id, reason)); break;
+            case 'revision': showInputModal('ارسال برای ویرایش', 'لطفاً توضیحات و موارد لازم برای ویرایش را در کادر زیر بنویسید.', (feedback, btn) => submitReview(btn, id, 'revision', feedback)); break;
+            case 'approve': showInputModal('تایید و ارسال به نشریه', 'می‌توانید توضیحات تکمیلی برای مدیر نشریه ارسال کنید (اختیاری).', (feedback, btn) => submitReview(btn, id, 'final_approval', feedback), false); break;
         }
-        
-        let feedbackFormHTML = '';
-        if (isUnderReview) {
-            let feedbackLabel = 'توضیحات و بازخورد (برای محقق ارسال می‌شود)';
-            let feedbackValue = '';
-            let updateButtonHTML = '';
-
-            if (articleStatus === '2') { // دستور یازدهم
-                feedbackLabel = 'اصلاح توضیحات ویرایش (توضیحات قبلی شما برای محقق ارسال شده است)';
-                feedbackValue = article.feedback_and_reason || '';
-                updateButtonHTML = `<button id="update-feedback-btn" class="btn-primary" style="margin-top:10px;"><i class="fas fa-sync-alt"></i><span class="btn-text">بروزرسانی توضیحات</span></button>`;
-            } else if (articleStatus === '12') { // دستور دهم
-                 feedbackLabel = 'توضیحات ویرایش دریافت شده از محقق در کادر زیر قابل مشاهده است. بازخورد جدید خود را بنویسید.';
-                 feedbackValue = `توضیحات محقق:\n"${article.feedback_and_reason || '...'}"\n\n------------------\nبازخورد شما:`;
-            } else if (articleStatus === '11') { // دستور هشتم
-                feedbackLabel = 'توضیحات برای نشریه (اختیاری)';
-            }
-            
-            feedbackFormHTML = `
-                <div style="padding: 20px 0;">
-                    <h4>فرم داوری و ارسال بازخورد</h4>
-                    <div class="form-group">
-                        <label for="review-feedback">${feedbackLabel}</label>
-                        <textarea id="review-feedback" rows="4">${feedbackValue}</textarea>
-                        ${updateButtonHTML}
-                    </div>
-                </div>`;
-        }
-
+    }
+    
+    // --- Modals & Actions ---
+    function showReviewModal(article) {
         // دستور ششم: ساختار آکاردئونی
-        const content = `
-            <div class="modal-body">
-                <details open>
-                    <summary>اطلاعات کلی</summary>
-                    <div class="details-content">
-                        <p><strong>محقق:</strong> ${article.researcher_name}</p>
-                        <p><strong>وابستگی:</strong> ${article.affiliation}</p>
-                        <p><strong>حیطه دانشی:</strong> ${article.knowledge_area}</p>
-                        <hr>
-                        <p><strong>دلیل انتخاب موضوع:</strong><br>${article.topic_reason || 'ثبت نشده'}</p>
-                    </div>
-                </details>
-                <details><summary>چکیده و کلیدواژگان</summary><div class="details-content"><p>${article.abstract || 'ثبت نشده'}</p><hr><strong>کلیدواژگان: </strong>${article.keywords || 'ثبت نشده'}</div></details>
-                <details><summary>مقدمه</summary><div class="details-content">${article.introduction || 'ثبت نشده'}</div></details>
-                <details><summary>بدنه مقاله</summary><div class="details-content" style="white-space: pre-wrap;">${article.body || 'ثبت نشده'}</div></details>
-                <details><summary>نتیجه‌گیری</summary><div class="details-content">${article.conclusion || 'ثبت نشده'}</div></details>
-                <details><summary>منابع</summary><div class="details-content" style="white-space: pre-wrap;">${article.references || 'ثبت نشده'}</div></details>
-                
-                ${feedbackFormHTML}
+        const accordionItems = [
+            { id: 'info', title: 'اطلاعات کلی', content: `<div class="details-grid"><div><strong>محقق:</strong> <span>${article.researcher_name}</span></div> <div><strong>وابستگی:</strong> <span>${article.affiliation}</span></div><div><strong>حیطه دانشی:</strong> <span>${article.knowledge_area}</span></div></div><h4 style="margin-top: 20px;">دلیل انتخاب موضوع</h4><p>${article.topic_reason || 'ثبت نشده'}</p>`},
+            { id: 'abstract', title: 'چکیده و کلیدواژه', content: `<h4>چکیده</h4><p>${article.abstract || 'ثبت نشده'}</p><h4>کلیدواژه‌ها</h4><p>${article.keywords || 'ثبت نشده'}</p>`},
+            { id: 'introduction', title: 'مقدمه', content: `<p>${article.introduction || 'ثبت نشده'}</p>`},
+            { id: 'body', title: 'بدنه اصلی مقاله', content: `<p>${article.body || 'ثبت نشده'}</p>`},
+            { id: 'conclusion', title: 'نتیجه‌گیری', content: `<p>${article.conclusion || 'ثبت نشده'}</p>`},
+            { id: 'references', title: 'منابع', content: `<div style="white-space: pre-wrap;">${article.references || 'ثبت نشده'}</div>`}
+        ];
+        
+        // دستور دهم و یازدهم
+        let specialNotes = '';
+        if(String(article.article_status) === '12' && article.rejection_reason) {
+            specialNotes += `<div class="form-group" style="background: var(--primary-light); padding: 15px; border-radius: var(--radius-md);"><strong>یادداشت محقق: </strong><span>${article.rejection_reason}</span></div>`;
+        }
+        if(String(article.article_status) === '2' && article.rejection_reason) {
+            specialNotes += `<div id="revision-feedback-display" class="form-group" style="background: var(--primary-light); padding: 15px; border-radius: var(--radius-md);">
+                <strong>بازخورد ارسالی شما: </strong>
+                <span id="feedback-text">${article.rejection_reason}</span>
+                <button id="edit-feedback-btn" class="btn-secondary btn-icon" style="width:30px; height:30px; margin-right: 10px;"><i class="fas fa-pencil-alt"></i></button>
             </div>
-            <div class="modal-footer">${footerHTML}</div>`;
+            <div id="revision-feedback-edit" class="hidden form-group">
+                <textarea id="editable-feedback" rows="4">${article.rejection_reason}</textarea>
+                <button id="cancel-edit-btn" class="btn-secondary">لغو</button>
+                <button id="save-edit-btn" class="btn-success">ذخیره</button>
+            </div>`;
+        }
+
+        const content = `<div class="modal-body">
+                ${specialNotes}
+                ${accordionItems.map(item => `
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>${item.title}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">${item.content}</div>
+                </div>`).join('')}
+            </div>`;
             
         renderModal(`بررسی مقاله: ${article.title}`, content, 'modal-lg');
         
-        const acceptBtn = document.getElementById('accept-btn');
-        if (acceptBtn) acceptBtn.onclick = e => handleGuidanceAction(e, article.article_id, true);
-        const rejectBtn = document.getElementById('reject-btn');
-        if (rejectBtn) rejectBtn.onclick = () => showRejectionReasonModal(article);
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.onclick = () => header.parentElement.classList.toggle('open');
+        });
         
-        const revisionBtn = document.getElementById('revision-btn');
-        if (revisionBtn) revisionBtn.onclick = e => submitReview(e, article.article_id, 'revision');
-        const approveBtn = document.getElementById('approve-btn');
-        if (approveBtn) approveBtn.onclick = e => submitReview(e, article.article_id, 'final_approval');
-
-        const updateFeedbackBtn = document.getElementById('update-feedback-btn');
-        if(updateFeedbackBtn) updateFeedbackBtn.onclick = e => handleUpdateFeedback(e, article.article_id);
+        // دستور یازدهم: قابلیت ویرایش بازخورد
+        const editBtn = E('edit-feedback-btn');
+        if(editBtn) {
+            editBtn.onclick = () => {
+                E('revision-feedback-display').classList.add('hidden');
+                E('revision-feedback-edit').classList.remove('hidden');
+            };
+            E('cancel-edit-btn').onclick = () => {
+                E('revision-feedback-display').classList.remove('hidden');
+                E('revision-feedback-edit').classList.add('hidden');
+            };
+            E('save-edit-btn').onclick = async (e) => {
+                const newFeedback = E('editable-feedback').value;
+                const res = await callApi('updateRevisionFeedback', { articleId: article.article_id, newFeedback }, e.target);
+                if(res.status === 'success'){
+                    showCustomAlert(res.message, 'success');
+                    E('feedback-text').textContent = newFeedback;
+                    E('revision-feedback-display').classList.remove('hidden');
+                    E('revision-feedback-edit').classList.add('hidden');
+                    updateCardStatus(article.article_id); // Refresh data in background
+                }
+            };
+        }
     }
     
+    async function updateCardStatus(articleId, temporaryStatusText = null) {
+        const card = document.querySelector(`.article-card[data-article-id='${articleId}']`);
+        if (card) {
+            const statusBadge = card.querySelector('.status-badge');
+            statusBadge.innerHTML = temporaryStatusText ? temporaryStatusText : '<div class="tiny-loader badge-loader"></div> در حال به‌روزرسانی';
+            statusBadge.style.backgroundColor = 'var(--text-light)';
+        }
+        await loadDashboardData(false); // Reload all data silently
+    }
+
     // --- Action Handlers ---
-    async function handleGuidanceAction(event, articleId, accepted, reason = '') {
-        // دستور چهارم: نمایش لودینگ قبل از ارسال
-        const cardStatus = document.querySelector(`.article-card[data-article-id="${articleId}"] .status-badge`);
-        if(cardStatus) cardStatus.innerHTML = `<div class="inline-loader"></div>`;
-
-        const res = await callApi('handleGuidanceRequest', { articleId, accepted, reason }, event.target);
+    async function handleGuidanceRequest(button, articleId, accepted, reason = '') {
+        const res = await callApi('handleGuidanceRequest', { articleId, accepted, reason }, button);
         if (res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
-        } else {
-             loadDashboardData(false); // در صورت خطا، صفحه را برای نمایش وضعیت صحیح رفرش کن
+            closeAllModals();
+            showCustomAlert(res.message, 'success');
+            updateCardStatus(articleId, 'در حال پردازش...'); // دستور چهارم
         }
     }
 
-    async function submitReview(event, articleId, decision) {
-        const feedback = document.getElementById('review-feedback').value;
-        if (!feedback && decision === 'revision') {
-            return showCustomAlert('برای ارسال جهت ویرایش، نوشتن توضیحات الزامی است.', 'error');
-        }
-
-        const cardStatus = document.querySelector(`.article-card[data-article-id="${articleId}"] .status-badge`);
-        if(cardStatus) cardStatus.innerHTML = `<div class="inline-loader"></div>`;
-        
-        const res = await callApi('submitArticleReview', { articleId, decision, feedback }, event.target);
-        if(res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
-        } else {
-            loadDashboardData(false);
+    async function submitReview(button, articleId, decision, feedback) {
+        const res = await callApi('submitArticleReview', { articleId, decision, feedback }, button);
+        if (res.status === 'success') {
+            closeAllModals();
+            showCustomAlert(res.message, 'success');
+            updateCardStatus(articleId, 'در حال ارسال...'); // دستور چهارم
         }
     }
     
-    // دستور هفتم: نمایش مودال برای دلیل انصراف
-    function showCancelSupervisionModal(articleId) {
-        const content = `<div class="modal-body"><p>برای انصراف از راهنمایی، ارائه دلیل الزامی است.</p>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label for="cancel-reason">دلیل انصراف (برای محقق ارسال می‌شود)</label>
-                    <textarea id="cancel-reason" rows="3" required></textarea>
-                </div></div>
-            <div class="modal-footer">
-                <button onclick="closeAllModals()" class="btn-secondary">لغو</button>
-                <button id="confirm-cancel-btn" class="btn-danger"><i class="fas fa-user-slash"></i><span class="btn-text">تایید انصراف</span></button>
-            </div>`;
-        renderModal('انصراف از راهنمایی', content, '');
-        document.getElementById('confirm-cancel-btn').onclick = async e => {
-            const reason = document.getElementById('cancel-reason').value;
-            if (!reason) return showCustomAlert('لطفاً دلیل انصراف را وارد کنید.', 'error');
-            
-            const cardStatus = document.querySelector(`.article-card[data-article-id="${articleId}"] .status-badge`);
-            if(cardStatus) cardStatus.innerHTML = `<div class="inline-loader"></div>`;
-
-            const res = await callApi('cancelSupervision', { articleId, reason }, e.target);
-            if(res.status === 'success') {
-                showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
-            } else {
-                loadDashboardData(false);
-            }
-        };
-    }
-
-    // دستور یازدهم: تابع برای ارسال ویرایش بازخورد
-    async function handleUpdateFeedback(event, articleId) {
-        const newFeedback = document.getElementById('review-feedback').value;
-        const res = await callApi('editRevisionFeedback', { articleId, newFeedback }, event.target);
-        if(res.status === 'success') {
+    async function cancelSupervision(button, articleId, reason) {
+        const res = await callApi('cancelSupervision', { articleId, reason }, button);
+        if (res.status === 'success') {
+            closeAllModals();
             showCustomAlert(res.message, 'success');
+            updateCardStatus(articleId, 'در حال ثبت انصراف...'); // دستور چهارم
         }
     }
 
-    function showRejectionReasonModal(article) {
-        // ... (منطق این تابع کمی تغییر می‌کند تا از تابع مشترک استفاده کند)
-        const content = `<div class="modal-body"><p>برای رد درخواست، ارائه دلیل الزامی است.</p>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label for="rejection-reason">دلیل عدم پذیرش (برای محقق ارسال می‌شود)</label>
-                    <textarea id="rejection-reason" rows="3" required></textarea>
-                </div></div>
-            <div class="modal-footer">
-                <button onclick="showReviewModal('${article.article_id}')" class="btn-secondary">لغو</button>
-                <button id="confirm-reject-btn" class="btn-danger"><i class="fas fa-times"></i><span class="btn-text">تایید و ارسال</span></button>
-            </div>`;
-        renderModal('عدم پذیرش راهنمایی', content, '');
-        document.getElementById('confirm-reject-btn').onclick = e => {
-            const reason = document.getElementById('rejection-reason').value;
-            if (!reason) return showCustomAlert('لطفاً دلیل عدم پذیرش را وارد کنید.', 'error');
-            handleGuidanceAction(e, article.article_id, false, reason);
-        };
-    }
-
-    async function showHistoryModal(articleId, button) {
-        // ... (بدون تغییر)
-    }
-
+    // --- Profile & Titles Modals ---
     async function showProfileModal() {
-        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="content-loader"></div></div>', '');
+        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="tiny-loader"></div></div>', '');
         const res = await callApi('getProfessorProfile');
         if (res.status === 'success') {
-            const profile = res.profile;
-            document.getElementById('profile-body').innerHTML = `
+            const { profile } = res;
+            E('profile-body').innerHTML = `
                 <div class="form-group">
                     <label>وضعیت حضور</label>
-                    <select id="profile-status" class="form-control">
+                    <select id="profile-status">
                         <option value="5" ${profile.status == 5 ? 'selected' : ''}>فعال (پذیرش درخواست جدید)</option>
                         <option value="0" ${profile.status == 0 ? 'selected' : ''}>غیرفعال (عدم پذیرش موقت)</option>
                     </select>
                 </div>
-                <!-- دستور دوم: افزودن فیلد ظرفیت -->
-                <div class="form-group">
-                    <label for="profile-capacity">ظرفیت داوری همزمان (عدد وارد کنید)</label>
-                    <input type="number" id="profile-capacity" value="${profile.capacity || ''}" placeholder="مثلا: 5">
+                <div class="form-group"> <!-- دستور دوم -->
+                    <label for="profile-capacity">ظرفیت پذیرش همزمان (عدد 0 برای نامحدود)</label>
+                    <input type="number" id="profile-capacity" value="${profile.capacity || 0}" min="0">
                 </div>
                 <div class="form-group">
                     <label>اطلاعات تماس (برای نمایش به محقق)</label>
@@ -537,63 +464,112 @@
                     <textarea id="profile-desc" rows="3">${profile.description || ''}</textarea>
                 </div>
                 <div class="modal-footer">
-                    <button onclick="closeAllModals()" class="btn-secondary">لغو</button>
                     <button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button>
                 </div>`;
-            document.getElementById('save-profile-btn').onclick = e => handleUpdateProfile(e);
+            E('save-profile-btn').onclick = e => handleUpdateProfile(e);
         }
     }
     
     async function handleUpdateProfile(event) {
         const profileData = {
-            status: document.getElementById('profile-status').value,
-            capacity: document.getElementById('profile-capacity').value, // دستور دوم
-            contactInfo: document.getElementById('profile-contact').value,
-            description: document.getElementById('profile-desc').value
+            status: E('profile-status').value,
+            capacity: E('profile-capacity').value, // دستور دوم
+            contactInfo: E('profile-contact').value,
+            description: E('profile-desc').value
         };
         const res = await callApi('updateProfessorProfile', { profileData }, event.target);
         if (res.status === 'success') {
-            showCustomAlert(res.message, 'success', () => { closeAllModals(); loadDashboardData(false); });
+            showCustomAlert(res.message, 'success', () => { closeAllModals(); updateStats(res.stats); });
         }
     }
 
     async function showTitlesModal() {
-         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="content-loader"></div></div>', '');
+         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="tiny-loader"></div></div>', 'modal-lg');
          const res = await callApi('getSuggestedTitles');
          if (res.status === 'success') {
-             // دستور اول: طراحی مجدد لیست
-             const titlesHTML = res.titles.length > 0 ? res.titles.map(t => `
-                <li class="title-item">
-                    <span>${t.title}</span>
-                    <span class="title-status" style="color: ${t.status == 5 ? 'var(--success)' : 'var(--text-light)'}">
-                        ${t.status == 5 ? `<i class="fas fa-check-circle"></i> پذیرفته شده (مقاله ${t.articleId})` : '<i class="far fa-circle"></i> آزاد'}
-                    </span>
-                </li>`).join('') : '<li class="title-item">عنوانی ثبت نشده است.</li>';
+             // دستور اول: جدول منظم
+             const titlesTable = res.titles.length > 0 ? `<table class="titles-table">
+                <thead><tr><th>عنوان پیشنهادی</th><th>وضعیت</th></tr></thead>
+                <tbody>${res.titles.map(t => `
+                <tr>
+                    <td>${t.title}</td>
+                    <td><span style="color: ${t.status == 5 ? 'var(--success)' : 'var(--text-light)'}">${t.status == 5 ? `پذیرفته شده (مقاله ${t.articleId})` : 'آزاد'}</span></td>
+                </tr>`).join('')}</tbody></table>` : '<p>عنوانی ثبت نشده است.</p>';
              
-             document.getElementById('titles-body').innerHTML = `
-                <h4>لیست عناوین پیشنهادی شما</h4>
-                <ul class="title-list">${titlesHTML}</ul><hr>
+             E('titles-body').innerHTML = `<h4>لیست عناوین پیشنهادی شما</h4>${titlesTable}<hr style="margin: 25px 0;">
                 <h4>افزودن عنوان جدید</h4>
                 <div class="form-group"><input type="text" id="new-title-input" placeholder="عنوان جدید را وارد کنید..."></div>
                 <div class="modal-footer"><button id="add-title-btn" class="btn-success"><i class="fas fa-plus"></i><span class="btn-text">افزودن</span></button></div>`;
-             document.getElementById('add-title-btn').onclick = e => handleAddTitle(e);
+             E('add-title-btn').onclick = e => handleAddTitle(e);
          }
     }
 
     async function handleAddTitle(event) {
-        // ... (بدون تغییر)
+        const title = E('new-title-input').value;
+        if (!title) return showCustomAlert('لطفاً یک عنوان وارد کنید.', 'error');
+        const res = await callApi('addSuggestedTitle', { title }, event.target);
+        if(res.status === 'success') showCustomAlert(res.message, 'success', () => showTitlesModal());
+    }
+    
+    async function showHistoryModal(articleId, button) {
+        renderModal('سوابق مقاله', '<div id="history-body" class="modal-body" style="text-align:center;"><div class="tiny-loader"></div></div>', '', true);
+        const res = await callApi('getArticleHistoryForProfessor', { articleId }, button);
+        if (res.status === 'success') {
+            E('history-body').style.textAlign = 'right';
+            if (res.history.length === 0) E('history-body').innerHTML = '<p>سابقه‌ای یافت نشد.</p>';
+            else E('history-body').innerHTML = `<ul style="list-style:none; padding:0;">${res.history.map(entry => `<li style="padding:10px; border-bottom: 1px dashed #eee;"><div><strong>${entry.user}: ${entry.action}</strong> <span style="font-size:0.8em; color: #888; float:left;">${new Date(entry.timestamp).toLocaleString('fa-IR')}</span></div><div style="font-size:0.9em; color:#555;">${entry.details || ''}</div></li>`).join('')}</ul>`;
+        } else { E('history-body').innerHTML = `<p style="color:var(--danger)">${res.message || 'خطا در دریافت سوابق'}</p>`; }
     }
 
-    // --- Utility Functions (Modals, Alerts, Storage) ---
+    // --- Utility Functions (Modals, Alerts) ---
     function renderModal(title, content, sizeClass = '', isSubModal = false) {
-        // ... (بدون تغییر)
+        const modalId = isSubModal ? 'sub-modal' : 'main-modal';
+        if (isSubModal) document.getElementById(modalId)?.remove();
+        else closeAllModals();
+        const modalWrapper = document.createElement('div');
+        modalWrapper.id = modalId;
+        modalWrapper.className = 'modal-overlay';
+        modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button class="modal-close-btn">&times;</button></div>${content}</div>`;
+        E('modal-container').appendChild(modalWrapper);
+        modalWrapper.querySelector('.modal-close-btn').onclick = () => modalWrapper.remove();
+        modalWrapper.onclick = (e) => { if (e.target === modalWrapper) modalWrapper.remove(); };
     }
-    function closeAllModals() { modalContainer.innerHTML = ''; }
+
+    function closeAllModals() { E('modal-container').innerHTML = ''; }
+
+    function showInputModal(title, message, callback, isRequired = true) {
+        const content = `<div class="modal-body"><p>${message}</p>
+                <div class="form-group" style="margin-top: 15px;">
+                    <textarea id="reason-input" rows="4" ${isRequired ? 'required' : ''}></textarea>
+                </div></div>
+            <div class="modal-footer">
+                <button id="cancel-reason-btn" class="btn-secondary">لغو</button>
+                <button id="confirm-reason-btn" class="btn-primary"><span class="btn-text">تایید و ارسال</span></button>
+            </div>`;
+        renderModal(title, content, '');
+        const input = E('reason-input');
+        const confirmBtn = E('confirm-reason-btn');
+        E('cancel-reason-btn').onclick = closeAllModals;
+        confirmBtn.onclick = () => {
+            if (isRequired && !input.value.trim()) return showCustomAlert('لطفاً فیلد مربوطه را پر کنید.', 'error');
+            callback(input.value, confirmBtn);
+        };
+    }
+    
     function showCustomAlert(message, type = 'info', onClose = null) {
-        // ... (بدون تغییر)
+        const alertContainer = E('alert-container');
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-alert-overlay'; // Add 'visible' with a delay for animation
+        const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+        overlay.innerHTML = `<div class="custom-alert-box" style="animation: slideIn 0.3s;"><i class="fas ${icons[type]}" style="font-size:3rem; margin-bottom:15px; color:var(--${type});"></i><p style="font-size:1.1rem; margin-bottom:20px;">${message}</p><div class="custom-alert-actions"><button id="alert-ok-btn" class="btn-${type === 'error' ? 'danger' : 'success'}" style="min-width: 100px;">تایید</button></div></div>`;
+        alertContainer.appendChild(overlay);
+        setTimeout(() => overlay.style.opacity = '1', 10);
+        const closeAlert = () => {
+            overlay.style.opacity = '0';
+            overlay.addEventListener('transitionend', () => { overlay.remove(); if (onClose) onClose(); });
+        };
+        overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
     }
-    function storeUser(user) { localStorage.setItem('currentProfessor', JSON.stringify(user)); }
-    function getStoredUser() { return JSON.parse(localStorage.getItem('currentProfessor')); }
 </script>
 </body>
 </html>
