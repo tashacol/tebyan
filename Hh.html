@@ -44,7 +44,6 @@
         .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin-center 0.8s linear infinite; }
         @keyframes spin-center { to { transform: rotate(360deg); } }
         
-        /* Layout & Dashboard */
         .dashboard-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .stat-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; text-align: right; border-right: 4px solid var(--primary); box-shadow: var(--shadow); }
@@ -54,7 +53,6 @@
         .skeleton-loader { background-color: #e5e7eb; border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; width: 60px; height: 32px; display: inline-block; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Article Card */
         .article-card { background: var(--bg-card); border-radius: var(--radius-lg); margin-bottom: 16px; padding: 20px; transition: var(--transition); border: 1px solid var(--border-color); }
         .article-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
         .article-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
@@ -64,12 +62,11 @@
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 80px; }
         .status-badge .mini-loader { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin-center 1s linear infinite; }
         .actions-menu { position: relative; display: flex; gap: 4px; }
-        .dropdown-menu { position: absolute; left: 0; top: 100%; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); list-style: none; padding: 8px; margin: 4px 0 0 0; width: 180px; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; }
+        .dropdown-menu { position: absolute; left: 0; top: 100%; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); list-style: none; padding: 8px; margin: 4px 0 0 0; width: max-content; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; }
         .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
         .dropdown-menu li { padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
         .dropdown-menu li:hover { background: var(--bg-main); }
         
-        /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.visible { opacity: 1; }
         .modal-box { background: var(--bg-card); border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 40px); transform: scale(0.95); transition: transform 0.3s; }
@@ -79,16 +76,14 @@
         .modal-body { overflow-y: auto; flex-grow: 1; padding: 24px; }
         .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; background: #f9fafb; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
         
-        /* Accordion */
         .accordion details { border-bottom: 1px solid var(--border-color); } .accordion details:last-child { border-bottom: none; }
-        .accordion summary { font-size: 1rem; font-weight: 700; padding: 16px 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; position: sticky; top: -24px; background: var(--bg-card); z-index: 10; }
+        .accordion summary { font-size: 1rem; font-weight: 700; padding: 16px 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
         .accordion summary::-webkit-details-marker { display: none; }
         .accordion summary::after { content: '\\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s; color: var(--text-light); }
         .accordion details[open] summary::after { transform: rotate(180deg); }
         .accordion .accordion-content { padding: 0 8px 16px; animation: fadeIn 0.4s; line-height: 1.8; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Other Components */
         .info-box { padding: 12px 16px; margin-bottom: 20px; border-radius: var(--radius-md); border-right: 4px solid; font-size: 0.9rem; }
         .info-box.warning { background-color: #fffbeb; border-color: var(--warning); color: #92400e; }
         .titles-list { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); }
@@ -149,12 +144,10 @@
     let allArticles = [];
     let currentProfessor = null;
 
-    // --- DOM Elements ---
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
     const articlesContainer = document.getElementById('articles-container');
 
-    // --- API Call Wrapper ---
     async function callApi(action, params = {}) {
         try {
             const payload = { action, params, professorNid: currentProfessor?.nationalId, professorName: currentProfessor?.name };
@@ -174,7 +167,6 @@
         }
     }
 
-    // --- Initializer & Auth ---
     document.addEventListener('DOMContentLoaded', () => {
         currentProfessor = JSON.parse(localStorage.getItem('currentProfessor'));
         if (currentProfessor) {
@@ -213,7 +205,6 @@
         }
     }
 
-    // --- Dashboard & Rendering ---
     async function showDashboard(user) {
         loginPage.classList.add('hidden');
         dashboardPage.classList.remove('hidden');
@@ -312,9 +303,7 @@
         if (button) button.classList.add('btn-loading');
         const card = document.querySelector(`.article-card[data-article-id='${articleId}']`);
         const statusBadge = card ? card.querySelector('.status-badge') : null;
-        if (statusBadge) {
-            statusBadge.innerHTML = `<div class="mini-loader"></div>`;
-        }
+        if (statusBadge) { statusBadge.innerHTML = `<div class="mini-loader"></div>`; }
         
         const res = await apiCallPromise;
         if (button) button.classList.remove('btn-loading');
@@ -344,17 +333,7 @@
     }
 
     // --- All Modal Functions ---
-    function showReviewModal(articleId) { /* ... This function shows the main article content ... */ }
-    function showRejectionReasonModal(articleId) { /* ... For rejecting a guidance request ... */ }
-    function showRevisionModal(articleId) { /* ... For sending an article back for revision ... */ }
-    function showApprovalModal(articleId) { /* ... For final approval ... */ }
-    function showCancelSupervisionModal(articleId) { /* ... For canceling supervision ... */ }
-    function showEditFeedbackModal(articleId) { /* ... For editing existing feedback ... */ }
-    async function showHistoryModal(articleId) { /* ... For showing article history ... */ }
-    async function showProfileModal() { /* ... For managing professor profile ... */ }
-    async function showTitlesModal() { /* ... For managing suggested titles ... */ }
     
-    // --- Detailed Modal Implementations ---
     function showReviewModal(articleId) {
         const article = allArticles.find(a => a.article_id == articleId);
         if (!article) return;
@@ -398,8 +377,41 @@
         }
     }
 
-    function showRejectionReasonModal(articleId) { /* ... implementation from previous response ... */ }
-    function showRevisionModal(articleId) { /* ... implementation from previous response ... */ }
+    function showRejectionReasonModal(articleId) {
+        const content = `
+            <div class="modal-body">
+                <p>لطفاً دلیل عدم پذیرش راهنمایی این مقاله را وارد کنید (این پیام برای محقق ارسال می‌شود).</p>
+                <textarea id="rejection-reason" rows="4" placeholder="دلیل رد درخواست..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-light" onclick="closeAllModals()">لغو</button>
+                <button id="confirm-reject-btn" class="btn-danger"><i class="fas fa-times"></i><span class="btn-text">تایید و ارسال</span></button>
+            </div>`;
+        renderModal('عدم پذیرش راهنمایی', content, '');
+        document.getElementById('confirm-reject-btn').onclick = e => {
+            const reason = document.getElementById('rejection-reason').value;
+            if (!reason) return showCustomAlert('لطفاً دلیل عدم پذیرش را وارد کنید.', 'error');
+            updateStatusAndReload(articleId, callApi('handleGuidanceRequest', { articleId, accepted: false, reason }), e.target);
+        };
+    }
+    
+    function showRevisionModal(articleId) {
+        const content = `
+            <div class="modal-body">
+                <p>توضیحات خود را برای ویرایش مقاله توسط محقق وارد کنید.</p>
+                <textarea id="revision-feedback" rows="5" placeholder="موارد مورد نیاز برای اصلاح..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-light" onclick="closeAllModals()">لغو</button>
+                <button id="confirm-revision-btn" class="btn-warning"><i class="fas fa-edit"></i><span class="btn-text">ارسال برای ویرایش</span></button>
+            </div>`;
+        renderModal('ارسال برای ویرایش', content, '');
+        document.getElementById('confirm-revision-btn').onclick = e => {
+            const feedback = document.getElementById('revision-feedback').value;
+            if (!feedback) return showCustomAlert('لطفاً توضیحات خود را وارد کنید.', 'error');
+            updateStatusAndReload(articleId, callApi('submitArticleReview', { articleId, decision: 'revision', feedback }), e.target);
+        };
+    }
     
     function showApprovalModal(articleId) {
         showCustomConfirm('آیا از تایید نهایی این مقاله و ارسال آن به نشریه اطمینان دارید؟', (confirmed, btn) => {
@@ -422,17 +434,199 @@
         };
     }
 
-    function showEditFeedbackModal(articleId) { /* ... similar implementation to showRevisionModal but calls 'updateRevisionFeedback' ... */ }
-    async function showHistoryModal(articleId) { /* ... implementation from previous response ... */ }
-    async function showProfileModal() { /* ... implementation from previous response ... */ }
-    async function showTitlesModal() { /* ... implementation from previous response ... */ }
+    function showEditFeedbackModal(articleId) {
+        const article = allArticles.find(a => a.article_id == articleId);
+        if (!article) return;
+        const content = `
+            <div class="modal-body">
+                <p>شما می‌توانید توضیحات ارسالی برای ویرایش را اصلاح کنید.</p>
+                <textarea id="revision-feedback" rows="5">${article.rejection_reason || ''}</textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-light" onclick="closeAllModals()">لغو</button>
+                <button id="confirm-edit-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button>
+            </div>`;
+        renderModal('ویرایش توضیحات', content, '');
+        document.getElementById('confirm-edit-btn').onclick = e => {
+            const feedback = document.getElementById('revision-feedback').value;
+            if (!feedback) return showCustomAlert('متن بازخورد نمی‌تواند خالی باشد.', 'error');
+            updateStatusAndReload(articleId, callApi('updateRevisionFeedback', { articleId, feedback }), e.target);
+        };
+    }
+
+    async function showHistoryModal(articleId) {
+        renderModal('سوابق مقاله', '<div id="history-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:100px;"></div></div>', '', true);
+        const res = await callApi('getArticleHistoryForProfessor', { articleId });
+        const body = document.getElementById('history-body');
+        if (res.status === 'success') {
+            body.style.textAlign = 'right';
+            if (res.history.length === 0) {
+                body.innerHTML = '<p>سابقه‌ای یافت نشد.</p>';
+            } else {
+                body.innerHTML = `<ul class="history-timeline">${res.history.map(entry => `
+                    <li class="timeline-item">
+                        <div class="timeline-header">
+                            <span>${entry.user}: ${entry.action}</span>
+                            <span style="font-size: 0.8rem; color: var(--text-light);">${new Date(entry.timestamp).toLocaleString('fa-IR')}</span>
+                        </div>
+                        <div class="timeline-details">${entry.details || ''}</div>
+                    </li>`).join('')}</ul>`;
+            }
+        }
+    }
+
+    async function showProfileModal() {
+        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:200px;"></div></div>', '');
+        const res = await callApi('getProfessorProfile');
+        if (res.status === 'success') {
+            const profile = res.profile;
+            document.getElementById('profile-body').innerHTML = `
+                <div class="form-group">
+                    <label>وضعیت حضور</label>
+                    <select id="profile-status" class="form-control">
+                        <option value="5" ${profile.status == 5 ? 'selected' : ''}>فعال (پذیرش درخواست جدید)</option>
+                        <option value="0" ${profile.status == 0 ? 'selected' : ''}>غیرفعال (عدم پذیرش موقت)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ظرفیت پذیرش همزمان</label>
+                    <input type="number" id="profile-capacity" value="${profile.capacity || 0}">
+                </div>
+                <div class="form-group">
+                    <label>اطلاعات تماس (برای نمایش به محقق)</label>
+                    <input type="text" id="profile-contact" value="${profile.contactInfo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>توضیحات و تخصص‌ها</label>
+                    <textarea id="profile-desc" rows="3">${profile.description || ''}</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-light" onclick="closeAllModals()">لغو</button>
+                    <button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button>
+                </div>
+            `;
+            document.getElementById('save-profile-btn').onclick = async e => {
+                const button = e.target;
+                button.classList.add('btn-loading');
+                const profileData = {
+                    status: document.getElementById('profile-status').value,
+                    capacity: document.getElementById('profile-capacity').value,
+                    contactInfo: document.getElementById('profile-contact').value,
+                    description: document.getElementById('profile-desc').value
+                };
+                const res = await callApi('updateProfessorProfile', { profileData });
+                button.classList.remove('btn-loading');
+                if (res.status === 'success') {
+                    showCustomAlert(res.message, 'success', () => closeAllModals());
+                }
+            };
+        }
+    }
+
+    async function showTitlesModal() {
+         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:150px;"></div></div>', '');
+         const res = await callApi('getSuggestedTitles');
+         if (res.status === 'success') {
+             const titlesHTML = res.titles.length > 0 ? res.titles.map(t => `
+                <li><span>${t.title}</span><span class="title-status ${t.status == 5 ? 'taken' : 'free'}">${t.status == 5 ? `پذیرفته شده (مقاله ${t.articleId})` : 'آزاد'}</span></li>`).join('') : '<li>عنوانی ثبت نشده است.</li>';
+             
+             document.getElementById('titles-body').innerHTML = `<h4>لیست عناوین پیشنهادی شما</h4>
+                <ul class="titles-list">${titlesHTML}</ul>
+                <hr style="margin: 24px 0;">
+                <h4>افزودن عنوان جدید</h4>
+                <div style="display: flex; gap: 8px;"><input type="text" id="new-title-input" placeholder="عنوان جدید را وارد کنید..." style="flex-grow:1;">
+                <button id="add-title-btn" class="btn-success"><i class="fas fa-plus"></i></button></div>`;
+
+             document.getElementById('add-title-btn').onclick = async e => {
+                 const button = e.target;
+                 button.classList.add('btn-loading');
+                 const title = document.getElementById('new-title-input').value;
+                 if (!title) {
+                     showCustomAlert('لطفاً یک عنوان وارد کنید.', 'error');
+                     button.classList.remove('btn-loading');
+                     return;
+                 }
+                 const res = await callApi('addSuggestedTitle', { title });
+                 button.classList.remove('btn-loading');
+                 if(res.status === 'success') {
+                     showCustomAlert(res.message, 'success', () => showTitlesModal());
+                 }
+             };
+         }
+    }
 
     // --- Utility Functions ---
-    function renderModal(title, content, sizeClass = '') { /* ... */ }
-    function closeAllModals() { /* ... */ }
-    function showCustomAlert(message, type = 'info', onClose = null) { /* ... */ }
-    function showCustomConfirm(message, onConfirm, confirmText, cancelText) { /* ... */ }
+    function renderModal(title, content, sizeClass = '') {
+        closeAllModals();
+        const modalWrapper = document.createElement('div');
+        modalWrapper.className = 'modal-overlay';
+        modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}">
+                <div class="modal-header">
+                    <h3>${title}</h3>
+                    <button class="btn-icon" onclick="closeAllModals()">&times;</button>
+                </div>
+                ${content}
+            </div>`;
+        document.getElementById('modal-container').appendChild(modalWrapper);
+        setTimeout(() => modalWrapper.classList.add('visible'), 10);
+    }
+    
+    function closeAllModals() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
+            modal.classList.remove('visible');
+            modal.addEventListener('transitionend', () => modal.remove());
+        }
+    }
 
+    function showCustomAlert(message, type = 'info', onClose = null) {
+        const existingAlert = document.querySelector('.custom-alert-overlay');
+        if (existingAlert) existingAlert.remove();
+        
+        const alertContainer = document.getElementById('alert-container');
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay'; // Use modal overlay for consistency
+        const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+        overlay.innerHTML = `<div class="modal-box" style="max-width: 400px; text-align: center;">
+            <i class="fas ${icons[type]}" style="font-size: 3rem; color: var(--${type}); margin-bottom: 16px;"></i>
+            <p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p>
+            <div class="modal-footer" style="justify-content: center;"><button id="alert-ok-btn">تایید</button></div>
+        </div>`;
+        alertContainer.appendChild(overlay);
+        overlay.querySelector('#alert-ok-btn').classList.add(type === 'error' ? 'btn-danger' : 'btn-success');
+        setTimeout(() => overlay.classList.add('visible'), 10);
+        
+        const closeAlert = () => {
+            overlay.classList.remove('visible');
+            overlay.addEventListener('transitionend', () => { overlay.remove(); if (onClose) onClose(); });
+        };
+        overlay.querySelector('#alert-ok-btn').onclick = closeAlert;
+    }
+
+    function showCustomConfirm(message, onConfirm, confirmText, cancelText) {
+        closeAllModals();
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `<div class="modal-box" style="max-width: 400px; text-align: center;">
+            <i class="fas fa-question-circle" style="font-size: 3rem; color: var(--warning); margin-bottom: 16px;"></i>
+            <p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p>
+            <div class="modal-footer">
+                <button id="confirm-no-btn" class="btn-light">${cancelText}</button>
+                <button id="confirm-yes-btn" class="btn-danger">${confirmText}</button>
+            </div>
+        </div>`;
+        document.getElementById('modal-container').appendChild(overlay);
+        setTimeout(() => overlay.classList.add('visible'), 10);
+        
+        const confirmBtn = overlay.querySelector('#confirm-yes-btn');
+        const cancelBtn = overlay.querySelector('#confirm-no-btn');
+        const closeModal = () => {
+            overlay.classList.remove('visible');
+            overlay.addEventListener('transitionend', () => overlay.remove());
+        };
+        confirmBtn.onclick = () => onConfirm(true, confirmBtn, closeModal);
+        cancelBtn.onclick = () => { onConfirm(false, null, closeModal); closeModal(); };
+    }
 </script>
 
 </body>
