@@ -18,15 +18,18 @@
             --primary-dark: #2563EB;
             --text-dark: #1f2937;
             --text-light: #6b7280;
-            --bg-main: #f9fafb;
+            /* Instruction 4: UI/UX Improvement - Slightly different background for better contrast */
+            --bg-main: #f8f9fa;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
             --success: #10b981;
             --success-light: #d1fae5;
             --danger: #ef4444;
+            --danger-light: #fee2e2;
             --warning: #f59e0b;
             --info: #38bdf8;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            /* Instruction 4: UI/UX Improvement - Softer, more modern shadow */
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
             --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -94,12 +97,13 @@
             width: 100%;
             box-sizing: border-box;
             padding: 12px 15px;
-            border: 1px solid var(--border-color);
+            /* Instruction 4: UI/UX Improvement - Lighter default border */
+            border: 1px solid #dee2e6;
             border-radius: var(--radius-md);
             font-size: 1rem;
             font-family: inherit;
             transition: var(--transition);
-            background-color: #fdfdff;
+            background-color: #fff;
         }
 
         input:disabled,
@@ -110,12 +114,9 @@
             cursor: not-allowed;
         }
         
-        /* START: Edited for Instruction 2 */
         input[readonly] {
             cursor: pointer;
-            /* background-color: #e9ecef; --- This line was removed */
         }
-        /* END: Edited for Instruction 2 */
 
         input:focus,
         select:focus,
@@ -315,6 +316,40 @@
             border-right: 5px solid var(--primary);
             box-shadow: var(--shadow);
             transition: var(--transition);
+            /* Instruction 4: UI/UX Improvement - Flex layout for centering and icon support */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            padding-top: 40px;
+        }
+        
+        /* Instruction 4: UI/UX Improvement - Adding icons to summary cards */
+        .summary-card::before {
+            content: '';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+        }
+
+        .summary-card:first-child::before {
+            content: '\f017'; /* fa-clock */
+            color: var(--primary-light);
+        }
+
+        .summary-card.accepted::before {
+            content: '\f058'; /* fa-check-circle */
+            color: var(--success-light);
+        }
+        
+        .summary-card.rejected::before {
+            content: '\f057'; /* fa-times-circle */
+            color: var(--danger-light);
         }
 
         .summary-card:hover {
@@ -327,7 +362,7 @@
             font-weight: 700;
             color: var(--text-dark);
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 0;
             min-height: 42px;
             display: flex;
             justify-content: center;
@@ -347,18 +382,32 @@
         .summary-card.rejected {
             border-right-color: var(--danger);
         }
-        
-        .mini-loader {
-            width: 28px;
-            height: 28px;
-            border: 3px solid var(--primary-light);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin-center 1s linear infinite;
-            display: inline-block;
+
+        /* START: Instruction 1 - Skeleton Loader styles */
+        .skeleton-loader {
+            background-color: #e2e8f0;
+            border-radius: var(--radius-md);
+            position: relative;
+            overflow: hidden;
         }
+        .skeleton-loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        /* END: Instruction 1 - Skeleton Loader styles */
         
-        /* START: Added for Instruction 5 */
         .status-loader {
             width: 20px;
             height: 20px;
@@ -368,7 +417,6 @@
             animation: spin-center 1s linear infinite;
             display: inline-block;
         }
-        /* END: Added for Instruction 5 */
 
         .dashboard-controls {
             display: flex;
@@ -440,7 +488,7 @@
             display: flex;
             gap: 8px;
             flex-shrink: 0;
-            min-height: 28px; /* Added for loader consistency */
+            min-height: 28px;
             align-items: center;
         }
 
@@ -489,7 +537,7 @@
         .supervisor-rejection-notice {
             margin-top: 15px;
             padding: 12px;
-            background-color: #fee2e2;
+            background-color: var(--danger-light);
             border: 1px solid var(--danger);
             border-right: 4px solid var(--danger);
             color: #991b1b;
@@ -576,7 +624,7 @@
         }
 
         .editor-feedback-notice.rejected {
-            background-color: #fee2e2;
+            background-color: var(--danger-light);
             border-right-color: var(--danger);
             color: #991b1b;
         }
@@ -967,7 +1015,7 @@
         }
 
         .tag-inactive {
-            background-color: #fee2e2;
+            background-color: var(--danger-light);
             color: #991b1b;
         }
 
@@ -1291,6 +1339,60 @@
         #pdf-render-container .pdf-references li {
             margin-bottom: 8px;
         }
+        
+        /* START: Instruction 3 - Display/Edit Mode Styles */
+        .editable-field {
+            padding: 5px 0;
+        }
+        .display-view {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-main);
+            min-height: 48px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+        }
+        .display-view-text {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.5;
+            white-space: pre-wrap; /* To respect newlines in textarea */
+            word-break: break-word;
+        }
+        .edit-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            min-height: auto;
+            transition: var(--transition);
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+        .edit-icon-btn:hover {
+            color: var(--primary);
+            background-color: var(--primary-light);
+            transform: none;
+            box-shadow: none;
+        }
+        .editable-field .form-control-edit {
+            display: none;
+        }
+        .editable-field.edit-mode .display-view {
+            display: none;
+        }
+        .editable-field.edit-mode .form-control-edit {
+            display: block;
+        }
+        /* END: Instruction 3 - Display/Edit Mode Styles */
     </style>
 </head>
 
@@ -1301,7 +1403,7 @@
             <div class="card">
                 <h1>ورود به پنل کاربری</h1>
                 <form id="login-form">
-                    <div class="form-group"><label for="national-id">کد ملی</label><input type="text" id="national-id"
+                    <div class="form-group"><label for="national-id">نام کاربری</label><input type="text" id="national-id"
                             required></div>
                     <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password"
                             required></div>
@@ -1433,11 +1535,22 @@
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
             const summaryContainer = document.getElementById('summary-dashboard');
+            // START: Instruction 1 - Use skeleton loader for summary cards on initial load
             summaryContainer.innerHTML = `
-                <div class="summary-card"><span class="count"><div class="mini-loader"></div></span><span class="label">در حال پیگیری</span></div>
-                <div class="summary-card accepted"><span class="count"><div class="mini-loader"></div></span><span class="label">پذیرفته شده</span></div>
-                <div class="summary-card rejected"><span class="count"><div class="mini-loader"></div></span><span class="label">رد شده</span></div>
+                <div class="summary-card">
+                    <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
+                    <span class="label">در حال پیگیری</span>
+                </div>
+                <div class="summary-card accepted">
+                    <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
+                    <span class="label">پذیرفته شده</span>
+                </div>
+                <div class="summary-card rejected">
+                    <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
+                    <span class="label">رد شده</span>
+                </div>
             `;
+            // END: Instruction 1
             
             let searchDebounce;
             const searchInput = document.getElementById('article-search-input');
@@ -1588,7 +1701,7 @@
 
         async function handleNewArticleSubmit(e, isDraft) {
             if (!isDraft && !window.selectedSupervisor) {
-                return showCustomAlert('لطفاً یک استاد راهنما برای ارسال نهایی انتخاب کنید.', 'error');
+                return showCustomAlert('لطفاً استاد راهنما را انتخاب کنید.', 'error');
             }
 
             const user = getStoredUser();
@@ -1606,7 +1719,7 @@
 
             if (response?.status === 'success') {
                 const message = isDraft
-                    ? 'مقاله با موفقیت به عنوان پیش‌نویس ذخیره شد. برای ارسال نهایی، از طریق دکمه "تکمیل پیش‌نویس" اقدام کنید.'
+                    ? 'مقاله با موفقیت به عنوان پیش‌نویس ذخیره شد. برای ویرایش يا ارسال، از طریق دکمه "تکمیل پیش‌نویس" اقدام کنید.'
                     : response.message;
                 showCustomAlert(message, 'success', async () => {
                     closeAllModals();
@@ -1618,7 +1731,6 @@
             }
         }
         
-        // START: New Function for Instruction 5 & 6
         async function updateCardInPlace(articleId) {
             const card = document.querySelector(`.article-card[data-article-id="${articleId}"]`);
             if (!card) return;
@@ -1644,11 +1756,9 @@
                 bindArticleCardEvents(card, newArticleData);
             } else {
                 showCustomAlert('خطا در به‌روزرسانی کارت مقاله. لطفا صفحه را رفرش کنید.', 'error');
-                // Restore previous content or simply reload all
                 if(statusContainer) statusContainer.innerHTML = 'خطا';
             }
         }
-        // END: New Function for Instruction 5 & 6
 
         function showEditArticleWizard(article) {
             const isFullyLocked = [5, 6, 8, 11].includes(Number(article.articleStatus));
@@ -1767,10 +1877,20 @@
                     }
                     const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target);
                     if (res?.status === 'success') {
-                        showCustomAlert(res.message, 'success');
-                        // START: Edited for Instruction 5 & 6
+                        // START: Instruction 2 - Dynamic success message
+                        const sectionNames = {
+                            keywords_abstract: 'چکیده و کلیدواژه‌ها',
+                            introduction: 'مقدمه',
+                            body: 'بدنه مقاله',
+                            conclusion: 'نتیجه‌گیری',
+                            references: 'منابع'
+                        };
+                        const friendlyName = sectionNames[section] || 'بخش مورد نظر';
+                        const successMessage = `${friendlyName} با موفقیت ذخیره شد.`;
+                        showCustomAlert(successMessage, 'success');
+                        // END: Instruction 2
+
                         updateCardInPlace(article.articleId);
-                        // END: Edited for Instruction 5 & 6
                         if (section === 'keywords_abstract') {
                             localStorage.removeItem(getStorageKey('abstract'));
                             localStorage.removeItem(getStorageKey('keywords'));
@@ -1864,25 +1984,96 @@
             renderInitialRefs();
 
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
-            const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--warning); text-align: center;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
-            const step1 = document.querySelector('.tab-content[data-tab="1"]');
-            step1.innerHTML = `<h4>اطلاعات کلی</h4><div class="form-group"><label for="edit-article-title">عنوان مقاله</label><input type="text" id="edit-article-title" value="${article.title}" ${isFullyLocked ? 'disabled' : ''}></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
+            const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--text-light); text-align: center; margin-bottom:15px;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
             
-            if (!isReadOnly) {
-                document.getElementById('edit-affiliation').onclick = () => showAffiliationModal('edit-affiliation', article.affiliation);
-            }
-            if (canChangeSupervisor && !isReadOnly) {
-                document.getElementById('edit-supervisor').onclick = () => showSupervisorModal('edit-supervisor', (s) => {
-                    window.selectedSupervisorForEdit = s;
-                    document.getElementById('edit-supervisor').value = s.name;
-                });
-            }
+            // START: Instruction 3 - Reworking the General Information tab
+            const step1 = document.querySelector('.tab-content[data-tab="1"]');
+            step1.innerHTML = `
+                <h4>اطلاعات کلی</h4>
+                <div class="form-group">
+                    <label>عنوان مقاله</label>
+                    <div id="editable-title" class="editable-field">
+                        <div class="display-view">
+                            <span class="display-view-text">${article.title || '<i>ثبت نشده</i>'}</span>
+                            ${!isFullyLocked ? '<button class="edit-icon-btn" data-field="title"><i class="fas fa-pencil-alt"></i></button>' : ''}
+                        </div>
+                        <input type="text" id="edit-article-title" class="form-control-edit" value="${article.title || ''}" ${isFullyLocked ? 'disabled' : ''}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>وابستگی سازمانی</label>
+                    <div id="editable-affiliation" class="editable-field">
+                        <div class="display-view">
+                            <span id="display-affiliation-text" class="display-view-text">${article.affiliation || '<i>ثبت نشده</i>'}</span>
+                            ${!isReadOnly ? '<button class="edit-icon-btn" data-field="affiliation"><i class="fas fa-pencil-alt"></i></button>' : ''}
+                        </div>
+                         <input type="hidden" id="edit-affiliation-hidden" value="${article.affiliation || ''}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>حیطه دانشی</label>
+                    <div id="editable-knowledgeArea" class="editable-field">
+                        <div class="display-view">
+                            <span class="display-view-text">${article.knowledgeArea || '<i>ثبت نشده</i>'}</span>
+                            ${!isReadOnly ? '<button class="edit-icon-btn" data-field="knowledgeArea"><i class="fas fa-pencil-alt"></i></button>' : ''}
+                        </div>
+                        <select id="edit-knowledgeArea" class="form-control-edit" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>دلیل انتخاب موضوع</label>
+                    <div id="editable-topicReason" class="editable-field">
+                        <div class="display-view">
+                            <span class="display-view-text">${article.topicReason || '<i>ثبت نشده</i>'}</span>
+                            ${!isReadOnly ? '<button class="edit-icon-btn" data-field="topicReason"><i class="fas fa-pencil-alt"></i></button>' : ''}
+                        </div>
+                        <textarea id="edit-topicReason" class="form-control-edit" rows="4" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>استاد راهنما</label>
+                    ${supervisorChangeNotice}
+                    <div id="editable-supervisor" class="editable-field">
+                       <div class="display-view" ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}>
+                            <span id="display-supervisor-text" class="display-view-text">${article.supervisorName || '<i>هنوز انتخاب نشده</i>'}</span>
+                            ${canChangeSupervisor && !isReadOnly ? '<button class="edit-icon-btn" data-field="supervisor"><i class="fas fa-pencil-alt"></i></button>' : ''}
+                        </div>
+                    </div>
+                </div>
+                <button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>
+            `;
+
+            step1.querySelectorAll('.edit-icon-btn, .display-view[style*="cursor:pointer;"]').forEach(element => {
+                element.onclick = (e) => {
+                    e.stopPropagation();
+                    const fieldName = element.dataset.field || (element.closest('.editable-field').id.split('-')[1]);
+                    const wrapper = document.getElementById(`editable-${fieldName}`);
+
+                    if (fieldName === 'affiliation') {
+                        const displaySpan = document.getElementById('display-affiliation-text');
+                        const hiddenInput = document.getElementById('edit-affiliation-hidden');
+                        showAffiliationModal(null, hiddenInput.value, (newValue) => {
+                            displaySpan.textContent = newValue;
+                            hiddenInput.value = newValue;
+                        });
+                    } else if (fieldName === 'supervisor') {
+                         showSupervisorModal(null, (supervisor) => {
+                            window.selectedSupervisorForEdit = supervisor;
+                            document.getElementById('display-supervisor-text').textContent = supervisor.name;
+                         });
+                    } else {
+                        wrapper.classList.add('edit-mode');
+                        wrapper.querySelector('.form-control-edit').focus();
+                    }
+                };
+            });
+
             document.getElementById('save-details-btn').onclick = async (e) => {
                 if (isReadOnly) return;
                 const user = getStoredUser();
                 const details = {
                     title: document.getElementById('edit-article-title').value,
-                    affiliation: document.getElementById('edit-affiliation').value,
+                    affiliation: document.getElementById('edit-affiliation-hidden').value,
                     knowledgeArea: document.getElementById('edit-knowledgeArea').value,
                     topicReason: document.getElementById('edit-topicReason').value
                 };
@@ -1891,31 +2082,26 @@
                 }
                 const res = await callApi('updateArticleDetails', { nationalId: user.nationalId, articleId: article.articleId, details }, e.target);
                 if (res?.status === 'success') {
-                    // START: Edited for Instruction 6
-                    showCustomAlert(res.message, 'success');
+                    showCustomAlert('اطلاعات کلی با موفقیت ذخیره شد.', 'success');
                     updateCardInPlace(article.articleId);
-                    window.selectedSupervisorForEdit = null; // Reset unsaved supervisor
-                    // END: Edited for Instruction 6
+                    window.selectedSupervisorForEdit = null;
                 } else {
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
                 }
             };
+            // END: Instruction 3
         }
 
         async function handleSubmitDraft(e, articleId, supervisorName) {
-            // START: Edited for Instruction 1
-            // supervisorName is the SAVED name.
             if (!supervisorName) {
-                // No supervisor is saved for this draft. Check if one is selected in UI but not saved.
-                const supervisorInput = document.getElementById('edit-supervisor');
-                const uiSupervisorName = supervisorInput ? supervisorInput.value : '';
-                if (uiSupervisorName) {
+                const supervisorInput = document.getElementById('display-supervisor-text');
+                const uiSupervisorName = supervisorInput ? supervisorInput.textContent : '';
+                if (uiSupervisorName && uiSupervisorName !== 'هنوز انتخاب نشده') {
                     return showCustomAlert('استاد راهنما انتخاب شده اما تغییرات ذخیره نشده است. لطفا ابتدا اطلاعات کلی مقاله را ذخیره کنید.', 'error');
                 } else {
                     return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید و سپس اطلاعات را ذخیره کنید.', 'error');
                 }
             }
-            // END: Edited for Instruction 1
             showCustomConfirm('آیا از ارسال مقاله برای استاد راهنما اطمینان دارید؟', async (confirmed, btn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
@@ -1965,7 +2151,6 @@
             }
         }
         
-        // START: New Function for Instruction 5
         function getCardBorderColor(article){
             const isDraft = String(article.articleStatus) === '9';
             let supervisorStatusColor;
@@ -2013,18 +2198,14 @@
             const supervisorContactInfo = article.supervisorContact ? `<div><strong>تماس با استاد:</strong> <span>${article.supervisorContact}</span></div>` : '';
             const printButtonHTML = article.articleStatus == 5 ? `<button class="btn-print btn-success" title="چاپ مقاله"><i class="fas fa-print"></i></button>` : '';
             
-            // START: Edited for Instruction 4
             let supervisorAcceptanceNotice = '';
             if (String(article.supervisorStatus) === '5' && String(article.articleStatus) === '1') {
-                supervisorAcceptanceNotice = `<div class="supervisor-acceptance-notice">استاد راهنما مقاله شما را جهت برسی قبول کرده، اگر مقاله نیازمند ویرایش است آن را ویرایش و ذخیره کنید.</div>`;
+                supervisorAcceptanceNotice = `<div class="supervisor-acceptance-notice">استاد راهنما مقاله شما را جهت برسی قبول کرده، اگر مقاله نیازمند ویرایش است آن را ویرایش و تکمیل کنید.</div>`;
             }
-            // END: Edited for Instruction 4
 
-            // START: Edited for Instruction 3
             const isContentComplete = article.title && article.affiliation && article.knowledgeArea && article.topicReason && article.abstract && article.keywords && article.introduction && article.body && article.conclusion && article.references;
             const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
             const finalReviewButtonHTML = canSendForFinalReview ? `<button class="btn-send-final-review btn-success" data-article-id="${article.articleId}">ارسال جهت برسی نهایی</button>` : '';
-            // END: Edited for Instruction 3
 
             return `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
         }
@@ -2054,7 +2235,6 @@
                 if(finalReviewBtn) { finalReviewBtn.onclick = (e) => { e.stopPropagation(); handleSendForFinalReview(article.articleId, e.target.closest('button')); }; }
             }
         }
-        // END: New Function for Instruction 5
 
         function renderGroup(title, articles, container) {
             if (articles.length === 0) return;
@@ -2065,7 +2245,7 @@
             articles.forEach(article => {
                 const card = document.createElement('div');
                 card.className = 'article-card';
-                card.dataset.articleId = article.articleId; // For easy selection
+                card.dataset.articleId = article.articleId;
                 card.style.borderTopColor = getCardBorderColor(article);
                 card.innerHTML = generateArticleCardInnerHTML(article);
                 bindArticleCardEvents(card, article);
@@ -2078,7 +2258,7 @@
             const { jsPDF } = window.jspdf;
             const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fa-IR') : 'نامشخص';
             const renderContainer = document.getElementById('pdf-render-container');
-            renderContainer.innerHTML = `<div class="pdf-header"><h2>مجله علمی پژوهشی</h2><div class="pdf-meta"><span>شماره مجله: ${article.issueNumber || 'نامشخص'}</span><span>تاریخ پذیرش: ${formatDate(article.acceptanceDate)}</span><span>تاریخ نشر: ${formatDate(article.publicationDate)}</span></div></div><h1 class="pdf-title">${article.title}</h1><div class="pdf-authors"><p><strong>محقق:</strong> ${article.researcherName || 'نامشخص'}</p><p><strong>وابستگی سازمانی:</strong> ${article.affiliation || 'نامشخص'}</p><p><strong>استاد راهنما:</strong> ${article.supervisorName || 'نامشخص'}</p></div><h2>چکیده</h2><p>${article.abstract || ''}</p><p class="pdf-keywords"><strong>کلیدواژه‌ها:</strong> ${article.keywords || ''}</p><h2>مقدمه</h2><p>${(article.introduction || '').replace(/\n/g, '<br>')}</p><h2>بدنه مقاله</h2><p>${(article.body || '').replace(/\n/g, '<br>')}</p><h2>نتیجه‌گیری</h2><p>${(article.conclusion || '').replace(/\n/g, '<br>')}</p><h2 class="pdf-references">منابع و مآخذ</h2><ul>${(article.references || '').split('\n').map(ref => `<li>${ref}</li>`).join('')}</ul>`;
+            renderContainer.innerHTML = `<div class="pdf-header"><h2>مجله علمی تعالی</h2><div class="pdf-meta"><span>شماره جلد: ${article.issueNumber || 'نامشخص'}</span><span>تاریخ پذیرش: ${formatDate(article.acceptanceDate)}</span><span>تاریخ نشر: ${formatDate(article.publicationDate)}</span></div></div><h1 class="pdf-title">${article.title}</h1><div class="pdf-authors"><p><strong>محقق:</strong> ${article.researcherName || 'نامشخص'}</p><p><strong>وابستگی سازمانی:</strong> ${article.affiliation || 'نامشخص'}</p><p><strong>استاد راهنما:</strong> ${article.supervisorName || 'نامشخص'}</p></div><h2>چکیده</h2><p>${article.abstract || ''}</p><p class="pdf-keywords"><strong>کلیدواژه‌ها:</strong> ${article.keywords || ''}</p><h2>مقدمه</h2><p>${(article.introduction || '').replace(/\n/g, '<br>')}</p><h2>بدنه مقاله</h2><p>${(article.body || '').replace(/\n/g, '<br>')}</p><h2>نتیجه‌گیری</h2><p>${(article.conclusion || '').replace(/\n/g, '<br>')}</p><h2 class="pdf-references">منابع و مآخذ</h2><ul>${(article.references || '').split('\n').map(ref => `<li>${ref}</li>`).join('')}</ul>`;
             try {
                 const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true });
                 const imgData = canvas.toDataURL('image/png');
@@ -2107,7 +2287,7 @@
         }
 
         async function handleSendForFinalReview(articleId, button) {
-            showCustomConfirm('شما مقاله را برای بررسی نهایی به استاد راهنما ارسال کرده اید. آیا اطمینان دارید؟', async (confirmed, confirmBtn, closeModal) => {
+            showCustomConfirm('شما مقاله را برای بررسی نهایی به استاد راهنما ارسال می‌کنید و تا زمان برسی استاد قادر به ویرایش نیستید. آیا اطمینان دارید؟', async (confirmed, confirmBtn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
                     const response = await callApi('sendForFinalReview', { articleId: articleId, nationalId: user.nationalId }, button);
@@ -2232,7 +2412,7 @@
 
                     <div class="wizard-step" data-step="4">
                         <h4>مرحله ۴ از ۴: انتخاب استاد راهنما</h4>
-                        <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">برای «ثبت و ارسال نهایی»، انتخاب استاد الزامی است. برای «ذخیره پیش‌نویس» می‌توانید این مرحله را رد کنید.</p>
+                        <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px;">برای «ثبت و ارسال نهایی»، انتخاب استاد الزامی است. در «ذخیره پیش‌نویس» انتخاب استاد ممکن نیست، می‌توانید این مرحله را رد کنید.</p>
                         <div id="new-supervisor-container"></div>
                     </div>
                 </div>
@@ -2441,13 +2621,20 @@
             updateView();
         }
 
-        function showAffiliationModal(targetInputId, currentAffiliation = '') {
+        // Instruction 3: Modified function to handle updating the display text
+        function showAffiliationModal(targetInputId, currentAffiliation = '', onSaveCallback) {
             const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
-            const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
+            const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level-modal" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field-modal" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute-modal" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location-modal" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
             renderModal('تکمیل وابستگی سازمانی', modalContent, 'modal-sm', true);
             document.getElementById('save-affiliation-btn').onclick = () => {
-                const parts = [document.getElementById('aff-level').value, document.getElementById('aff-field').value, document.getElementById('aff-institute').value, document.getElementById('aff-location').value].filter(Boolean);
-                document.getElementById(targetInputId).value = parts.join('، ');
+                const parts = [document.getElementById('aff-level-modal').value, document.getElementById('aff-field-modal').value, document.getElementById('aff-institute-modal').value, document.getElementById('aff-location-modal').value].filter(Boolean);
+                const newValue = parts.join('، ');
+                if (targetInputId) {
+                    document.getElementById(targetInputId).value = newValue;
+                }
+                if (onSaveCallback) {
+                    onSaveCallback(newValue);
+                }
                 closeModalById('sub-modal');
             };
         }
@@ -2489,7 +2676,9 @@
                         if (!isDisabled) {
                             item.onclick = () => {
                                 onSelectCallback(s);
-                                document.getElementById(targetInputId).value = s.name;
+                                if (targetInputId) {
+                                    document.getElementById(targetInputId).value = s.name;
+                                }
                                 closeModalById('sub-modal');
                             };
                         }
