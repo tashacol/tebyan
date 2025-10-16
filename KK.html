@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         :root {
             --primary: #4f46e5; --primary-light: #e0e7ff; --primary-dark: #3730a3;
-            --secondary: #1f2937; --secondary-light: #f3f4f6;
+            --secondary: #111827; --secondary-light: #f3f4f6;
             --text-dark: #111827; --text-light: #6b7280; --bg-main: #f9fafb;
             --bg-card: #ffffff; --border-color: #e5e7eb; --success: #16a34a;
             --danger: #dc2626; --warning: #f97316; --info: #0ea5e9;
@@ -20,7 +20,6 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; font-size: 15px; }
         .hidden { display: none !important; }
-        .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px; }
         .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         h1,h2,h3,h4 { font-weight: 700; margin: 0 0 16px 0; color: var(--text-dark); }
         h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; } h3 { font-size: 1.2rem; }
@@ -31,19 +30,16 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
         button {
             font-family: inherit; padding: 10px 16px; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 500;
-            cursor: pointer; transition: var(--transition); display: inline-flex;
-            align-items: center; justify-content: center; gap: 8px; position: relative; background-color: var(--primary); color: white;
+            cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; position: relative; background-color: var(--primary); color: white;
         }
         button:hover:not(:disabled) { opacity: 0.85; }
         button:disabled { background-color: #d1d5db; cursor: not-allowed; }
-        .btn-success { background-color: var(--success); } .btn-danger { background-color: var(--danger); }
-        .btn-warning { background-color: var(--warning); } .btn-secondary { background-color: var(--secondary); }
+        .btn-success { background-color: var(--success); } .btn-danger { background-color: var(--danger); } .btn-warning { background-color: var(--warning); } .btn-secondary { background-color: var(--secondary); }
         .btn-light { background-color: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); }
         .btn-loading .btn-text, .btn-loading .fas { visibility: hidden; }
         .btn-loading::after { content: ''; position: absolute; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Layout */
+        
         #main-app { display: flex; min-height: 100vh; }
         #sidebar { width: 250px; background: var(--secondary); color: white; padding: 20px; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s; }
         #sidebar h2 { color: white; border-bottom: 1px solid #4b5563; padding-bottom: 15px; text-align: center; }
@@ -56,7 +52,6 @@
         .loader-wrapper { display: flex; justify-content: center; align-items: center; padding: 60px; }
         .loader { width: 48px; height: 48px; border: 5px solid var(--primary-light); border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
         
-        /* Table */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
@@ -66,7 +61,6 @@
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: white; display: inline-block; }
         .actions-cell button { padding: 6px 10px; font-size: 0.85rem; }
 
-        /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
         .modal-box { background: var(--bg-card); border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 40px); animation: zoomIn 0.3s; }
         .modal-lg { max-width: 900px; } .modal-md { max-width: 600px; }
@@ -78,6 +72,15 @@
         label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-dark); }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { transform: scale(0.9); } to { transform: scale(1); } }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .stat-card { padding: 20px; text-align: center; border-right: 4px solid var(--primary); }
+        .stat-card h4 { color: var(--text-light); font-size: 1rem; }
+        .stat-card .count { font-size: 2.5rem; font-weight: 700; }
+        
+        .tab-nav { display:flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .tab-nav button { background: none; color: var(--text-light); border-radius: 0; padding: 10px 20px; border-bottom: 3px solid transparent; }
+        .tab-nav button.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -90,14 +93,8 @@
             <p style="color: var(--text-light);">لطفا اطلاعات خود را برای ورود وارد کنید.</p>
         </div>
         <form id="login-form">
-            <div class="form-group">
-                <label for="username">نام کاربری</label>
-                <input type="text" id="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">رمز عبور</label>
-                <input type="password" id="password" required>
-            </div>
+            <div class="form-group"><label for="username">نام کاربری</label><input type="text" id="username" required></div>
+            <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password" required></div>
             <button type="submit" id="login-btn" style="width: 100%; padding: 12px;"><span class="btn-text">ورود به سیستم</span></button>
             <p id="login-error" style="color:var(--danger); text-align: center; height: 1em; margin-top: 1em;"></p>
         </form>
@@ -116,34 +113,22 @@
         </nav>
         <button id="logout-btn"><i class="fas fa-sign-out-alt"></i><span class="nav-text"> خروج از سیستم</span></button>
     </aside>
-
-    <main id="main-content">
-        <!-- Views will be rendered here by JavaScript -->
-    </main>
+    <main id="main-content"><!-- Views will be rendered here --></main>
 </div>
-
 <div id="modal-container"></div>
 
 <script>
     // ==========================================================
-    // == پنل مدیریت نشریه - JavaScript (نسخه نهایی)
+    // == پنل مدیریت نشریه - JavaScript (نسخه نهایی و پایدار)
     // ==========================================================
 
-    // !مهم: این آدرس باید با آدرس دیپلوی اسکریپت پنل مدیریت جایگزین شود
-    const GOOGLE_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/1EMbhRCghY7x406DpfbwGHhc-gPrAMVdHZRrfkDgWj-k/edit?usp=drivesdk';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwyLMcZ5mYDf07NPYU1T2IyWNkTjEdZF5Qj36yMLGSgJfJvNnKIxgSFXhnTpKcYfIt4g/exec';
 
     const appState = {
         currentUser: null,
-        currentView: 'dashboard',
-        data: {
-            articles: null,
-            users: null,
-            publications: null,
-            logs: null,
-            dashboard: null
-        }
+        data: { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] }
     };
-    
+
     // --- Core Functions: Initialization & API ---
     document.addEventListener('DOMContentLoaded', () => {
         appState.currentUser = JSON.parse(localStorage.getItem('journalAdmin'));
@@ -154,19 +139,14 @@
         }
         document.getElementById('login-form').addEventListener('submit', handleLogin);
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
-        document.querySelectorAll('#main-nav button').forEach(btn => {
-            btn.addEventListener('click', () => navigateTo(btn.dataset.view));
-        });
+        document.querySelectorAll('#main-nav button').forEach(btn => btn.addEventListener('click', () => navigateTo(btn.dataset.view)));
     });
 
     async function callApi(action, params = {}, button = null) {
         if (button) button.classList.add('btn-loading');
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, params, adminUser: appState.currentUser })
+                method: 'POST', body: JSON.stringify({ action, params, adminUser: appState.currentUser })
             });
             if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
             const data = await response.json();
@@ -185,12 +165,7 @@
         const button = document.getElementById('login-btn');
         const loginError = document.getElementById('login-error');
         loginError.textContent = '';
-        
-        const response = await callApi('adminLogin', {
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-        }, button);
-        
+        const response = await callApi('adminLogin', { username: document.getElementById('username').value, password: document.getElementById('password').value }, button);
         if (response?.status === 'success') {
             appState.currentUser = response.user;
             localStorage.setItem('journalAdmin', JSON.stringify(appState.currentUser));
@@ -202,27 +177,19 @@
         }
     }
 
-    function handleLogout() {
-        localStorage.removeItem('journalAdmin');
-        window.location.reload();
-    }
+    function handleLogout() { localStorage.removeItem('journalAdmin'); window.location.reload(); }
     
     // --- Navigation & View Rendering ---
     async function navigateTo(view) {
-        appState.currentView = view;
-        document.querySelectorAll('#main-nav button').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === view);
-        });
-        
+        document.querySelectorAll('#main-nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
         const mainContent = document.getElementById('main-content');
         mainContent.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
 
-        // Fetch all data on first load or refresh, then use cache
-        if (!appState.data.articles) {
+        if (!appState.data.articles.length) { // Fetch only if cache is empty
              const response = await callApi('getAllData');
              if (response) appState.data = response.data;
         }
-
+        
         switch (view) {
             case 'dashboard': renderDashboardView(); break;
             case 'articles': renderArticlesView(); break;
@@ -233,47 +200,125 @@
     }
     
     function refreshDataAndNavigate(view) {
-        appState.data = { articles: null, users: null, publications: null, logs: null, dashboard: null }; // Clear cache
+        appState.data = { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] };
         navigateTo(view);
     }
-    
+
     function renderDashboardView() {
-        // Simple dashboard for now, can be expanded with charts
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `<h1>داشبورد</h1><p>خلاصه وضعیت فعلی سیستم.</p>`;
+        const articles = appState.data.articles;
+        const stats = {
+            pending: articles.filter(a => String(a.status) === '6').length,
+            accepted: articles.filter(a => String(a.status) === '5').length,
+            rejected: articles.filter(a => String(a.status) === '0').length,
+            total: articles.length
+        };
+        document.getElementById('main-content').innerHTML = `
+            <h1>داشبورد</h1>
+            <div class="stat-grid">
+                <div class="card stat-card" style="border-right-color: var(--warning);"><h4>منتظر بررسی نشریه</h4><p class="count">${stats.pending}</p></div>
+                <div class="card stat-card" style="border-right-color: var(--success);"><h4>پذیرفته شده نهایی</h4><p class="count">${stats.accepted}</p></div>
+                <div class="card stat-card" style="border-right-color: var(--danger);"><h4>رد شده نهایی</h4><p class="count">${stats.rejected}</p></div>
+                <div class="card stat-card"><h4>کل مقالات ثبت شده</h4><p class="count">${stats.total}</p></div>
+            </div>
+        `;
     }
     
     function renderArticlesView() {
-        const mainContent = document.getElementById('main-content');
-        const articles = appState.data.articles || [];
-        mainContent.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                 <h1>مدیریت مقالات (${articles.length})</h1>
-            </div>
+        const articles = appState.data.articles;
+        document.getElementById('main-content').innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h1>مدیریت مقالات (${articles.length})</h1></div>
             <div class="card">
-                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-                    <input type="text" id="table-search" placeholder="جستجو در مقالات..." onkeyup="filterTable('articles-table-body', this.value)">
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو..." onkeyup="filterTable('articles-table-body', this.value)"></div>
+                <div class="table-wrapper"><table>
+                    <thead><tr><th>شناسه</th><th>عنوان</th><th>محقق</th><th>استاد راهنما</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                    <tbody id="articles-table-body">
+                        ${articles.map(a => `
+                            <tr>
+                                <td>${a.articleId}</td><td>${a.title}</td><td>${a.researcherName}</td><td>${a.supervisorName}</td>
+                                <td>${getStatusBadge(a.status)}</td>
+                                <td class="actions-cell"><button class="btn-light" onclick="showArticleDetailsModal('${a.articleId}')"><i class="fas fa-eye"></i> مشاهده</button></td>
+                            </tr>`).join('') || `<tr><td colspan="6" class="text-center p-5">مقاله‌ای یافت نشد.</td></tr>`}
+                    </tbody>
+                </table></div>
+            </div>`;
+    }
+
+    function renderPublicationsView() {
+        const { issues, readyArticles } = appState.data.publications;
+        document.getElementById('main-content').innerHTML = `
+            <h1>مدیریت انتشارات</h1>
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
+                <div class="card">
+                    <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">تخصیص مقالات به شماره نشر</h3>
+                    <div style="padding: 20px;">
+                        <h4>۱. مقالات آماده تخصیص را انتخاب کنید:</h4>
+                        <div id="ready-articles-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; margin-bottom: 1rem;">
+                            ${readyArticles.map(a => `<div><input type="checkbox" id="art-${a.articleId}" value="${a.articleId}"> <label for="art-${a.articleId}">${a.title}</label></div>`).join('') || `<p>مقاله‌ای برای تخصیص وجود ندارد.</p>`}
+                        </div>
+                        <h4>۲. شماره نشر مقصد را انتخاب کنید:</h4>
+                        <select id="issue-select" style="width:100%;">${issues.map(i => `<option value="${i.issueNumber}">${i.issueNumber} (تاریخ نشر: ${formatDate(i.publishDate)})</option>`).join('')}</select>
+                        <button id="assign-btn" class="btn-success" style="width:100%; margin-top: 15px;">تخصیص مقالات انتخاب شده</button>
+                    </div>
                 </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead><tr><th>شناسه</th><th>عنوان مقاله</th><th>محقق</th><th>استاد راهنما</th><th>وضعیت</th><th>عملیات</th></tr></thead>
-                        <tbody id="articles-table-body">
-                           ${articles.map(a => `
-                                <tr>
-                                    <td>${a.articleId}</td>
-                                    <td>${a.title}</td>
-                                    <td>${a.researcherName}</td>
-                                    <td>${a.supervisorName}</td>
-                                    <td>${getStatusBadge(a.status)}</td>
-                                    <td class="actions-cell">
-                                        <button class="btn-light" onclick="showArticleDetailsModal('${a.articleId}')"><i class="fas fa-eye"></i> مشاهده</button>
-                                    </td>
-                                </tr>`).join('') || `<tr><td colspan="6" style="text-align:center; padding: 40px;">مقاله‌ای یافت نشد.</td></tr>`}
-                        </tbody>
-                    </table>
+                <div class="card">
+                     <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">مدیریت شماره‌های آتی</h3>
+                     <div style="padding: 20px;">
+                        <ul id="issues-list">${issues.map(i => `<li>شماره ${i.issueNumber} - ${formatDate(i.publishDate)}</li>`).join('')}</ul>
+                        <hr style="margin: 20px 0;">
+                        <h4>افزودن شماره جدید</h4>
+                        <div class="form-group"><label>شماره نشر (مثلا: ۱۲)</label><input type="text" id="new-issue-number"></div>
+                        <div class="form-group"><label>تاریخ نشر</label><input type="date" id="new-issue-date"></div>
+                        <button id="add-issue-btn" class="btn-success" style="width:100%;">افزودن</button>
+                     </div>
                 </div>
+            </div>`;
+        
+        document.getElementById('add-issue-btn').onclick = async function(e) {
+            const issueNumber = document.getElementById('new-issue-number').value;
+            const publishDate = document.getElementById('new-issue-date').value;
+            if(!issueNumber || !publishDate) { alert('لطفا هر دو فیلد را پر کنید.'); return; }
+            await callApi('createPublicationIssue', { issueNumber, publishDate }, e.target);
+            refreshDataAndNavigate('publications');
+        };
+        document.getElementById('assign-btn').onclick = async function(e) {
+            const selectedArticles = Array.from(document.querySelectorAll('#ready-articles-list input:checked')).map(cb => cb.value);
+            const issueNumber = document.getElementById('issue-select').value;
+            if(selectedArticles.length === 0 || !issueNumber) { alert('لطفا حداقل یک مقاله و یک شماره نشر را انتخاب کنید.'); return; }
+            await callApi('assignArticlesToIssue', { articleIds: selectedArticles, issueNumber }, e.target);
+            refreshDataAndNavigate('publications');
+        };
+    }
+    
+    function renderUsersView() {
+        const { researchers, professors } = appState.data.users;
+        document.getElementById('main-content').innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;"><h1>مدیریت کاربران</h1>
+                 <div><button class="btn-success" onclick="showCreateUserModal()"><i class="fas fa-user-plus"></i> افزودن کاربر جدید</button></div>
             </div>
-        `;
+            <div class="card" style="padding: 20px;">
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchUserTab('researchers', this)">محققان (${researchers.length})</button>
+                    <button class="tab-btn" onclick="switchUserTab('professors', this)">اساتید (${professors.length})</button>
+                </div>
+                <div id="users-content"></div>
+            </div>`;
+        switchUserTab('researchers', document.querySelector('.tab-btn')); // Show first tab
+    }
+    
+    function renderLogsView() {
+        const logs = appState.data.logs;
+        document.getElementById('main-content').innerHTML = `
+            <h1>گزارش وقایع سیستم</h1>
+            <div class="card">
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو..." onkeyup="filterTable('logs-table-body', this.value)"></div>
+                <div class="table-wrapper"><table>
+                    <thead><tr><th>تاریخ</th><th>کاربر</th><th>اقدام</th><th>شناسه مقاله</th><th>جزئیات</th></tr></thead>
+                    <tbody id="logs-table-body">
+                        ${logs.map(l => `
+                            <tr><td>${formatDate(l.timestamp)}</td><td>${l.user}</td><td>${l.action}</td><td>${l.articleId}</td><td>${l.details}</td></tr>`).join('')}
+                    </tbody>
+                </table></div>
+            </div>`;
     }
     
     // --- Modals & Dynamic Content ---
@@ -285,102 +330,114 @@
         const { details, history } = response.data;
         const modalBody = `
             <h3>${details.title}</h3>
-            <!-- More details can be displayed here -->
-            <hr>
-            <h4>تاریخچه کامل مقاله</h4>
-            <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-md); background: #f9fafb;">
+            <p><strong>محقق:</strong> ${details.researcher_name} | <strong>استاد راهنما:</strong> ${details.supervisor_name} | <strong>وضعیت فعلی:</strong> ${getStatusBadge(details.article_status)}</p>
+            <details style="margin-top: 1rem;"><summary>مشاهده محتوای کامل مقاله</summary>
+                <div style="background: #f9fafb; padding: 15px; border-radius: var(--radius-md); margin-top: 10px; max-height: 250px; overflow-y:auto;">
+                   <h4>چکیده</h4><p>${details.abstract || 'ثبت نشده'}</p><h4>مقدمه</h4><p>${details.introduction || 'ثبت نشده'}</p> ...
+                </div>
+            </details>
+            <h4 style="margin-top: 1.5rem;">تاریخچه کامل مقاله</h4>
+            <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-md);">
                 ${history.map(h => `<p><small>${formatDate(h.timestamp)}</small> - <strong>${h.user}:</strong> ${h.action} - <em>${h.details || ''}</em></p>`).join('')}
-            </div>
-        `;
-        showModal(`بررسی مقاله: ${details.articleId}`, modalBody, 'modal-lg');
-
+            </div>`;
+        showModal(`بررسی مقاله: ${details.article_id}`, modalBody, 'modal-lg');
+        
         const footer = document.getElementById('main-modal-footer');
-        if (String(details.article_status) === '6') { // Only show actions if pending review
-             footer.innerHTML += `
-                <button class="btn-danger" id="reject-btn"><i class="fas fa-times"></i> رد نهایی</button>
-                <button class="btn-warning" id="revise-btn"><i class="fas fa-edit"></i> ارسال برای ویرایش</button>
-                <button class="btn-success" id="accept-btn"><i class="fas fa-check"></i> پذیرش نهایی</button>
-            `;
-            document.getElementById('accept-btn').onclick = async (e) => {
-                await callApi('decideOnArticle', { articleId, decision: 'accept' }, e.target);
-                closeModal('main-modal');
-                refreshDataAndNavigate('articles');
-            };
-            document.getElementById('reject-btn').onclick = () => showReasonModal(articleId, 'reject');
-            document.getElementById('revise-btn').onclick = () => showReasonModal(articleId, 'revise');
+        if (String(details.article_status) === '6') {
+             footer.innerHTML = `<button class="btn-light" onclick="closeModal('main-modal')">بستن</button>
+                <button class="btn-danger" onclick="showReasonModal('${articleId}', 'reject')"><i class="fas fa-times"></i> رد نهایی</button>
+                <button class="btn-warning" onclick="showReasonModal('${articleId}', 'revise')"><i class="fas fa-edit"></i> ارسال برای ویرایش</button>
+                <button class="btn-success" id="accept-btn" onclick="handleAcceptClick('${articleId}', this)"><i class="fas fa-check"></i> پذیرش نهایی</button>`;
         }
+    }
+
+    async function handleAcceptClick(articleId, button) {
+        await callApi('decideOnArticle', { articleId, decision: 'accept' }, button);
+        closeModal('main-modal');
+        refreshDataAndNavigate('articles');
     }
 
     function showReasonModal(articleId, decision) {
         const title = decision === 'reject' ? 'رد نهایی مقاله' : 'ارسال برای ویرایش';
-        const content = `
-            <p>لطفاً دلیل خود را برای این تصمیم به صورت شفاف وارد کنید. این پیام برای محقق نمایش داده خواهد شد.</p>
-            <textarea id="decision-reason" rows="5" placeholder="دلیل ${decision === 'reject' ? 'رد مقاله' : 'نیاز به ویرایش'}..."></textarea>
-        `;
+        const content = `<p>دلیل خود را برای این تصمیم وارد کنید:</p><textarea id="decision-reason" rows="5"></textarea>`;
         showModal(title, content, 'modal-md');
         const footer = document.getElementById('main-modal-footer');
-        footer.innerHTML += `<button id="confirm-decision-btn" class="${decision === 'reject' ? 'btn-danger' : 'btn-warning'}">تایید و ارسال</button>`;
-        document.getElementById('confirm-decision-btn').onclick = async (e) => {
-            const reason = document.getElementById('decision-reason').value;
-            if(!reason) { alert('ارائه دلیل الزامی است.'); return; }
-            await callApi('decideOnArticle', { articleId, decision, reason }, e.target);
-            closeModal('main-modal');
-            refreshDataAndNavigate('articles');
+        footer.innerHTML = `<button class="btn-light" onclick="closeModal('main-modal')">لغو</button>
+            <button id="confirm-decision-btn" class="${decision === 'reject' ? 'btn-danger' : 'btn-warning'}" onclick="handleReasonConfirm('${articleId}', '${decision}', this)">تایید و ارسال</button>`;
+    }
+
+    async function handleReasonConfirm(articleId, decision, button) {
+        const reason = document.getElementById('decision-reason').value;
+        if(!reason) { alert('ارائه دلیل الزامی است.'); return; }
+        await callApi('decideOnArticle', { articleId, decision, reason }, button);
+        closeModal('main-modal');
+        refreshDataAndNavigate('articles');
+    }
+
+    function showCreateUserModal() {
+        const content = `
+            <div class="form-group"><label>نوع کاربر</label><select id="user-type"><option value="researcher">محقق</option><option value="professor">استاد</option></select></div>
+            <div class="form-group"><label>نام و نام خانوادگی</label><input type="text" id="user-name"></div>
+            <div class="form-group"><label>کد ملی (نام کاربری)</label><input type="text" id="user-nid"></div>
+            <div class="form-group"><label>رمز عبور</label><input type="text" id="user-pass"></div>
+        `;
+        showModal('ایجاد کاربر جدید', content, 'modal-md');
+        const footer = document.getElementById('main-modal-footer');
+        footer.innerHTML += `<button class="btn-success" onclick="handleCreateUser(this)">ایجاد کاربر</button>`;
+    }
+    
+    async function handleCreateUser(button) {
+        const userData = {
+            name: document.getElementById('user-name').value,
+            nid: document.getElementById('user-nid').value,
+            pass: document.getElementById('user-pass').value
         };
+        const userType = document.getElementById('user-type').value;
+        if(!userData.name || !userData.nid || !userData.pass) { alert('تمام فیلدها الزامی است.'); return; }
+        await callApi('createUser', { userData, userType }, button);
+        closeModal('main-modal');
+        refreshDataAndNavigate('users');
+    }
+    
+    function switchUserTab(tabName, clickedBtn) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        clickedBtn.classList.add('active');
+        const contentDiv = document.getElementById('users-content');
+        const users = appState.data.users[tabName];
+        let tableHTML = `<div class="table-wrapper"><table><thead><tr><th>نام</th><th>کد ملی</th>${tabName === 'professors' ? '<th>وضعیت</th>' : ''}<th>عملیات</th></tr></thead><tbody>`;
+        users.forEach(u => {
+            tableHTML += `<tr><td>${u.name}</td><td>${u.nid}</td>${tabName === 'professors' ? `<td>${u.status == 5 ? 'فعال' : 'غیرفعال'}</td>` : ''}<td><button class="btn-light btn-sm">ویرایش</button></td></tr>`;
+        });
+        tableHTML += `</tbody></table></div>`;
+        contentDiv.innerHTML = tableHTML;
     }
     
     // --- Utility Functions ---
     function showModal(title, content, sizeClass = '') {
+        closeModal('main-modal'); // Close any existing modal first
         const modalContainer = document.getElementById('modal-container');
         const modalId = 'main-modal';
-        const modalHTML = `
-            <div class="modal-overlay" id="${modalId}" onclick="if (event.target.id === '${modalId}') closeModal('${modalId}');">
-                <div class="modal-box ${sizeClass}">
-                    <div class="modal-header">
-                        <h3>${title}</h3>
-                        <button onclick="closeModal('${modalId}')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--text-light);">&times;</button>
-                    </div>
-                    <div class="modal-body">${content}</div>
-                    <div class="modal-footer" id="${modalId}-footer">
-                        <button class="btn-light" onclick="closeModal('${modalId}')">بستن</button>
-                    </div>
-                </div>
-            </div>`;
-        modalContainer.innerHTML = modalHTML;
+        modalContainer.innerHTML = `<div class="modal-overlay" id="${modalId}" onclick="if (event.target.id === '${modalId}') closeModal('${modalId}');"><div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button onclick="closeModal('${modalId}')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--text-light);">&times;</button></div><div class="modal-body">${content}</div><div class="modal-footer" id="${modalId}-footer"><button class="btn-light" onclick="closeModal('${modalId}')">بستن</button></div></div></div>`;
     }
-
-    function closeModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) modal.remove();
-    }
+    function closeModal(id) { document.getElementById(id)?.remove(); }
     
     function getStatusBadge(status) {
         const s = String(status);
-        const map = {
-            '0': { text: 'رد شده نهایی', color: 'var(--danger)' },
-            '5': { text: 'پذیرفته شده', color: 'var(--success)' },
-            '6': { text: 'منتظر بررسی نشریه', color: 'var(--warning)' },
-            '10': { text: 'نیازمند ویرایش نهایی', color: 'var(--info)' },
-        };
-        const info = map[s] || { text: `نامشخص (${s})`, color: 'var(--text-light)' };
-        return `<span class="status-badge" style="background-color: ${info.color};">${info.text}</span>`;
+        const map = { '0': {t:'رد شده',c:'danger'}, '5':{t:'پذیرفته',c:'success'}, '6':{t:'منتظر بررسی',c:'warning'}, '10':{t:'ویرایش نهایی',c:'info'}, '1':{t:'در حال بررسی',c:'primary'}, '9':{t:'پیش‌نویس',c:'secondary'} };
+        const info = map[s] || { t: `نامشخص(${s})`, c: 'secondary' };
+        return `<span class="status-badge" style="background-color: var(--${info.c});">${info.t}</span>`;
     }
 
     function filterTable(tableBodyId, searchTerm) {
-        const rows = document.getElementById(tableBodyId).getElementsByTagName('tr');
+        const rows = document.getElementById(tableBodyId).rows;
         const term = searchTerm.toLowerCase();
-        for (let i = 0; i < rows.length; i++) {
-            const rowText = rows[i].textContent || rows[i].innerText;
-            rows[i].style.display = rowText.toLowerCase().indexOf(term) > -1 ? '' : 'none';
-        }
+        for (let row of rows) row.style.display = (row.textContent || row.innerText).toLowerCase().includes(term) ? '' : 'none';
     }
     
     function formatDate(dateString) {
-        if (!dateString) return 'نامشخص';
+        if (!dateString) return '-';
         return new Date(dateString).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
     }
-
 </script>
-
 </body>
 </html>
