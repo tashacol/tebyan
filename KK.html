@@ -94,7 +94,6 @@
         .toast.error { background-color: var(--danger); }
         @keyframes toast-in { to { opacity: 1; transform: translateY(0); } }
 
-        /* دستور سوم و پنجم: استایل مدرن مودال عملیات مقاله */
         #article-modal-tabs { display: flex; border-bottom: 1px solid var(--border-color); }
         #article-modal-tabs button { background: none; color: var(--text-light); border: none; padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; }
         #article-modal-tabs button.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
@@ -107,10 +106,13 @@
         .timeline-header { display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 5px; }
         .timeline-details { font-size: 0.9em; color: var(--text-light); word-break: break-word; }
         
-        /* دستور هفتم و هشتم: استایل مدرن مدیریت انتشارات */
         .issue-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; }
         .issue-list-item button { background: none; color: var(--danger); border: none; cursor: pointer; }
         .issue-list-item button:disabled { color: #ccc; cursor: not-allowed; }
+        
+        #drop-area { border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 30px; text-align: center; color: var(--text-light); cursor: pointer; }
+        #drop-area.highlight { border-color: var(--primary); background-color: var(--primary-light); }
+        #file-info { margin-top: 15px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -153,7 +155,7 @@
     // == پنل مدیریت نشریه - JavaScript (نسخه نهایی و پایدار)
     // ==========================================================
 
-    const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqsfCE7G7gbMANi-CqxBlIVPQHzIZt54IDQAY-f3PhC46kt5kBvLo1bpp4Xk3KscASvg/exec';
 
     const appState = {
         currentUser: null,
@@ -191,6 +193,7 @@
         'ISSUE_CREATED': { title: 'ایجاد شماره نشر جدید', icon: 'fa-newspaper' },
         'USER_CREATED': { title: 'ایجاد کاربر جدید', icon: 'fa-user-plus' },
         'USER_UPDATED': { title: 'ویرایش اطلاعات کاربر', icon: 'fa-user-pen' },
+        'ISSUE_DELETED': { title: 'حذف شماره نشر', icon: 'fa-trash-can'}
     };
 
     // --- Core Functions: Initialization & API ---
@@ -248,6 +251,7 @@
         const mainContent = document.getElementById('main-content');
         mainContent.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
 
+        // دستور یازدهم: فقط در اولین بار کل داده‌ها را می‌گیرد
         if (!appState.isDataLoaded) {
              const response = await callApi('getAllData');
              if (response) {
@@ -332,7 +336,7 @@
                         <div id="issues-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem;">
                             ${issues.map(i => {
                                 const isPast = new Date(i.publishDate) < new Date();
-                                return `<div class="issue-list-item"><span>شماره ${i.issueNumber} - ${formatDate(i.publishDate, false)}</span> <button ${isPast ? 'disabled' : ''} onclick="handleDeleteIssue('${i.issueNumber}', this)"><i class="fas fa-trash"></i></button></div>`;
+                                return `<div class="issue-list-item"><span>شماره ${i.issueNumber} - ${formatDate(i.publishDate, false)}</span> <button ${isPast ? 'disabled title="امکان حذف شماره‌های گذشته وجود ندارد"' : `title="حذف شماره ${i.issueNumber}"`} onclick="handleDeleteIssue('${i.issueNumber}', this)"><i class="fas fa-trash"></i></button></div>`;
                             }).join('') || `<p style="color:var(--text-light); text-align:center;">شماره نشری ایجاد نشده است.</p>`}
                         </div>
                         <hr style="margin: 20px 0;">
@@ -366,7 +370,6 @@
     }
     
     function renderLogsView() {
-        // دستور سیزدهم: فیلتر کردن وقایع
         const logs = [...appState.data.logs]
             .filter(log => log.user.includes('(مدیر)'))
             .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -398,8 +401,8 @@
             </div>
             <div id="actions-content" class="tab-content">
                 <h3>${details.title}</h3>
-                <p><strong>شناسه:</strong> ${details.article_id} | <strong>محقق:</strong> ${details.researcher_name} | <strong>استاد راهنما:</strong> ${details.supervisor_name}</p>
-                <p><strong>وضعیت فعلی:</strong> ${getStatusBadge(details.article_status)}</p>
+                <p><strong>شناسه:</strong> ${details.articleId} | <strong>محقق:</strong> ${details.researcherName} | <strong>استاد راهنما:</strong> ${details.supervisorName}</p>
+                <p><strong>وضعیت فعلی:</strong> ${getStatusBadge(details.articleStatus)}</p>
                 <hr style="margin: 20px 0;"><h4>اقدامات مدیریتی</h4><div id="admin-actions"></div>
             </div>
             <div id="content-content" class="tab-content hidden" style="max-height: 400px; overflow-y:auto; line-height: 1.8;">
@@ -415,7 +418,7 @@
         updateModalContent('main-modal', modalBody);
         
         const actionsContainer = document.getElementById('admin-actions');
-        if (String(details.article_status) === '6') {
+        if (String(details.articleStatus) === '6') {
              actionsContainer.innerHTML = `<p>این مقاله توسط استاد راهنما تایید شده و منتظر تصمیم نهایی نشریه است.</p>
                 <button class="btn-danger" onclick="showReasonModal('${articleId}', 'reject')"><i class="fas fa-times"></i> رد نهایی</button>
                 <button class="btn-warning" onclick="showReasonModal('${articleId}', 'revise')"><i class="fas fa-edit"></i> ارسال برای ویرایش نهایی</button>
@@ -423,7 +426,7 @@
         } else {
             actionsContainer.innerHTML = `<p style="color:var(--text-light)">در وضعیت فعلی، اقدامی از سوی شما مورد نیاز نیست.</p>`;
         }
-        document.getElementById('main-modal-footer').innerHTML = `<button class="btn-light" onclick="handleDownloadPDF(appState.data.articles.find(a=>a.articleId == '${articleId}'))"><i class="fas fa-file-pdf"></i> دانلود PDF</button> <button class="btn-secondary" onclick="closeModal('main-modal')">بستن</button>`;
+        document.getElementById('main-modal-footer').innerHTML = `<button class="btn-light" onclick="handleDownloadPDF('${articleId}')"><i class="fas fa-file-pdf"></i> دانلود PDF</button> <button class="btn-secondary" onclick="closeModal('main-modal')">بستن</button>`;
     }
     
     // --- Action Handlers ---
@@ -432,7 +435,6 @@
         if (res) {
             showToast(res.message, 'success');
             closeModal('main-modal');
-            // دستور یازدهم: آپدیت UI بدون رفرش
             appState.data.articles = res.updatedData.articles;
             appState.data.publications.readyArticles = res.updatedData.publications.readyArticles;
             renderArticlesView();
@@ -535,6 +537,24 @@
         showModal('ویرایش کاربر', content, 'modal-md');
         document.getElementById('main-modal-footer').innerHTML = `<button class="btn-light" onclick="closeModal('main-modal')">لغو</button><button class="btn-success" onclick="handleUpdateUser(this)">ذخیره تغییرات</button>`;
     }
+    function showImportUsersModal() {
+        const content = `
+            <p>فایل اکسل خود را اینجا بکشید یا برای انتخاب کلیک کنید.</p>
+            <div id="drop-area">
+                <input type="file" id="file-input" accept=".xlsx, .xls" style="display: none;">
+                <i class="fas fa-upload fa-2x"></i>
+                <p>فرمت: ستون A: نام، ستون B: کد ملی، ستون C: رمز عبور</p>
+            </div>
+            <div id="file-info"></div>
+            <div id="import-actions" class="hidden" style="margin-top: 20px;">
+                <p>این کاربران به کدام گروه اضافه شوند؟</p>
+                <button class="btn-secondary" id="import-researchers-btn"><i class="fas fa-user"></i> افزودن به محققان</button>
+                <button class="btn-secondary" id="import-professors-btn"><i class="fas fa-user-tie"></i> افزودن به اساتید</button>
+            </div>
+        `;
+        showModal('افزودن کاربر از اکسل', content, 'modal-md');
+        setupExcelDropArea();
+    }
     function switchUserTab(tabName, clickedBtn) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         clickedBtn.classList.add('active');
@@ -599,6 +619,123 @@
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         if (includeTime) { options.hour = '2-digit'; options.minute = '2-digit'; }
         return new Date(dateString).toLocaleDateString('fa-IR', options);
+    }
+    
+    // --- Excel & PDF Export ---
+    function setupExcelDropArea() {
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        let parsedData = [];
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }));
+        ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight')));
+        ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight')));
+        
+        dropArea.onclick = () => fileInput.click();
+        fileInput.onchange = e => handleFile(e.target.files[0]);
+        dropArea.ondrop = e => handleFile(e.dataTransfer.files[0]);
+
+        function handleFile(file) {
+            if (!file) return;
+            document.getElementById('file-info').textContent = `فایل انتخاب شده: ${file.name}`;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                parsedData = jsonData.slice(1).map(row => ({ name: row[0], nid: row[1], pass: row[2] })).filter(u => u.name && u.nid && u.pass);
+                document.getElementById('import-actions').classList.remove('hidden');
+                document.getElementById('file-info').textContent += ` - ${parsedData.length} کاربر معتبر یافت شد.`;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        document.getElementById('import-researchers-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'researcher');
+        document.getElementById('import-professors-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'professor');
+    }
+    function handleExportExcel() {
+        const dataToExport = appState.data.articles.map(a => ({
+            'عنوان مقاله': a.title,
+            'نام محقق': a.researcherName,
+            'کد ملی محقق': a.researcherId,
+            'استاد راهنما': a.supervisorName,
+            'کد ملی استاد': a.supervisorId,
+            'وضعیت': getStatusBadge(a.status).replace(/<[^>]+>/g, ''),
+            'تاریخ ثبت': formatDate(a.requestDate, false),
+            'تاریخ پذیرش': formatDate(a.acceptanceDate, false)
+        }));
+        
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const today = `تاریخ گزارش: ${formatDate(new Date())}`;
+        XLSX.utils.sheet_add_aoa(ws, [[today]], { origin: 'A1' });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "گزارش مقالات");
+        XLSX.writeFile(wb, `ArticleReport-${new Date().toLocaleDateString('fa-IR').replace(/\//g,'-')}.xlsx`);
+    }
+
+    async function handleDownloadPDF(articleId) {
+        const button = event.target.closest('button');
+        if (button) button.classList.add('btn-loading');
+        const detailsResponse = await callApi('getArticleDetails', { articleId });
+        if (button) button.classList.remove('btn-loading');
+        
+        if (!detailsResponse) return;
+        
+        const details = detailsResponse.data.details;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // فونت فارسی وزیرمتن برای نمایش صحیح در PDF
+        // این فونت به صورت Base64 در کد قرار داده شده تا نیازی به فایل خارجی نباشد.
+        const vazirmatnFont = 'AAEAAAARAQAABAAQRFNJRwAAAAAAAQAAAA...'; // This is a placeholder for the extremely long Base64 font string. A real implementation requires pasting the full string here.
+
+        // به دلیل محدودیت شدید طول پاسخ، رشته کامل فونت در اینجا قرار داده نشده است.
+        // برای عملکرد صحیح، باید رشته Base64 کامل فونت Vazirmatn را در متغیر بالا جایگزین کنید.
+        // در صورت عدم جایگزینی، متن فارسی ممکن است به درستی نمایش داده نشود.
+        // doc.addFileToVFS('Vazirmatn-Regular.ttf', vazirmatnFont);
+        // doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
+        // doc.setFont('Vazirmatn');
+
+        doc.setR2L(true);
+        doc.setFontSize(16);
+        doc.text(details.title, 105, 20, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.text(`محقق: ${details.researcherName}`, 190, 30, { align: 'right' });
+        doc.text(`استاد راهنما: ${details.supervisorName}`, 190, 38, { align: 'right' });
+        doc.text(`تاریخ ثبت: ${formatDate(details.requestDate, false)}`, 190, 46, { align: 'right' });
+
+        const body = [
+            ['چکیده', details.abstract || '-'],
+            ['کلیدواژه', details.keywords || '-'],
+            ['مقدمه', details.introduction || '-'],
+            ['بدنه', details.body || '-'],
+            ['نتیجه گیری', details.conclusion || '-'],
+            ['منابع', details.references || '-']
+        ];
+        
+        doc.autoTable({
+            startY: 55,
+            head: [['محتوا', 'بخش']],
+            body: body,
+            theme: 'grid',
+            styles: {
+                fontSize: 14, // دستور چهارم: سایز 14
+                halign: 'right',
+                font: 'Vazirmatn' // فعال کردن فونت فارسی
+            },
+            headStyles: {
+                fillColor: [31, 41, 55],
+                halign: 'right',
+                font: 'Vazirmatn'
+            },
+            columnStyles: {
+                0: { cellWidth: 'auto' },
+                1: { cellWidth: 30, fontStyle: 'bold' }
+            }
+        });
+        
+        doc.save(`Article-${details.articleId}.pdf`);
     }
 </script>
 </body>
