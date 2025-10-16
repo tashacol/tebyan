@@ -18,7 +18,6 @@
             --primary-dark: #2563EB;
             --text-dark: #1f2937;
             --text-light: #6b7280;
-            /* Instruction 4: UI/UX Improvement - Slightly different background for better contrast */
             --bg-main: #f8f9fa;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
@@ -28,7 +27,6 @@
             --danger-light: #fee2e2;
             --warning: #f59e0b;
             --info: #38bdf8;
-            /* Instruction 4: UI/UX Improvement - Softer, more modern shadow */
             --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
@@ -97,7 +95,6 @@
             width: 100%;
             box-sizing: border-box;
             padding: 12px 15px;
-            /* Instruction 4: UI/UX Improvement - Lighter default border */
             border: 1px solid #dee2e6;
             border-radius: var(--radius-md);
             font-size: 1rem;
@@ -316,7 +313,7 @@
             border-right: 5px solid var(--primary);
             box-shadow: var(--shadow);
             transition: var(--transition);
-            /* Instruction 4: UI/UX Improvement - Flex layout for centering and icon support */
+            /* START: Instruction 2 - Flex layout for centering and icon support */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -324,9 +321,10 @@
             gap: 8px;
             position: relative;
             padding-top: 40px;
+            /* END: Instruction 2 */
         }
         
-        /* Instruction 4: UI/UX Improvement - Adding icons to summary cards */
+        /* START: Instruction 2 - Adding icons to summary cards */
         .summary-card::before {
             content: '';
             font-family: "Font Awesome 6 Free";
@@ -335,11 +333,11 @@
             top: 20px;
             right: 20px;
             font-size: 1.5rem;
+            color: var(--primary-light);
         }
 
         .summary-card:first-child::before {
             content: '\f017'; /* fa-clock */
-            color: var(--primary-light);
         }
 
         .summary-card.accepted::before {
@@ -351,6 +349,7 @@
             content: '\f057'; /* fa-times-circle */
             color: var(--danger-light);
         }
+        /* END: Instruction 2 */
 
         .summary-card:hover {
             transform: translateY(-4px);
@@ -383,7 +382,6 @@
             border-right-color: var(--danger);
         }
 
-        /* START: Instruction 1 - Skeleton Loader styles */
         .skeleton-loader {
             background-color: #e2e8f0;
             border-radius: var(--radius-md);
@@ -406,7 +404,6 @@
                 transform: translateX(100%);
             }
         }
-        /* END: Instruction 1 - Skeleton Loader styles */
         
         .status-loader {
             width: 20px;
@@ -1340,7 +1337,6 @@
             margin-bottom: 8px;
         }
         
-        /* START: Instruction 3 - Display/Edit Mode Styles */
         .editable-field {
             padding: 5px 0;
         }
@@ -1392,7 +1388,6 @@
         .editable-field.edit-mode .form-control-edit {
             display: block;
         }
-        /* END: Instruction 3 - Display/Edit Mode Styles */
     </style>
 </head>
 
@@ -1535,7 +1530,6 @@
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
             const summaryContainer = document.getElementById('summary-dashboard');
-            // START: Instruction 1 - Use skeleton loader for summary cards on initial load
             summaryContainer.innerHTML = `
                 <div class="summary-card">
                     <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
@@ -1550,7 +1544,6 @@
                     <span class="label">رد شده</span>
                 </div>
             `;
-            // END: Instruction 1
             
             let searchDebounce;
             const searchInput = document.getElementById('article-search-input');
@@ -1760,7 +1753,7 @@
             }
         }
 
-        function showEditArticleWizard(article) {
+        function showEditArticleWizard(article, initialTabIndex = 0) {
             const isFullyLocked = [5, 6, 8, 11].includes(Number(article.articleStatus));
             const isReadOnly = isFullyLocked;
             const isDraft = Number(article.articleStatus) === 9;
@@ -1813,7 +1806,7 @@
         `;
             renderModal(`ویرایش مقاله: ${article.title}`, modalContent, 'modal-lg');
             
-            setupTabCarousel();
+            setupTabCarousel(initialTabIndex);
 
             if (isDraft) {
                 document.getElementById('submit-draft-btn').onclick = (e) => handleSubmitDraft(e, article.articleId, article.supervisorName);
@@ -1877,7 +1870,6 @@
                     }
                     const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target);
                     if (res?.status === 'success') {
-                        // START: Instruction 2 - Dynamic success message
                         const sectionNames = {
                             keywords_abstract: 'چکیده و کلیدواژه‌ها',
                             introduction: 'مقدمه',
@@ -1888,7 +1880,6 @@
                         const friendlyName = sectionNames[section] || 'بخش مورد نظر';
                         const successMessage = `${friendlyName} با موفقیت ذخیره شد.`;
                         showCustomAlert(successMessage, 'success');
-                        // END: Instruction 2
 
                         updateCardInPlace(article.articleId);
                         if (section === 'keywords_abstract') {
@@ -1986,7 +1977,6 @@
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
             const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--text-light); text-align: center; margin-bottom:15px;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
             
-            // START: Instruction 3 - Reworking the General Information tab
             const step1 = document.querySelector('.tab-content[data-tab="1"]');
             step1.innerHTML = `
                 <h4>اطلاعات کلی</h4>
@@ -2080,16 +2070,46 @@
                 if (canChangeSupervisor && window.selectedSupervisorForEdit) {
                     details.supervisor = window.selectedSupervisorForEdit;
                 }
-                const res = await callApi('updateArticleDetails', { nationalId: user.nationalId, articleId: article.articleId, details }, e.target);
+                const res = await callApi('updateArticleDetails', { nationalId: user.nationalId, articleId: article.articleId, details }, e.target.closest('button'));
+                
+                // START: Instruction 1 - Refresh modal data after saving general info
                 if (res?.status === 'success') {
-                    showCustomAlert('اطلاعات کلی با موفقیت ذخیره شد.', 'success');
-                    updateCardInPlace(article.articleId);
-                    window.selectedSupervisorForEdit = null;
+                    const activeTabIndex = Array.from(document.querySelectorAll('.tab-nav-item')).findIndex(item => item.classList.contains('active'));
+
+                    showCustomAlert(
+                        'اطلاعات کلی با موفقیت ذخیره شد.<br><div id="reloading-indicator" style="display:flex; justify-content:center; align-items:center; margin-top:10px; color:var(--text-light);"><div class="status-loader" style="width:18px; height:18px; border-width:2px; margin-left:8px;"></div><span>در حال بروزرسانی صفحه مقاله...</span></div>',
+                        'success'
+                    );
+                    
+                    const alertOkBtn = document.querySelector('#alert-ok-btn');
+                    if(alertOkBtn) alertOkBtn.disabled = true;
+
+                    (async () => {
+                        try {
+                            await updateCardInPlace(article.articleId);
+                            const updatedArticle = allUserArticles.find(a => a.articleId == article.articleId);
+
+                            if (updatedArticle) {
+                                window.selectedSupervisorForEdit = null;
+                                closeAllModals(); 
+                                showEditArticleWizard(updatedArticle, activeTabIndex);
+                            } else {
+                                throw new Error("Updated article not found in list.");
+                            }
+                        } catch (error) {
+                            console.error("Failed to refresh article wizard:", error);
+                            const indicator = document.getElementById('reloading-indicator');
+                            if (indicator) {
+                                indicator.innerHTML = '<span style="color:var(--danger);">خطا در بروزرسانی. لطفاً پنجره را ببندید و دوباره امتحان کنید.</span>';
+                            }
+                            if(alertOkBtn) alertOkBtn.disabled = false;
+                        }
+                    })();
                 } else {
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
                 }
+                // END: Instruction 1
             };
-            // END: Instruction 3
         }
 
         async function handleSubmitDraft(e, articleId, supervisorName) {
@@ -2562,14 +2582,14 @@
             }
         }
         
-        function setupTabCarousel() {
+        function setupTabCarousel(initialIndex = 0) {
             const wrapper = document.querySelector('.tab-nav-wrapper');
             const nav = document.querySelector('.tab-nav');
             const items = Array.from(document.querySelectorAll('.tab-nav-item'));
             const contents = document.querySelectorAll('.tab-content');
             const nextBtn = document.getElementById('nav-next');
             const prevBtn = document.getElementById('nav-prev');
-            let activeIndex = 0;
+            let activeIndex = initialIndex;
 
             const updateView = () => {
                 const activeItem = items[activeIndex];
@@ -2621,7 +2641,6 @@
             updateView();
         }
 
-        // Instruction 3: Modified function to handle updating the display text
         function showAffiliationModal(targetInputId, currentAffiliation = '', onSaveCallback) {
             const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
             const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level-modal" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field-modal" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute-modal" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location-modal" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
