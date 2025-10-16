@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -126,6 +126,7 @@
 
     const appState = {
         currentUser: null,
+        isDataLoaded: false,
         data: { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] }
     };
 
@@ -145,9 +146,7 @@
     async function callApi(action, params = {}, button = null) {
         if (button) button.classList.add('btn-loading');
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', body: JSON.stringify({ action, params, adminUser: appState.currentUser })
-            });
+            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action, params, adminUser: appState.currentUser }) });
             if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
             const data = await response.json();
             if (data.status === 'error') throw new Error(data.message);
@@ -185,9 +184,15 @@
         const mainContent = document.getElementById('main-content');
         mainContent.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
 
-        if (!appState.data.articles.length) { // Fetch only if cache is empty
+        if (!appState.isDataLoaded) {
              const response = await callApi('getAllData');
-             if (response) appState.data = response.data;
+             if (response) {
+                appState.data = response.data;
+                appState.isDataLoaded = true;
+             } else {
+                mainContent.innerHTML = `<h2>خطا در بارگذاری اطلاعات اولیه.</h2>`;
+                return;
+             }
         }
         
         switch (view) {
@@ -200,7 +205,7 @@
     }
     
     function refreshDataAndNavigate(view) {
-        appState.data = { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] };
+        appState.isDataLoaded = false;
         navigateTo(view);
     }
 
@@ -213,14 +218,13 @@
             total: articles.length
         };
         document.getElementById('main-content').innerHTML = `
-            <h1>داشبورد</h1>
+            <h1>داشبورد</h1><p>خلاصه وضعیت فعلی سیستم.</p>
             <div class="stat-grid">
                 <div class="card stat-card" style="border-right-color: var(--warning);"><h4>منتظر بررسی نشریه</h4><p class="count">${stats.pending}</p></div>
                 <div class="card stat-card" style="border-right-color: var(--success);"><h4>پذیرفته شده نهایی</h4><p class="count">${stats.accepted}</p></div>
                 <div class="card stat-card" style="border-right-color: var(--danger);"><h4>رد شده نهایی</h4><p class="count">${stats.rejected}</p></div>
                 <div class="card stat-card"><h4>کل مقالات ثبت شده</h4><p class="count">${stats.total}</p></div>
-            </div>
-        `;
+            </div>`;
     }
     
     function renderArticlesView() {
@@ -228,7 +232,7 @@
         document.getElementById('main-content').innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;"><h1>مدیریت مقالات (${articles.length})</h1></div>
             <div class="card">
-                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو..." onkeyup="filterTable('articles-table-body', this.value)"></div>
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو در مقالات..." onkeyup="filterTable('articles-table-body', this.value)"></div>
                 <div class="table-wrapper"><table>
                     <thead><tr><th>شناسه</th><th>عنوان</th><th>محقق</th><th>استاد راهنما</th><th>وضعیت</th><th>عملیات</th></tr></thead>
                     <tbody id="articles-table-body">
@@ -237,12 +241,12 @@
                                 <td>${a.articleId}</td><td>${a.title}</td><td>${a.researcherName}</td><td>${a.supervisorName}</td>
                                 <td>${getStatusBadge(a.status)}</td>
                                 <td class="actions-cell"><button class="btn-light" onclick="showArticleDetailsModal('${a.articleId}')"><i class="fas fa-eye"></i> مشاهده</button></td>
-                            </tr>`).join('') || `<tr><td colspan="6" class="text-center p-5">مقاله‌ای یافت نشد.</td></tr>`}
+                            </tr>`).join('') || `<tr><td colspan="6" style="text-align:center; padding: 40px;">مقاله‌ای یافت نشد.</td></tr>`}
                     </tbody>
                 </table></div>
             </div>`;
     }
-
+    
     function renderPublicationsView() {
         const { issues, readyArticles } = appState.data.publications;
         document.getElementById('main-content').innerHTML = `
@@ -252,8 +256,8 @@
                     <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">تخصیص مقالات به شماره نشر</h3>
                     <div style="padding: 20px;">
                         <h4>۱. مقالات آماده تخصیص را انتخاب کنید:</h4>
-                        <div id="ready-articles-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; margin-bottom: 1rem;">
-                            ${readyArticles.map(a => `<div><input type="checkbox" id="art-${a.articleId}" value="${a.articleId}"> <label for="art-${a.articleId}">${a.title}</label></div>`).join('') || `<p>مقاله‌ای برای تخصیص وجود ندارد.</p>`}
+                        <div id="ready-articles-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; margin-bottom: 1rem; background: #f9fafb;">
+                            ${readyArticles.map(a => `<div><input type="checkbox" id="art-${a.articleId}" value="${a.articleId}" class="article-checkbox"> <label for="art-${a.articleId}">${a.title} (${a.articleId})</label></div>`).join('') || `<p style="color:var(--text-light)">مقاله‌ای برای تخصیص وجود ندارد.</p>`}
                         </div>
                         <h4>۲. شماره نشر مقصد را انتخاب کنید:</h4>
                         <select id="issue-select" style="width:100%;">${issues.map(i => `<option value="${i.issueNumber}">${i.issueNumber} (تاریخ نشر: ${formatDate(i.publishDate)})</option>`).join('')}</select>
@@ -263,7 +267,7 @@
                 <div class="card">
                      <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">مدیریت شماره‌های آتی</h3>
                      <div style="padding: 20px;">
-                        <ul id="issues-list">${issues.map(i => `<li>شماره ${i.issueNumber} - ${formatDate(i.publishDate)}</li>`).join('')}</ul>
+                        <ul id="issues-list" style="padding-right: 20px;">${issues.map(i => `<li>شماره ${i.issueNumber} - ${formatDate(i.publishDate)}</li>`).join('')}</ul>
                         <hr style="margin: 20px 0;">
                         <h4>افزودن شماره جدید</h4>
                         <div class="form-group"><label>شماره نشر (مثلا: ۱۲)</label><input type="text" id="new-issue-number"></div>
@@ -281,14 +285,14 @@
             refreshDataAndNavigate('publications');
         };
         document.getElementById('assign-btn').onclick = async function(e) {
-            const selectedArticles = Array.from(document.querySelectorAll('#ready-articles-list input:checked')).map(cb => cb.value);
+            const selectedArticles = Array.from(document.querySelectorAll('.article-checkbox:checked')).map(cb => cb.value);
             const issueNumber = document.getElementById('issue-select').value;
             if(selectedArticles.length === 0 || !issueNumber) { alert('لطفا حداقل یک مقاله و یک شماره نشر را انتخاب کنید.'); return; }
             await callApi('assignArticlesToIssue', { articleIds: selectedArticles, issueNumber }, e.target);
             refreshDataAndNavigate('publications');
         };
     }
-    
+
     function renderUsersView() {
         const { researchers, professors } = appState.data.users;
         document.getElementById('main-content').innerHTML = `
@@ -302,20 +306,19 @@
                 </div>
                 <div id="users-content"></div>
             </div>`;
-        switchUserTab('researchers', document.querySelector('.tab-btn')); // Show first tab
+        switchUserTab('researchers', document.querySelector('.tab-btn'));
     }
     
     function renderLogsView() {
-        const logs = appState.data.logs;
+        const logs = [...appState.data.logs].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
         document.getElementById('main-content').innerHTML = `
             <h1>گزارش وقایع سیستم</h1>
             <div class="card">
-                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو..." onkeyup="filterTable('logs-table-body', this.value)"></div>
+                <div style="padding: 20px; border-bottom: 1px solid var(--border-color);"><input type="text" id="table-search" placeholder="جستجو در لاگ‌ها..." onkeyup="filterTable('logs-table-body', this.value)"></div>
                 <div class="table-wrapper"><table>
                     <thead><tr><th>تاریخ</th><th>کاربر</th><th>اقدام</th><th>شناسه مقاله</th><th>جزئیات</th></tr></thead>
                     <tbody id="logs-table-body">
-                        ${logs.map(l => `
-                            <tr><td>${formatDate(l.timestamp)}</td><td>${l.user}</td><td>${l.action}</td><td>${l.articleId}</td><td>${l.details}</td></tr>`).join('')}
+                        ${logs.map(l => `<tr><td>${formatDate(l.timestamp)}</td><td>${l.user}</td><td>${l.action}</td><td>${l.articleId}</td><td>${l.details}</td></tr>`).join('')}
                     </tbody>
                 </table></div>
             </div>`;
@@ -331,14 +334,14 @@
         const modalBody = `
             <h3>${details.title}</h3>
             <p><strong>محقق:</strong> ${details.researcher_name} | <strong>استاد راهنما:</strong> ${details.supervisor_name} | <strong>وضعیت فعلی:</strong> ${getStatusBadge(details.article_status)}</p>
-            <details style="margin-top: 1rem;"><summary>مشاهده محتوای کامل مقاله</summary>
-                <div style="background: #f9fafb; padding: 15px; border-radius: var(--radius-md); margin-top: 10px; max-height: 250px; overflow-y:auto;">
-                   <h4>چکیده</h4><p>${details.abstract || 'ثبت نشده'}</p><h4>مقدمه</h4><p>${details.introduction || 'ثبت نشده'}</p> ...
+            <details style="margin-top: 1rem;"><summary style="cursor:pointer; font-weight:700;">مشاهده محتوای کامل مقاله</summary>
+                <div style="background: #f9fafb; padding: 15px; border-radius: var(--radius-md); margin-top: 10px; max-height: 250px; overflow-y:auto; line-height: 1.8;">
+                   <h4>چکیده</h4><p>${details.abstract || 'ثبت نشده'}</p><hr><h4>مقدمه</h4><p>${details.introduction || 'ثبت نشده'}</p><hr><h4>بدنه</h4><p>${details.body || 'ثبت نشده'}</p><hr><h4>نتیجه گیری</h4><p>${details.conclusion || 'ثبت نشده'}</p><hr><h4>منابع</h4><div style="white-space:pre-wrap;">${details.references || 'ثبت نشده'}</div>
                 </div>
             </details>
             <h4 style="margin-top: 1.5rem;">تاریخچه کامل مقاله</h4>
             <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-md);">
-                ${history.map(h => `<p><small>${formatDate(h.timestamp)}</small> - <strong>${h.user}:</strong> ${h.action} - <em>${h.details || ''}</em></p>`).join('')}
+                ${history.map(h => `<p style="border-bottom: 1px dashed #eee; padding-bottom: 5px; margin-bottom: 5px;"><small>${formatDate(h.timestamp)}</small> - <strong>${h.user}:</strong> ${h.action} <br><em style="color:var(--text-light); font-size: 0.9em;">${h.details || ''}</em></p>`).join('')}
             </div>`;
         showModal(`بررسی مقاله: ${details.article_id}`, modalBody, 'modal-lg');
         
@@ -379,19 +382,13 @@
             <div class="form-group"><label>نوع کاربر</label><select id="user-type"><option value="researcher">محقق</option><option value="professor">استاد</option></select></div>
             <div class="form-group"><label>نام و نام خانوادگی</label><input type="text" id="user-name"></div>
             <div class="form-group"><label>کد ملی (نام کاربری)</label><input type="text" id="user-nid"></div>
-            <div class="form-group"><label>رمز عبور</label><input type="text" id="user-pass"></div>
-        `;
+            <div class="form-group"><label>رمز عبور</label><input type="text" id="user-pass"></div>`;
         showModal('ایجاد کاربر جدید', content, 'modal-md');
-        const footer = document.getElementById('main-modal-footer');
-        footer.innerHTML += `<button class="btn-success" onclick="handleCreateUser(this)">ایجاد کاربر</button>`;
+        document.getElementById('main-modal-footer').innerHTML += `<button class="btn-success" onclick="handleCreateUser(this)">ایجاد کاربر</button>`;
     }
     
     async function handleCreateUser(button) {
-        const userData = {
-            name: document.getElementById('user-name').value,
-            nid: document.getElementById('user-nid').value,
-            pass: document.getElementById('user-pass').value
-        };
+        const userData = { name: document.getElementById('user-name').value, nid: document.getElementById('user-nid').value, pass: document.getElementById('user-pass').value };
         const userType = document.getElementById('user-type').value;
         if(!userData.name || !userData.nid || !userData.pass) { alert('تمام فیلدها الزامی است.'); return; }
         await callApi('createUser', { userData, userType }, button);
@@ -404,26 +401,23 @@
         clickedBtn.classList.add('active');
         const contentDiv = document.getElementById('users-content');
         const users = appState.data.users[tabName];
-        let tableHTML = `<div class="table-wrapper"><table><thead><tr><th>نام</th><th>کد ملی</th>${tabName === 'professors' ? '<th>وضعیت</th>' : ''}<th>عملیات</th></tr></thead><tbody>`;
-        users.forEach(u => {
-            tableHTML += `<tr><td>${u.name}</td><td>${u.nid}</td>${tabName === 'professors' ? `<td>${u.status == 5 ? 'فعال' : 'غیرفعال'}</td>` : ''}<td><button class="btn-light btn-sm">ویرایش</button></td></tr>`;
-        });
-        tableHTML += `</tbody></table></div>`;
-        contentDiv.innerHTML = tableHTML;
+        contentDiv.innerHTML = `<div class="table-wrapper"><table>
+            <thead><tr><th>نام</th><th>کد ملی</th>${tabName === 'professors' ? '<th>وضعیت</th>' : ''}<th>عملیات</th></tr></thead><tbody>
+            ${users.map(u => `<tr><td>${u.name}</td><td>${u.nid}</td>${tabName === 'professors' ? `<td>${u.status == 5 ? 'فعال' : 'غیرفعال'}</td>` : ''}<td><button class="btn-light btn-sm">ویرایش</button></td></tr>`).join('')}
+            </tbody></table></div>`;
     }
     
     // --- Utility Functions ---
     function showModal(title, content, sizeClass = '') {
-        closeModal('main-modal'); // Close any existing modal first
+        closeModal('main-modal');
         const modalContainer = document.getElementById('modal-container');
-        const modalId = 'main-modal';
-        modalContainer.innerHTML = `<div class="modal-overlay" id="${modalId}" onclick="if (event.target.id === '${modalId}') closeModal('${modalId}');"><div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button onclick="closeModal('${modalId}')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--text-light);">&times;</button></div><div class="modal-body">${content}</div><div class="modal-footer" id="${modalId}-footer"><button class="btn-light" onclick="closeModal('${modalId}')">بستن</button></div></div></div>`;
+        modalContainer.innerHTML = `<div class="modal-overlay" id="main-modal" onclick="if (event.target.id === 'main-modal') closeModal('main-modal');"><div class="modal-box ${sizeClass}"><div class="modal-header"><h3>${title}</h3><button onclick="closeModal('main-modal')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--text-light);">&times;</button></div><div class="modal-body">${content}</div><div class="modal-footer" id="main-modal-footer"><button class="btn-light" onclick="closeModal('main-modal')">بستن</button></div></div></div>`;
     }
     function closeModal(id) { document.getElementById(id)?.remove(); }
     
     function getStatusBadge(status) {
         const s = String(status);
-        const map = { '0': {t:'رد شده',c:'danger'}, '5':{t:'پذیرفته',c:'success'}, '6':{t:'منتظر بررسی',c:'warning'}, '10':{t:'ویرایش نهایی',c:'info'}, '1':{t:'در حال بررسی',c:'primary'}, '9':{t:'پیش‌نویس',c:'secondary'} };
+        const map = { '0': {t:'رد نهایی',c:'danger'}, '5':{t:'پذیرفته',c:'success'}, '6':{t:'منتظر بررسی',c:'warning'}, '10':{t:'ویرایش نهایی',c:'info'}, '1':{t:'در حال بررسی',c:'primary'}, '2':{t:'نیازمند ویرایش',c:'warning'},'4':{t:'انصراف استاد',c:'danger'}, '9':{t:'پیش‌نویس',c:'secondary'} };
         const info = map[s] || { t: `نامشخص(${s})`, c: 'secondary' };
         return `<span class="status-badge" style="background-color: var(--${info.c});">${info.t}</span>`;
     }
