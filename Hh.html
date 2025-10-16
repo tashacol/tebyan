@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -77,9 +77,15 @@
         .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; background: #f9fafb; border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
         
         .accordion details { border-bottom: 1px solid var(--border-color); } .accordion details:last-child { border-bottom: none; }
-        .accordion summary { font-size: 1rem; font-weight: 700; padding: 16px 8px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .accordion summary { 
+            font-size: 1rem; font-weight: 700; padding: 16px 8px; cursor: pointer; list-style: none; display: flex; 
+            justify-content: space-between; align-items: center;
+            /* دستور چهارم: چسبنده کردن عنوان‌ها */
+            position: sticky; top: 0; background-color: var(--bg-card); z-index: 1;
+        }
         .accordion summary::-webkit-details-marker { display: none; }
-        .accordion summary::after { content: '\\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s; color: var(--text-light); }
+        /* دستور سوم: تصحیح آیکن باز و بسته شدن */
+        .accordion summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s; color: var(--text-light); }
         .accordion details[open] summary::after { transform: rotate(180deg); }
         .accordion .accordion-content { padding: 0 8px 16px; animation: fadeIn 0.4s; line-height: 1.8; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -95,6 +101,14 @@
         .timeline-item { padding: 10px; border-bottom: 1px dashed var(--border-color); } .timeline-item:last-child { border-bottom: none; }
         .timeline-header { display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 5px; }
         .timeline-details { font-size: 0.9rem; color: var(--text-light); }
+        
+        /* دستور ششم: استایل‌های جدید برای پروفایل */
+        .form-group { margin-bottom: 20px; }
+        .form-group > label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dark); }
+        .btn-group { display: flex; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; }
+        .btn-group input[type="radio"] { display: none; }
+        .btn-group label { flex: 1; text-align: center; padding: 10px 12px; cursor: pointer; background: #f9fafb; color: var(--text-light); transition: var(--transition); user-select: none; font-size: 0.9rem; }
+        .btn-group input[type="radio"]:checked + label { background: var(--primary); color: white; font-weight: 500; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -147,6 +161,34 @@
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
     const articlesContainer = document.getElementById('articles-container');
+
+    // دستور هفتم: مپ کردن کدهای لاگ به عناوین نمایشی
+    const LOG_ACTION_TITLES = {
+        // بخش اول: اقدامات ثبت شده از پنل اساتید (کارهای خود استاد)
+        'PROF_LOGIN_SUCCESS': 'ورود به سیستم',
+        'GUIDANCE_ACCEPTED': 'پذیرش راهنمایی',
+        'GUIDANCE_REJECTED': 'عدم پذیرش راهنمایی',
+        'SENT_FOR_REVISION': 'ارسال برای ویرایش',
+        'APPROVED_FOR_JOURNAL': 'تایید نهایی و ارسال به نشریه',
+        'SUPERVISION_CANCELLED': 'انصراف از راهنمایی',
+        'REVISION_FEEDBACK_UPDATED': 'ویرایش توضیحات بازخورد',
+        // بخش دوم: اقدامات ثبت شده از پنل محققان (کارهای محقق)
+        'SUBMIT_ARTICLE_SUCCESS': 'دریافت درخواست راهنمایی جدید',
+        'SUBMIT_DRAFT_SUCCESS': 'دریافت درخواست راهنمایی (از پیش‌نویس)',
+        'SUBMIT_REVISIONS_SUCCESS': 'ارسال ویرایشات توسط محقق',
+        'SEND_FINAL_REVIEW_SUCCESS': 'ارسال مقاله برای بررسی نهایی',
+        'UPDATE_DETAILS_SUCCESS': 'ویرایش اطلاعات کلی توسط محقق',
+        'DELETE_ARTICLE_SUCCESS': 'حذف مقاله توسط محقق',
+        // بخش سوم: اقدامات ثبت شده از پنل مدیریت (تصمیمات نهایی نشریه)
+        'JOURNAL_ACCEPTED': 'پذیرش نهایی توسط نشریه',
+        'JOURNAL_REJECTED': 'رد نهایی توسط نشریه',
+        'SENT_FOR_FINAL_REVISION': 'ارجاع برای ویرایش نهایی',
+        'ARTICLE_ASSIGNED_TO_ISSUE': 'تخصیص به شماره نشر',
+        // سایر لاگ‌های سیستمی
+        'PROFILE_UPDATED': 'پروفایل به‌روزرسانی شد',
+        'TITLE_SUGGESTED': 'عنوان جدید پیشنهاد شد'
+    };
+
 
     async function callApi(action, params = {}) {
         try {
@@ -241,7 +283,8 @@
         const { text, color } = getStatusInfo(article);
         
         let dropdownItems = '';
-        if (['8', '12'].includes(String(article.article_status))) {
+        // دستور اول: نمایش گزینه "تایید و ارسال" فقط برای وضعیت 11
+        if (String(article.article_status) === '11') {
             dropdownItems += `<li onclick="showApprovalModal('${article.article_id}')"><i class="fas fa-check-double fa-fw"></i> تایید و ارسال به نشریه</li>`;
         }
         if (String(article.article_status) === '2') {
@@ -281,6 +324,7 @@
             '2': { text: 'ارسال برای ویرایش', color: '#fb923c' }, '4': { text: 'انصراف استاد', color: 'var(--danger)' },
             '5': { text: 'تایید نهایی شده', color: 'var(--success)' }, '6': { text: 'منتظر بررسی نشریه', color: 'var(--info)' },
             '8': { text: 'در حال بررسی مجدد', color: '#a855f7' },
+            '11': { text: 'جهت بررسی نهایی شما', color: '#a855f7' }, // وضعیت جدید برای دستور اول
             '12': { text: 'ویرایش جدید دریافت شد', color: '#a855f7' }
         };
         return map[status] || { text: 'نامشخص', color: 'var(--text-light)' };
@@ -339,8 +383,17 @@
         if (!article) return;
         
         let infoNote = '';
+        // دستور دوم: تغییر نحوه نمایش یادداشت محقق
         if(String(article.article_status) === '12' && article.rejection_reason) {
-            infoNote = `<div class="info-box warning"><strong>یادداشت محقق:</strong> ${article.rejection_reason}</div>`;
+            const fullText = article.rejection_reason || '';
+            const parts = fullText.split('توضیحات محقق:');
+            const professorRequest = (parts[0] || '').replace('درخواست استاد:', '').trim();
+            const researcherExplanation = (parts[1] || '').trim();
+            
+            infoNote = `<div class="info-box warning" style="line-height: 1.8;">
+                           <p style="margin: 0;"><strong>درخواست استاد:</strong> ${professorRequest}</p>
+                           <p style="margin: 8px 0 0 0;"><strong>توضیحات محقق:</strong> ${researcherExplanation}</p>
+                       </div>`;
         } else if(String(article.article_status) === '2' && article.rejection_reason) {
             infoNote = `<div class="info-box warning"><strong>توضیحات شما برای ویرایش:</strong> ${article.rejection_reason}</div>`;
         } else if(String(article.article_status) === '4' && article.rejection_reason) {
@@ -455,7 +508,8 @@
     }
 
     async function showHistoryModal(articleId) {
-        renderModal('سوابق مقاله', '<div id="history-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:100px;"></div></div>', '', true);
+        // دستور پنجم: نمایش لودینگ قبل از بارگیری محتوا
+        renderModal('سوابق مقاله', '<div id="history-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:100px; max-width: 400px; margin: auto;"></div></div>', '', true);
         const res = await callApi('getArticleHistoryForProfessor', { articleId });
         const body = document.getElementById('history-body');
         if (res.status === 'success') {
@@ -463,53 +517,67 @@
             if (res.history.length === 0) {
                 body.innerHTML = '<p>سابقه‌ای یافت نشد.</p>';
             } else {
-                body.innerHTML = `<ul class="history-timeline">${res.history.map(entry => `
+                // دستور هفتم: نمایش عنوان فارسی لاگ‌ها
+                body.innerHTML = `<ul class="history-timeline">${res.history.map(entry => {
+                    const actionTitle = LOG_ACTION_TITLES[entry.action] || entry.action;
+                    return `
                     <li class="timeline-item">
                         <div class="timeline-header">
-                            <span>${entry.user}: ${entry.action}</span>
+                            <span>${entry.user}: ${actionTitle}</span>
                             <span style="font-size: 0.8rem; color: var(--text-light);">${new Date(entry.timestamp).toLocaleString('fa-IR')}</span>
                         </div>
                         <div class="timeline-details">${entry.details || ''}</div>
-                    </li>`).join('')}</ul>`;
+                    </li>`}).join('')}</ul>`;
             }
         }
     }
 
     async function showProfileModal() {
-        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:200px;"></div></div>', '');
+        // دستور پنجم: نمایش لودینگ قبل از بارگیری محتوا
+        renderModal('مدیریت پروفایل', '<div id="profile-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:200px;max-width: 400px; margin: auto;"></div></div>', '');
         const res = await callApi('getProfessorProfile');
         if (res.status === 'success') {
             const profile = res.profile;
+            const modalBox = document.querySelector('.modal-box');
+            
+            // دستور ششم: طراحی مدرن و جدید برای پروفایل
             document.getElementById('profile-body').innerHTML = `
                 <div class="form-group">
-                    <label>وضعیت حضور</label>
-                    <select id="profile-status" class="form-control">
-                        <option value="5" ${profile.status == 5 ? 'selected' : ''}>فعال (پذیرش درخواست جدید)</option>
-                        <option value="0" ${profile.status == 0 ? 'selected' : ''}>غیرفعال (عدم پذیرش موقت)</option>
-                    </select>
+                    <label>وضعیت فعالیت</label>
+                    <div class="btn-group">
+                        <input type="radio" id="status-active" name="profile-status" value="5" ${profile.status == 5 ? 'checked' : ''}>
+                        <label for="status-active"><i class="fas fa-check-circle" style="margin-left: 5px;"></i>فعال (پذیرش درخواست)</label>
+                        <input type="radio" id="status-inactive" name="profile-status" value="0" ${profile.status == 0 ? 'checked' : ''}>
+                        <label for="status-inactive"><i class="fas fa-times-circle" style="margin-left: 5px;"></i>غیرفعال (عدم پذیرش)</label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>ظرفیت پذیرش همزمان</label>
+                    <label for="profile-capacity">ظرفیت پذیرش همزمان</label>
                     <input type="number" id="profile-capacity" value="${profile.capacity || 0}">
                 </div>
                 <div class="form-group">
-                    <label>اطلاعات تماس (برای نمایش به محقق)</label>
-                    <input type="text" id="profile-contact" value="${profile.contactInfo || ''}">
+                    <label for="profile-contact">اطلاعات تماس (برای نمایش به محقق)</label>
+                    <input type="text" id="profile-contact" value="${profile.contactInfo || ''}" placeholder="ایمیل، شماره تماس و...">
                 </div>
                 <div class="form-group">
-                    <label>توضیحات و تخصص‌ها</label>
-                    <textarea id="profile-desc" rows="3">${profile.description || ''}</textarea>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-light" onclick="closeAllModals()">لغو</button>
-                    <button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button>
+                    <label for="profile-desc">توضیحات و تخصص‌ها</label>
+                    <textarea id="profile-desc" rows="3" placeholder="تخصص اصلی شما، ساعات پاسخگویی و...">${profile.description || ''}</textarea>
                 </div>
             `;
+            
+            const footer = document.createElement('div');
+            footer.className = 'modal-footer';
+            footer.innerHTML = `
+                <button class="btn-light" onclick="closeAllModals()">لغو</button>
+                <button id="save-profile-btn" class="btn-success"><i class="fas fa-save"></i><span class="btn-text">ذخیره تغییرات</span></button>
+            `;
+            modalBox.appendChild(footer);
+            
             document.getElementById('save-profile-btn').onclick = async e => {
-                const button = e.target;
+                const button = e.target.closest('button');
                 button.classList.add('btn-loading');
                 const profileData = {
-                    status: document.getElementById('profile-status').value,
+                    status: document.querySelector('input[name="profile-status"]:checked').value,
                     capacity: document.getElementById('profile-capacity').value,
                     contactInfo: document.getElementById('profile-contact').value,
                     description: document.getElementById('profile-desc').value
@@ -524,7 +592,8 @@
     }
 
     async function showTitlesModal() {
-         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:150px;"></div></div>', '');
+        // دستور پنجم: نمایش لودینگ قبل از بارگیری محتوا
+         renderModal('مدیریت عناوین پیشنهادی', '<div id="titles-body" class="modal-body" style="text-align:center;"><div class="skeleton-loader" style="width:100%;height:150px;max-width: 400px; margin: auto;"></div></div>', '');
          const res = await callApi('getSuggestedTitles');
          if (res.status === 'success') {
              const titlesHTML = res.titles.length > 0 ? res.titles.map(t => `
@@ -538,7 +607,7 @@
                 <button id="add-title-btn" class="btn-success"><i class="fas fa-plus"></i></button></div>`;
 
              document.getElementById('add-title-btn').onclick = async e => {
-                 const button = e.target;
+                 const button = e.target.closest('button');
                  button.classList.add('btn-loading');
                  const title = document.getElementById('new-title-input').value;
                  if (!title) {
