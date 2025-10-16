@@ -1,17 +1,15 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل مدیریت نشریه</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- دستور دوازدهم و چهاردهم: افزودن کتابخانه‌های اکسل و PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
-        /* دستور اول: ظاهر حرفه‌ای و مدرن با رنگ‌های رسمی */
         :root {
             --primary: #2563eb; --primary-light: #dbeafe; --primary-dark: #1e40af;
             --secondary: #1f2937; --secondary-light: #f3f4f6;
@@ -42,8 +40,17 @@
         button:disabled { background-color: #d1d5db; cursor: not-allowed; }
         .btn-success { background-color: var(--success); } .btn-danger { background-color: var(--danger); } .btn-warning { background-color: var(--warning); } .btn-secondary { background-color: #4b5563; }
         .btn-light { background-color: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); }
+        
+        /* دستور نهم: اصلاح کامل لودینگ دکمه‌ها */
+        .btn-loading { color: transparent !important; pointer-events: none; }
         .btn-loading .btn-text, .btn-loading .fas, .btn-loading .fa-solid { visibility: hidden; }
-        .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .btn-loading::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            margin-top: -9px; margin-left: -9px;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         
         #main-app { display: flex; min-height: 100vh; }
@@ -94,7 +101,7 @@
         .toast.error { background-color: var(--danger); }
         @keyframes toast-in { to { opacity: 1; transform: translateY(0); } }
 
-        /* دستور سوم و پنجم: استایل‌های مدرن برای مودال مقاله و تاریخچه */
+        /* دستور سوم و هفتم: استایل‌های مدرن برای مودال مقاله و تاریخچه */
         #article-modal-tabs { display: flex; border-bottom: 1px solid var(--border-color); }
         #article-modal-tabs button { background: none; color: var(--text-light); border: none; padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; font-size: 1rem; }
         #article-modal-tabs button.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
@@ -102,13 +109,13 @@
         .history-timeline { list-style: none; padding: 0; }
         .timeline-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); }
         .timeline-item:last-child { border-bottom: none; }
-        .timeline-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: var(--secondary-light); color: var(--secondary); }
+        .timeline-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
         .timeline-content { flex-grow: 1; }
         .timeline-header { display: flex; justify-content: space-between; align-items: center; font-weight: 500; margin-bottom: 5px; }
         .timeline-title { display: flex; align-items: center; gap: 8px; font-weight: 700; }
         .timeline-details { font-size: 0.9em; color: var(--text-light); word-break: break-word; }
         
-        /* دستور هفتم: استایل مدرن مدیریت انتشارات */
+        /* دستور هشتم: استایل مدرن مدیریت انتشارات */
         .issue-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; }
         .issue-list-item button { background: none; color: var(--danger); border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
         .issue-list-item button:disabled { color: #ccc; cursor: not-allowed; }
@@ -121,8 +128,22 @@
         /* دستور چهارم: استایل برای دانلود PDF */
         #pdf-render-container {
             position: absolute; left: -9999px; top: -9999px; /* Hide it */
-            width: 210mm; background: white; color: black; padding: 20mm;
+            width: 210mm; background: white; color: black;
             font-family: 'Vazirmatn', sans-serif; direction: rtl;
+        }
+        .pdf-page {
+            padding: 15mm; /* دستور اول: حاشیه 1.5 سانت */
+            page-break-after: always;
+            font-size: 14px; /* دستور دوم: سایز متن */
+            line-height: 1.8;
+        }
+        .pdf-page h3 {
+            font-size: 18px; /* دستور دوم: سایز عنوان */
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 0;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -168,7 +189,7 @@
     // == پنل مدیریت نشریه - JavaScript (نسخه نهایی و پایدار)
     // ==========================================================
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqsfCE7G7gbMANi-CqxBlIVPQHzIZt54IDQAY-f3PhC46kt5kBvLo1bpp4Xk3KscASvg/exec';
+    const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE';
 
     const appState = {
         currentUser: null,
@@ -178,7 +199,7 @@
     
     // دستور پانزدهم: لیست کامل لاگ‌ها
     const LOG_ACTIONS = {
-        'LOGIN_SUCCESS': { title: 'ورود محقق', icon: 'fa-right-to-bracket', color: 'var(--text-light)' },
+        'LOGIN_SUCCESS': { title: 'ورود محقق', icon: 'fa-right-to-bracket', color: '#6b7280' },
         'SUBMIT_ARTICLE_SUCCESS': { title: 'ثبت نهایی مقاله', icon: 'fa-file-circle-plus', color: 'var(--primary)' },
         'SAVE_DRAFT_SUCCESS': { title: 'ذخیره پیش‌نویس', icon: 'fa-floppy-disk', color: 'var(--secondary)' },
         'SUBMIT_DRAFT_SUCCESS': { title: 'ارسال پیش‌نویس', icon: 'fa-paper-plane', color: 'var(--primary)' },
@@ -187,13 +208,13 @@
         'SUBMIT_REVISIONS_SUCCESS': { title: 'ارسال ویرایشات برای استاد', icon: 'fa-file-pen', color: 'var(--primary)' },
         'SEND_FINAL_REVIEW_SUCCESS': { title: 'ارسال برای بررسی نهایی', icon: 'fa-user-check', color: 'var(--success)' },
         'DELETE_ARTICLE_SUCCESS': { title: 'حذف مقاله', icon: 'fa-trash', color: 'var(--danger)' },
-        'PROF_LOGIN_SUCCESS': { title: 'ورود استاد', icon: 'fa-right-to-bracket', color: 'var(--text-light)' },
+        'PROF_LOGIN_SUCCESS': { title: 'ورود استاد', icon: 'fa-right-to-bracket', color: '#6b7280' },
         'GUIDANCE_ACCEPTED': { title: 'پذیرش راهنمایی', icon: 'fa-handshake', color: 'var(--success)' },
         'GUIDANCE_REJECTED': { title: 'عدم پذیرش راهنمایی', icon: 'fa-handshake-slash', color: 'var(--danger)' },
         'SENT_FOR_REVISION': { title: 'ارجاع برای ویرایش (توسط استاد)', icon: 'fa-user-edit', color: 'var(--warning)' },
         'APPROVED_FOR_JOURNAL': { title: 'تایید نهایی توسط استاد', icon: 'fa-user-graduate', color: 'var(--success)' },
         'SUPERVISION_CANCELLED': { title: 'انصراف استاد', icon: 'fa-user-slash', color: 'var(--danger)' },
-        'ADMIN_LOGIN_SUCCESS': { title: 'ورود مدیر', icon: 'fa-user-shield', color: 'var(--text-light)' },
+        'ADMIN_LOGIN_SUCCESS': { title: 'ورود مدیر', icon: 'fa-user-shield', color: '#6b7280' },
         'JOURNAL_ACCEPTED': { title: 'پذیرش نهایی توسط نشریه', icon: 'fa-award', color: 'var(--success)' },
         'JOURNAL_REJECTED': { title: 'رد نهایی توسط نشریه', icon: 'fa-ban', color: 'var(--danger)' },
         'SENT_FOR_FINAL_REVISION': { title: 'ارجاع برای ویرایش نهایی', icon: 'fa-circle-exclamation', color: 'var(--warning)' },
@@ -280,13 +301,21 @@
     }
     
     // دستور یازدهم: آپدیت داده‌ها بدون رفرش کامل
-    async function updateAndRender(viewToRender, updatedData) {
+    function updateAndRender(viewToRender, updatedData) {
         Object.keys(updatedData).forEach(key => {
             if (appState.data[key] !== undefined) {
                 appState.data[key] = updatedData[key];
             }
         });
-        navigateTo(viewToRender);
+        // Re-render the current view with fresh data
+        const currentActive = document.querySelector('#main-nav button.active').dataset.view;
+        if (currentActive === viewToRender) {
+             switch (viewToRender) {
+                case 'articles': renderArticlesView(); break;
+                case 'publications': renderPublicationsView(); break;
+                case 'users': renderUsersView(); break;
+            }
+        }
     }
     
     function renderDashboardView() {
@@ -319,7 +348,7 @@
                 <div class="table-wrapper"><table>
                     <thead><tr><th>شناسه</th><th>عنوان</th><th>محقق</th><th>استاد راهنما</th><th>وضعیت</th><th>عملیات</th></tr></thead>
                     <tbody id="articles-table-body">
-                        ${articles.map(a => `
+                        ${[...articles].sort((a,b)=>b.articleId-a.articleId).map(a => `
                             <tr>
                                 <td>${a.articleId}</td><td>${a.title}</td><td>${a.researcherName}</td><td>${a.supervisorName}</td>
                                 <td>${getStatusBadge(a.status)}</td>
@@ -431,7 +460,7 @@
             <div id="history-content" class="tab-content hidden" style="max-height: 400px; overflow-y: auto;">
                  <ul class="history-timeline">${history.map(h => {
                      const logInfo = LOG_ACTIONS[h.action] || { title: h.action, icon: 'fa-question-circle', color: 'var(--secondary)' };
-                     return `<li class="timeline-item"><div class="timeline-icon" style="background-color:${logInfo.color}; color:white;"><i class="fa-solid ${logInfo.icon}"></i></div><div class="timeline-content"><div class="timeline-header"><span class="timeline-title">${logInfo.title}</span><small>${formatDate(h.timestamp)}</small></div><p style="font-size:0.9em;">توسط: ${h.user}</p><p class="timeline-details">${h.details || ''}</p></div></li>`
+                     return `<li class="timeline-item"><div class="timeline-icon" style="background-color:${logInfo.color};"><i class="fa-solid ${logInfo.icon}"></i></div><div class="timeline-content"><div class="timeline-header"><span class="timeline-title">${logInfo.title}</span><small>${formatDate(h.timestamp)}</small></div><p style="font-size:0.9em;">توسط: ${h.user}</p><p class="timeline-details">${h.details || ''}</p></div></li>`
                  }).join('')}</ul>
             </div>`;
             
@@ -448,7 +477,7 @@
         } else {
             actionsContainer.innerHTML = `<p style="color:var(--text-light)">در وضعیت فعلی، اقدامی از سوی شما مورد نیاز نیست.</p>`;
         }
-        document.getElementById('main-modal-footer').innerHTML = `<button class="btn-light" onclick="handleDownloadPDF('${articleId}', this)"><i class="fas fa-file-pdf"></i> دانلود PDF</button> <button class="btn-secondary" onclick="closeModal('main-modal')">بستن</button>`;
+        document.getElementById('main-modal-footer').innerHTML = `<button class="btn-light" onclick="handleDownloadPDF(this, '${articleId}')"><i class="fas fa-file-pdf"></i> <span class="btn-text">دانلود PDF</span></button> <button class="btn-secondary" onclick="closeModal('main-modal')">بستن</button>`;
     }
     
     // --- Action Handlers ---
@@ -457,10 +486,7 @@
         if(res) { 
             showToast(res.message, 'success'); 
             closeModal('main-modal');
-            // دستور یازدهم: آپدیت داده‌های محلی و رندر مجدد فقط بخش مقالات
-            appState.data.articles = res.updatedData.articles;
-            appState.data.publications = res.updatedData.publications; // readyArticles might have changed
-            renderArticlesView();
+            updateAndRender('articles', res.updatedData);
         }
     }
     async function handleCreateIssue(e) {
@@ -617,16 +643,11 @@
     function getStatusBadge(status) {
         const s = String(status);
         const map = {
-            '0': { t: 'رد نهایی', c: 'danger' },
-            '1': { t: 'در دست محقق', c: 'warning' },
-            '2': { t: 'در دست محقق (ویرایش)', c: 'warning' },
-            '4': { t: 'انصراف استاد', c: 'secondary' },
-            '5': { t: 'پذیرفته شده', c: 'success' },
-            '6': { t: 'منتظر تصمیم نشریه', c: 'primary' },
-            '8': { t: 'در دست استاد', c: 'info' },
-            '10':{ t: 'نیازمند ویرایش نهایی', c: 'warning' },
-            '11':{ t: 'در دست استاد (بررسی نهایی)', c: 'info'},
-            '12':{ t: 'در دست استاد (بازبینی)', c: 'info'},
+            '0': { t: 'رد نهایی', c: 'danger' }, '1': { t: 'در دست محقق', c: 'warning' },
+            '2': { t: 'در دست محقق (ویرایش)', c: 'warning' }, '4': { t: 'انصراف استاد', c: 'secondary' },
+            '5': { t: 'پذیرفته شده', c: 'success' }, '6': { t: 'منتظر تصمیم نشریه', c: 'primary' },
+            '8': { t: 'در دست استاد', c: 'info' }, '10':{ t: 'نیازمند ویرایش نهایی', c: 'warning' },
+            '11':{ t: 'در دست استاد (بررسی نهایی)', c: 'info'}, '12':{ t: 'در دست استاد (بازبینی)', c: 'info'},
             '9': { t: 'پیش‌نویس محقق', c: 'secondary' }
         };
         const info = map[s] || { t: `نامشخص (${s})`, c: 'secondary' };
@@ -671,94 +692,100 @@
                     parsedData = jsonData.slice(1).map(row => ({ name: row[0], nid: row[1], pass: row[2] })).filter(u => u.name && u.nid && u.pass);
                     document.getElementById('import-actions').classList.remove('hidden');
                     document.getElementById('file-info').textContent += ` - ${parsedData.length} کاربر معتبر یافت شد.`;
-                } catch(err) {
-                    showToast('خطا در پردازش فایل اکسل.', 'error');
-                }
+                } catch(err) { showToast('خطا در پردازش فایل اکسل.', 'error'); }
             };
             reader.readAsArrayBuffer(file);
         }
         document.getElementById('import-researchers-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'researcher');
         document.getElementById('import-professors-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'professor');
     }
-    function handleExportExcel() {
-        const allArticles = appState.data.articles.map(a => {
-            const fullDetails = appState.data.articles.find(fullA => fullA.articleId === a.articleId);
-            return {
-                'عنوان مقاله': fullDetails.title,
-                'نام محقق': fullDetails.researcherName,
-                'کد ملی محقق': fullDetails.researcherId,
-                'استاد راهنما': fullDetails.supervisorName,
-                'کد ملی استاد': fullDetails.supervisorId,
-                'وضعیت': getStatusBadge(fullDetails.status).replace(/<[^>]+>/g, ''),
-                'تاریخ ثبت': formatDate(fullDetails.requestDate, false),
-                'تاریخ پذیرش': formatDate(fullDetails.acceptanceDate, false)
-            };
-        });
+    async function handleExportExcel() {
+        const button = event.target.closest('button');
+        if(button) button.classList.add('btn-loading');
         
-        const ws = XLSX.utils.json_to_sheet(allArticles);
-        const today = `تاریخ گزارش: ${formatDate(new Date())}`;
-        XLSX.utils.sheet_add_aoa(ws, [[today]], { origin: {r:0, c:0} }); // Adding title at the top
-        // Start data from second row
+        const articlesToExport = appState.data.articles;
+        const dataToExport = articlesToExport.map(a => ({
+            'عنوان مقاله': a.title, 'نام محقق': a.researcherName, 'کد ملی محقق': a.researcherId,
+            'استاد راهنما': a.supervisorName, 'کد ملی استاد': a.supervisorId,
+            'وضعیت': getStatusBadge(a.status).replace(/<[^>]+>/g, ''),
+            'تاریخ ثبت': formatDate(a.requestDate, false),
+            'تاریخ پذیرش': formatDate(a.acceptanceDate, false)
+        }));
+        
+        const ws = XLSX.utils.json_to_sheet([]);
+        XLSX.utils.sheet_add_aoa(ws, [[`گزارش مقالات کل سیستم - تاریخ: ${formatDate(new Date())}`]], { origin: 'A1' });
+        XLSX.utils.sheet_add_json(ws, dataToExport, { origin: 'A2', skipHeader: false });
+        
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "گزارش مقالات");
         XLSX.writeFile(wb, `ArticleReport-${new Date().toLocaleDateString('fa-IR').replace(/\//g,'-')}.xlsx`);
+        if(button) button.classList.remove('btn-loading');
     }
 
-    async function handleDownloadPDF(articleId, button) {
+    async function handleDownloadPDF(button, articleId) {
         if (button) button.classList.add('btn-loading');
         const detailsResponse = await callApi('getArticleDetails', { articleId });
-        if (button) button.classList.remove('btn-loading');
         
-        if (!detailsResponse) return;
+        if (!detailsResponse) { if (button) button.classList.remove('btn-loading'); return; }
         
         const details = detailsResponse.data.details;
         const renderContainer = document.getElementById('pdf-render-container');
         
+        // دستور چهارم: صفحه‌بندی محتوا
         renderContainer.innerHTML = `
-            <h1 style="text-align:center; font-size:22px;">${details.title}</h1>
-            <p><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
-            <p><strong>محقق:</strong> ${details.researcherName}</p>
-            <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
-            <hr>
-            <h3>چکیده</h3><p>${details.abstract || '-'}</p>
-            <p><strong>کلیدواژه:</strong> ${details.keywords || '-'}</p>
-            <h3>مقدمه</h3><p>${(details.introduction || '-').replace(/\n/g, '<br>')}</p>
-            <h3>بدنه</h3><p>${(details.body || '-').replace(/\n/g, '<br>')}</p>
-            <h3>نتیجه</h3><p>${(details.conclusion || '-').replace(/\n/g, '<br>')}</p>
-            <h3>منابع</h3><div style="font-size:12px; white-space:pre-wrap;">${details.references || '-'}</div>
+            <div class="pdf-page">
+                <h3>اطلاعات کلی</h3>
+                <p><strong>عنوان:</strong> ${details.title}</p>
+                <p><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
+                <p><strong>محقق:</strong> ${details.researcherName}</p>
+                <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
+                <hr>
+                <h3>چکیده</h3><p>${details.abstract || '-'}</p>
+                <p><strong>کلیدواژه:</strong> ${details.keywords || '-'}</p>
+            </div>
+            <div class="pdf-page"><h3>مقدمه</h3><p>${(details.introduction || '-').replace(/\n/g, '<br>')}</p></div>
+            <div class="pdf-page"><h3>بدنه</h3><p>${(details.body || '-').replace(/\n/g, '<br>')}</p></div>
+            <div class="pdf-page"><h3>نتیجه</h3><p>${(details.conclusion || '-').replace(/\n/g, '<br>')}</p></div>
+            <div class="pdf-page"><h3>منابع</h3><div style="font-size:12px; white-space:pre-wrap;">${details.references || '-'}</div></div>
         `;
 
         try {
             const { jsPDF } = window.jspdf;
-            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgProps = pdf.getImageProperties(imgData);
-            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdfHeight;
-
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-                heightLeft -= pdfHeight;
+            const pages = renderContainer.querySelectorAll('.pdf-page');
+            for (let i = 0; i < pages.length; i++) {
+                if (i > 0) pdf.addPage();
+                const canvas = await html2canvas(pages[i], { scale: 2, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const imgProps = pdf.getImageProperties(imgData);
+                const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight > pdf.internal.pageSize.getHeight() ? pdf.internal.pageSize.getHeight() : imgHeight);
             }
+
+            // دستور سوم: شماره‌گذاری صفحات
+            const pageCount = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(10);
+                if (i % 2 === 0) { // صفحه زوج
+                    pdf.text(String(i), pdf.internal.pageSize.getWidth() - 15, pdf.internal.pageSize.getHeight() - 10);
+                } else { // صفحه فرد
+                    pdf.text(String(i), 15, pdf.internal.pageSize.getHeight() - 10);
+                }
+            }
+
             pdf.save(`Article-${details.articleId}.pdf`);
         } catch(err) {
             showToast('خطا در تولید فایل PDF.', 'error');
             console.error(err);
         } finally {
             renderContainer.innerHTML = ''; // Clean up
+            if (button) button.classList.remove('btn-loading');
         }
     }
 </script>
+
 </body>
 </html>
