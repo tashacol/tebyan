@@ -13,12 +13,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
 
         :root {
-            --primary: #3B82F6; 
+            --primary: #3B82F6;
             --primary-light: #DBEAFE;
             --primary-dark: #2563EB;
             --text-dark: #1f2937;
             --text-light: #6b7280;
-            /* Instruction 4: UI/UX Improvement - Slightly different background for better contrast */
             --bg-main: #f8f9fa;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
@@ -28,7 +27,6 @@
             --danger-light: #fee2e2;
             --warning: #f59e0b;
             --info: #38bdf8;
-            /* Instruction 4: UI/UX Improvement - Softer, more modern shadow */
             --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --radius-lg: 16px;
             --radius-md: 12px;
@@ -40,13 +38,31 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
             margin: 0;
-            padding: 20px;
+            /* Padding is now conditional */
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
+            transition: background-image 0.5s ease-in-out;
         }
+        
+        /* START: Instruction 3 - Login Background */
+        body.login-view {
+            /* لینک تصویر پس‌زمینه خود را در اینجا جایگزین کنید */
+            background-image: url('https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            align-items: center; /* Center the login box vertically */
+            padding: 20px;
+        }
+        
+        body:not(.login-view) {
+            padding: 20px;
+        }
+        /* END: Instruction 3 */
+
 
         .hidden {
             display: none !important;
@@ -65,6 +81,108 @@
             padding: 30px;
             border: 1px solid var(--border-color);
         }
+        
+        /* START: Instruction 1 & 2 - Modern Login Box Styles */
+        .login-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            padding: 40px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .login-logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background-color: var(--border-color);
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            /* This is a placeholder for an <img> tag */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--text-light);
+             border: 4px solid white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        /* You can replace this icon with your own image */
+        .login-logo-placeholder::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: '\f1ad'; /* fa-building icon */
+        }
+
+        .login-box h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .login-subtitle {
+            color: var(--text-light);
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .login-box .form-group label {
+            text-align: right;
+        }
+        
+        .login-box .form-group {
+            position: relative;
+        }
+
+        .login-actions {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 30px;
+            box-sizing: border-box;
+        }
+
+        .login-action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0.9;
+        }
+
+        .login-action-item:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .login-action-item i {
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .login-action-item span {
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        /* END: Instruction 1 & 2 */
 
         h1,
         h2,
@@ -97,7 +215,6 @@
             width: 100%;
             box-sizing: border-box;
             padding: 12px 15px;
-            /* Instruction 4: UI/UX Improvement - Lighter default border */
             border: 1px solid #dee2e6;
             border-radius: var(--radius-md);
             font-size: 1rem;
@@ -1035,8 +1152,7 @@
             color: var(--text-light);
             margin-right: 8px;
         }
-
-        /* Instruction 2: Styles are already modern via content-loader, this class is now unused but kept for safety */
+        
         .list-loader {
             position: absolute;
             inset: 0;
@@ -1341,7 +1457,6 @@
             margin-bottom: 8px;
         }
         
-        /* START: Instruction 4 - Display/Edit Mode Styles */
         .editable-field {
             padding: 5px 0;
         }
@@ -1360,7 +1475,7 @@
             color: var(--text-dark);
             font-size: 1rem;
             line-height: 1.5;
-            white-space: pre-wrap; /* To respect newlines in textarea */
+            white-space: pre-wrap;
             word-break: break-word;
         }
         .edit-icon-btn {
@@ -1393,26 +1508,49 @@
         .editable-field.edit-mode .form-control-edit {
             display: block;
         }
-        /* END: Instruction 4 - Display/Edit Mode Styles */
     </style>
 </head>
 
 <body>
     <div id="alert-container"></div>
     <div class="container">
+        <!-- START: Instructions 1, 2, 3 - New Login Page HTML -->
         <div id="login-page">
-            <div class="card">
-                <h1>ورود به پنل کاربری</h1>
-                <form id="login-form">
-                    <div class="form-group"><label for="national-id">نام کاربری</label><input type="text" id="national-id"
-                            required></div>
-                    <div class="form-group"><label for="password">رمز عبور</label><input type="password" id="password"
-                            required></div>
-                    <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود</span></button>
-                    <p id="login-error" style="color: var(--danger); margin-top: 10px; text-align: center;"></p>
-                </form>
+            <div class="login-wrapper">
+                <div class="login-box">
+                    <div class="login-logo-placeholder">
+                        <!-- کاربر می‌تواند تگ img خود را اینجا قرار دهد -->
+                        <!-- <img src="path/to/your/logo.png" alt="Logo"> -->
+                    </div>
+                    <h2>ورود به پنل کاربری</h2>
+                    <p class="login-subtitle">برای ورود اطلاعات خود را وارد کنید</p>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="national-id">نام کاربری (کد ملی)</label>
+                            <input type="text" id="national-id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">رمز عبور</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit" id="login-btn" style="width: 100%;"><span class="btn-text">ورود</span></button>
+                        <p id="login-error" style="color: var(--danger); margin-top: 10px; text-align: center; height: 1em;"></p>
+                    </form>
+                </div>
+                <div class="login-actions">
+                     <a href="#" class="login-action-item" id="main-page-link">
+                        <i class="fas fa-home"></i>
+                        <span>صفحه اصلی</span>
+                    </a>
+                    <div class="login-action-item" id="register-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>ثبت نام</span>
+                    </div>
+                </div>
             </div>
         </div>
+        <!-- END: New Login Page HTML -->
+
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
                 <div class="dashboard-title-wrapper">
@@ -1488,13 +1626,24 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const user = getStoredUser();
+            const body = document.body;
             if (user) {
                 loginPage.classList.add('hidden');
                 dashboardPage.classList.remove('hidden');
+                body.classList.remove('login-view');
                 showDashboard(user);
             } else {
                  loginPage.classList.remove('hidden');
                  dashboardPage.classList.add('hidden');
+                 body.classList.add('login-view');
+                 // START: Instruction 2 - Event listeners for new login buttons
+                 document.getElementById('register-btn').addEventListener('click', showRegistrationModal);
+                 document.getElementById('main-page-link').addEventListener('click', (e) => {
+                     e.preventDefault();
+                     // TODO: Replace with the actual main page URL
+                     showCustomAlert('این لینک به صفحه اصلی وب‌سایت منتقل خواهد شد.', 'info');
+                 });
+                 // END: Instruction 2
             }
 
             document.addEventListener('click', function (event) {
@@ -1518,12 +1667,40 @@
                 storeUser(response.user);
                 loginPage.classList.add('hidden');
                 dashboardPage.classList.remove('hidden');
+                document.body.classList.remove('login-view');
                 showDashboard(response.user);
             } else {
                 loginError.textContent = response?.isNetworkError ? 'خطا در ارتباط با سرور' : response?.message || 'خطایی رخ داد.';
             }
         });
 
+        // START: Instruction 2 - New function for registration modal
+        function showRegistrationModal() {
+            const modalContent = `
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="reg-full-name">نام و نام خانوادگی</label>
+                            <input type="text" id="reg-full-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-national-id">کد ملی</label>
+                            <input type="text" id="reg-national-id" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="submit-registration-btn" class="btn-success" style="width:100%"><span class="btn-text">ثبت نام</span></button>
+                </div>
+            `;
+            renderModal('ثبت نام کاربر جدید', modalContent, 'modal-sm');
+
+            document.getElementById('submit-registration-btn').onclick = () => {
+                 showCustomAlert('ثبت نام فعلا ممکن نیست.', 'info');
+            };
+        }
+        // END: Instruction 2
+        
         function showDashboard(user) {
             document.getElementById('dashboard-user-name').textContent = user.name;
             document.getElementById('menu-user-name').textContent = user.name;
@@ -1536,7 +1713,7 @@
             document.getElementById('add-new-article-btn').onclick = showNewArticleModal;
 
             const summaryContainer = document.getElementById('summary-dashboard');
-            // START: Instruction 3 - Use skeleton loader for summary cards on initial load
+            
             summaryContainer.innerHTML = `
                 <div class="summary-card">
                     <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
@@ -1551,7 +1728,6 @@
                     <span class="label">رد شده</span>
                 </div>
             `;
-            // END: Instruction 3
             
             let searchDebounce;
             const searchInput = document.getElementById('article-search-input');
@@ -1579,7 +1755,7 @@
                 allUserArticles = [];
                 hasMoreArticles = true;
                 articlesContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>';
-                // START: Instruction 3 - Show skeleton loader on summary cards when reloading
+                
                 summaryContainer.innerHTML = `
                     <div class="summary-card">
                         <span class="count"><div class="skeleton-loader" style="width: 60px; height: 38px;"></div></span>
@@ -1594,7 +1770,7 @@
                         <span class="label">رد شده</span>
                     </div>
                 `;
-                // END: Instruction 3
+                
             } else {
                 if (loadMoreContainer.querySelector('button')) {
                     loadMoreContainer.querySelector('button').classList.add('btn-loading');
@@ -1895,7 +2071,6 @@
                     }
                     const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target);
                     if (res?.status === 'success') {
-                        // START: Instruction 2 - Dynamic success message (already existed, but confirming it's good)
                         const sectionNames = {
                             keywords_abstract: 'چکیده و کلیدواژه‌ها',
                             introduction: 'مقدمه',
@@ -1906,7 +2081,6 @@
                         const friendlyName = sectionNames[section] || 'بخش مورد نظر';
                         const successMessage = `${friendlyName} با موفقیت ذخیره شد.`;
                         showCustomAlert(successMessage, 'success');
-                        // END: Instruction 2
 
                         updateCardInPlace(article.articleId);
                         if (section === 'keywords_abstract') {
@@ -2004,7 +2178,6 @@
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
             const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--text-light); text-align: center; margin-bottom:15px;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
             
-            // START: Instruction 4 - Reworking the General Information tab with Display/Edit mode
             const step1 = document.querySelector('.tab-content[data-tab="1"]');
             step1.innerHTML = `
                 <h4>اطلاعات کلی</h4>
@@ -2086,7 +2259,6 @@
                 };
             });
 
-            // START: Instruction 1 - Implement modal refresh on saving draft details
             document.getElementById('save-details-btn').onclick = async (e) => {
                 if (isReadOnly) return;
                 const button = e.target.closest('button');
@@ -2123,7 +2295,6 @@
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
                 }
             };
-            // END: Instruction 1 and Instruction 4
         }
 
         async function handleSubmitDraft(e, articleId, supervisorName) {
@@ -2395,7 +2566,6 @@
 
         async function handleShowHistory(articleId, articleTitle, button) {
             const modalBodyId = 'history-modal-body';
-            // Instruction 2: Use modern loader
             renderModal(`تاریخچه مقاله: ${articleTitle}`, `<div id="${modalBodyId}" class="modal-body" style="text-align:center; position:relative; min-height: 150px;"><div class="content-loader-wrapper"><div class="content-loader"></div></div></div>`, 'modal-sm');
             const user = getStoredUser();
             const response = await callApi('getArticleHistory', { nationalId: user.nationalId, articleId }, button);
@@ -2523,7 +2693,6 @@
             const loadMoreBtn = document.getElementById('load-more-supervisors-modal');
 
             const fetchAndRender = async (reset = false) => {
-                // Instruction 2: Use modern loader
                 if (reset) { currentPage = 1; resultsContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>'; }
                 const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
                 if (reset && resultsContainer.querySelector('.content-loader-wrapper')) resultsContainer.innerHTML = '';
@@ -2571,7 +2740,6 @@
         async function showSuggestedTitlesModal(e) {
             const button = e.target.closest('button');
             const modalBodyId = 'suggested-titles-body';
-            // Instruction 2: Use modern loader
             renderModal('انتخاب از عناوین پیشنهادی', `<div id="${modalBodyId}" class="modal-body" style="text-align:center; position:relative; min-height: 280px;"><div class="content-loader-wrapper"><div class="content-loader"></div></div></div>`, 'modal-sm', true);
             const response = await callApi('getSuggestedTitles', {}, button);
             const modalBody = document.getElementById(modalBodyId);
@@ -2658,7 +2826,6 @@
             updateView();
         }
 
-        // Instruction 4: Modified function to handle updating the display text
         function showAffiliationModal(targetInputId, currentAffiliation = '', onSaveCallback) {
             const [level = '', field = '', institute = '', location = ''] = currentAffiliation.split('،').map(s => s.trim());
             const modalContent = `<div class="modal-body"><div class="form-group"><label for="aff-level">پایه تحصیلی / مدرک</label><input id="aff-level-modal" value="${level}" placeholder="مثال: سطح سه حوزه یا کارشناسی ارشد"></div><div class="form-group"><label for="aff-field">رشته آموزشی</label><input id="aff-field-modal" value="${field}" placeholder="مثال: فقه و اصول"></div><div class="form-group"><label for="aff-institute">مدرسه / موسسه / دانشگاه</label><input id="aff-institute-modal" value="${institute}" placeholder="مثال: مدرسه علمیه امام صادق(ع)"></div><div class="form-group"><label for="aff-location">شهر و کشور</label><input id="aff-location-modal" value="${location}" placeholder="مثال: قم، ایران"></div></div><div class="wizard-nav"><button id="save-affiliation-btn" style="width:100%"><span class="btn-text">تایید و ثبت</span></button></div>`;
@@ -2685,7 +2852,6 @@
             const loadMoreBtn = document.getElementById('load-more-supervisors-modal');
 
             const fetchAndRender = async (reset = false) => {
-                // Instruction 2: Use modern loader
                 if (reset) { currentPage = 1; resultsContainer.innerHTML = '<div class="content-loader-wrapper"><div class="content-loader"></div></div>'; }
                 const res = await callApi('getSupervisors', { searchTerm: currentSearchTerm, page: currentPage }, loadMoreBtn);
                 if (reset) resultsContainer.innerHTML = '';
@@ -2767,4 +2933,3 @@
 </body>
 
 </html>
-```
