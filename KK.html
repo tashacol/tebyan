@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
-        /* دستور اول: ظاهر حرفه‌ای و مدرن با رنگ‌های رسمی */
+        /* دستور اول: ظاهر حرفه‌ای و رسمی با رنگ‌های رسمی */
         :root {
             --primary: #2563eb; --primary-light: #dbeafe; --primary-dark: #1e40af;
             --secondary: #1f2937; --secondary-light: #f3f4f6;
@@ -165,7 +165,7 @@
     // == پنل مدیریت نشریه - JavaScript (نسخه نهایی و پایدار)
     // ==========================================================
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqsfCE7G7gbMANi-CqxBlIVPQHzIZt54IDQAY-f3PhC46kt5kBvLo1bpp4Xk3KscASvg/exec';
+    const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE';
 
     const appState = {
         currentUser: null,
@@ -173,39 +173,157 @@
         data: { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] }
     };
     
-    // لیست جامع لاگ‌ها با آیکن و رنگ
+    // لیست کامل و جامع ۱۵۰ لاگ با آیکن و رنگ
     const LOG_ACTIONS = {
-        'ADMIN_LOGIN_FAIL': { title: 'ورود ناموفق مدیر', icon: 'fa-user-shield', color: 'var(--danger)' },
-        'ADMIN_LOGIN_SUCCESS': { title: 'ورود موفق مدیر', icon: 'fa-user-shield', color: 'var(--success)' },
-        'APPROVED_FOR_JOURNAL': { title: 'تایید نهایی توسط استاد', icon: 'fa-user-graduate', color: 'var(--success)' },
-        'ARTICLE_ASSIGNED_TO_ISSUE': { title: 'تخصیص به شماره نشر', icon: 'fa-calendar-check', color: 'var(--info)' },
-        'DELETE_ARTICLE_SUCCESS': { title: 'حذف مقاله توسط محقق', icon: 'fa-trash', color: 'var(--danger)' },
+        'LOGIN_SUCCESS': { title: 'ورود موفق', icon: 'fa-right-to-bracket', color: 'var(--success)' },
+        'LOGIN_FAIL': { title: 'ورود ناموفق', icon: 'fa-user-clock', color: 'var(--warning)' },
+        'DRAFT_CREATE_SUCCESS': { title: 'ایجاد پیش‌نویس جدید', icon: 'fa-file-medical', color: 'var(--info)' },
+        'DRAFT_SAVE_SUCCESS': { title: 'ذخیره پیش‌نویس', icon: 'fa-floppy-disk', color: 'var(--text-light)' },
+        'SUBMIT_ARTICLE_SUCCESS': { title: 'ارسال برای استاد', icon: 'fa-file-circle-plus', color: 'var(--primary)' },
+        'SUBMIT_DRAFT_SUCCESS': { title: 'ارسال پیش‌نویس برای استاد', icon: 'fa-paper-plane', color: 'var(--primary)' },
+        'UPDATE_DETAILS_SUCCESS': { title: 'ویرایش اطلاعات کلی', icon: 'fa-pen-to-square', color: 'var(--info)' },
+        'ABSTRACT_UPDATE_SUCCESS': { title: 'ویرایش چکیده', icon: 'fa-file-lines', color: 'var(--info)' },
+        'INTRODUCTION_UPDATE_SUCCESS': { title: 'ویرایش مقدمه', icon: 'fa-file-lines', color: 'var(--info)' },
+        'BODY_UPDATE_SUCCESS': { title: 'ویرایش بدنه', icon: 'fa-file-lines', color: 'var(--info)' },
+        'CONCLUSION_UPDATE_SUCCESS': { title: 'ویرایش نتیجه‌گیری', icon: 'fa-file-lines', color: 'var(--info)' },
+        'REFERENCES_UPDATE_SUCCESS': { title: 'ویرایش منابع', icon: 'fa-file-lines', color: 'var(--info)' },
+        'SUBMIT_REVISIONS_SUCCESS': { title: 'ارسال ویرایشات برای استاد', icon: 'fa-file-pen', color: 'var(--primary)' },
+        'REVISION_NOTE_ADD_SUCCESS': { title: 'افزودن یادداشت برای استاد', icon: 'fa-note-sticky', color: 'var(--info)' },
+        'SEND_FINAL_REVIEW_SUCCESS': { title: 'ارسال برای بررسی نهایی', icon: 'fa-user-check', color: 'var(--primary-dark)' },
+        'DELETE_ARTICLE_SUCCESS': { title: 'حذف مقاله', icon: 'fa-trash', color: 'var(--danger)' },
+        'ARTICLE_WITHDRAW_REQUEST': { title: 'درخواست انصراف از مقاله', icon: 'fa-user-minus', color: 'var(--warning)' },
+        'SUGGESTED_TITLE_TAKEN': { title: 'انتخاب عنوان پیشنهادی', icon: 'fa-lightbulb', color: 'var(--success)' },
+        'SUGGESTED_TITLE_RELEASED': { title: 'آزادسازی عنوان', icon: 'fa-lightbulb', color: 'var(--info)' },
+        'PROFILE_UPDATE_SUCCESS': { title: 'بروزرسانی پروفایل', icon: 'fa-address-card', color: 'var(--info)' },
+        'PASSWORD_CHANGE_SUCCESS': { title: 'تغییر موفق رمز عبور', icon: 'fa-key', color: 'var(--success)' },
+        'PASSWORD_CHANGE_FAIL': { title: 'تلاش ناموفق برای تغییر رمز', icon: 'fa-key', color: 'var(--warning)' },
+        'FEEDBACK_VIEWED_BY_RESEARCHER': { title: 'مشاهده بازخورد استاد', icon: 'fa-eye', color: 'var(--info)' },
+        'ATTACHMENT_UPLOAD_SUCCESS': { title: 'بارگذاری فایل ضمیمه', icon: 'fa-paperclip', color: 'var(--info)' },
+        'ATTACHMENT_DELETE_SUCCESS': { title: 'حذف فایل ضمیمه', icon: 'fa-unlink', color: 'var(--info)' },
+        'COAUTHOR_ADD_REQUEST': { title: 'درخواست افزودن همکار', icon: 'fa-user-plus', color: 'var(--primary)' },
+        'COAUTHOR_REMOVE_SUCCESS': { title: 'حذف همکار نویسنده', icon: 'fa-user-minus', color: 'var(--info)' },
+        'SESSION_TIMEOUT_LOGOUT': { title: 'خروج خودکار', icon: 'fa-clock', color: 'var(--text-light)' },
+        'SUPPORT_TICKET_CREATE_SUCCESS': { title: 'ثبت تیکت پشتیبانی', icon: 'fa-life-ring', color: 'var(--primary)' },
+        'NOTIFICATION_READ': { title: 'مشاهده اعلان', icon: 'fa-bell', color: 'var(--info)' },
+        'NOTIFICATION_DELETE_ALL': { title: 'حذف همه اعلان‌ها', icon: 'fa-trash-can', color: 'var(--info)' },
+        'ARTICLE_CLONE_SUCCESS': { title: 'ایجاد کپی از مقاله', icon: 'fa-clone', color: 'var(--info)' },
+        'FORM_VALIDATION_FAIL': { title: 'خطای اعتبارسنجی فرم', icon: 'fa-triangle-exclamation', color: 'var(--warning)' },
+        'ARTICLE_PRINT_VIEW': { title: 'مشاهده نسخه چاپی', icon: 'fa-print', color: 'var(--info)' },
+        'FINAL_DECISION_VIEWED': { title: 'مشاهده تصمیم نهایی', icon: 'fa-gavel', color: 'var(--primary-dark)' },
+        'ARTICLE_HISTORY_VIEW': { title: 'مشاهده تاریخچه مقاله', icon: 'fa-history', color: 'var(--info)' },
+        'SUPERVISOR_CHANGE_REQUEST': { title: 'درخواست تغییر استاد', icon: 'fa-user-tag', color: 'var(--primary)' },
+        'KEYWORDS_UPDATE_SUCCESS': { title: 'ویرایش کلیدواژه‌ها', icon: 'fa-tags', color: 'var(--info)' },
+        'TITLE_UPDATE_SUCCESS': { title: 'ویرایش عنوان مقاله', icon: 'fa-heading', color: 'var(--info)' },
+        'AFFILIATION_UPDATE_SUCCESS': { title: 'ویرایش وابستگی سازمانی', icon: 'fa-building-columns', color: 'var(--info)' },
+        'VERSION_RESTORE_REQUEST': { title: 'درخواست بازیابی نسخه', icon: 'fa-clock-rotate-left', color: 'var(--warning)' },
+        'MESSAGE_SEND_TO_SUPERVISOR': { title: 'ارسال پیام به استاد', icon: 'fa-paper-plane', color: 'var(--primary)' },
+        'MESSAGE_VIEW_FROM_SUPERVISOR': { title: 'مشاهده پیام از استاد', icon: 'fa-envelope-open', color: 'var(--info)' },
+        'FILE_UPLOAD_FORMAT_ERROR': { title: 'خطای فرمت فایل', icon: 'fa-file-circle-exclamation', color: 'var(--danger)' },
+        'FILE_UPLOAD_SIZE_EXCEEDED': { title: 'خطای حجم فایل', icon: 'fa-file-arrow-up', color: 'var(--danger)' },
+        'SUBMISSION_CANCEL_SUCCESS': { title: 'لغو ارسال مقاله', icon: 'fa-file-circle-xmark', color: 'var(--warning)' },
+        'ACCOUNT_DEACTIVATION_REQUEST': { title: 'درخواست غیرفعال‌سازی حساب', icon: 'fa-user-lock', color: 'var(--danger)' },
+        'PASSWORD_RESET_REQUEST': { title: 'درخواست بازیابی رمز', icon: 'fa-unlock-keyhole', color: 'var(--primary)' },
+        'TWO_FACTOR_AUTH_SETUP': { title: 'فعال‌سازی تایید دو مرحله‌ای', icon: 'fa-shield-halved', color: 'var(--success)' },
+        'API_TOKEN_REGENERATE': { title: 'تولید مجدد توکن API', icon: 'fa-key', color: 'var(--info)' },
+        'PROF_LOGIN_SUCCESS': { title: 'ورود موفق استاد', icon: 'fa-user-tie', color: 'var(--success)' },
+        'PROF_LOGIN_FAIL': { title: 'ورود ناموفق استاد', icon: 'fa-user-tie', color: 'var(--warning)' },
         'GUIDANCE_ACCEPTED': { title: 'پذیرش راهنمایی', icon: 'fa-handshake', color: 'var(--success)' },
         'GUIDANCE_REJECTED': { title: 'عدم پذیرش راهنمایی', icon: 'fa-handshake-slash', color: 'var(--danger)' },
-        'ISSUE_CREATED': { title: 'ایجاد شماره نشر جدید', icon: 'fa-newspaper', color: 'var(--primary)' },
-        'ISSUE_DELETED': { title: 'حذف شماره نشر', icon: 'fa-trash-can', color: 'var(--danger)'},
-        'JOURNAL_ACCEPTED': { title: 'پذیرش نهایی توسط نشریه', icon: 'fa-award', color: 'var(--success)' },
-        'JOURNAL_REJECTED': { title: 'رد نهایی توسط نشریه', icon: 'fa-ban', color: 'var(--danger)' },
-        'LOGIN_FAIL': { title: 'ورود ناموفق محقق', icon: 'fa-user-clock', color: 'var(--warning)' },
-        'LOGIN_SUCCESS': { title: 'ورود موفق محقق', icon: 'fa-user-check', color: 'var(--info)' },
-        'PROF_LOGIN_FAIL': { title: 'ورود ناموفق استاد', icon: 'fa-user-tie', color: 'var(--warning)' },
-        'PROF_LOGIN_SUCCESS': { title: 'ورود موفق استاد', icon: 'fa-user-tie', color: 'var(--info)' },
-        'PROFILE_UPDATED': { title: 'بروزرسانی پروفایل استاد', icon: 'fa-address-card', color: 'var(--info)' },
-        'RESEARCHER_WITHDRAWAL': { title: 'انصراف محقق', icon: 'fa-user-minus', color: 'var(--danger)' },
-        'REVISION_FEEDBACK_UPDATED': { title: 'ویرایش بازخورد استاد', icon: 'fa-comment-dots', color: 'var(--info)' },
-        'SAVE_DRAFT_SUCCESS': { title: 'ذخیره پیش‌نویس', icon: 'fa-floppy-disk', color: 'var(--text-light)' },
-        'SEND_FINAL_REVIEW_SUCCESS': { title: 'ارسال برای بررسی نهایی', icon: 'fa-user-check', color: 'var(--primary-dark)' },
-        'SENT_FOR_FINAL_REVISION': { title: 'ارجاع برای ویرایش نهایی', icon: 'fa-circle-exclamation', color: 'var(--warning)' },
+        'ARTICLE_OPEN_FOR_REVIEW': { title: 'باز کردن مقاله برای بازبینی', icon: 'fa-folder-open', color: 'var(--info)' },
         'SENT_FOR_REVISION': { title: 'ارجاع برای ویرایش (توسط استاد)', icon: 'fa-user-edit', color: 'var(--warning)' },
-        'SUBMIT_ARTICLE_SUCCESS': { title: 'ثبت نهایی مقاله جدید', icon: 'fa-file-circle-plus', color: 'var(--primary)' },
-        'SUBMIT_DRAFT_SUCCESS': { title: 'ارسال پیش‌نویس برای استاد', icon: 'fa-paper-plane', color: 'var(--primary)' },
-        'SUBMIT_REVISIONS_SUCCESS': { title: 'ارسال ویرایشات توسط محقق', icon: 'fa-file-pen', color: 'var(--primary)' },
+        'REVISION_FEEDBACK_UPDATED': { title: 'ویرایش بازخورد استاد', icon: 'fa-comment-dots', color: 'var(--info)' },
+        'FEEDBACK_SAVE_DRAFT': { title: 'ذخیره پیش‌نویس بازخورد', icon: 'fa-floppy-disk', color: 'var(--text-light)' },
+        'APPROVED_FOR_JOURNAL': { title: 'تایید نهایی توسط استاد', icon: 'fa-user-graduate', color: 'var(--success)' },
         'SUPERVISION_CANCELLED': { title: 'انصراف استاد از راهنمایی', icon: 'fa-user-slash', color: 'var(--danger)' },
-        'SYSTEM_ERROR': { title: 'خطای داخلی سرور', icon: 'fa-server', color: 'var(--danger)' },
+        'CAPACITY_UPDATE_SUCCESS': { title: 'تغییر ظرفیت پذیرش', icon: 'fa-users-line', color: 'var(--info)' },
+        'AVAILABILITY_SET_AWAY': { title: 'تنظیم وضعیت به "غیرفعال"', icon: 'fa-toggle-off', color: 'var(--text-light)' },
+        'AVAILABILITY_SET_ACTIVE': { title: 'تنظیم وضعیت به "فعال"', icon: 'fa-toggle-on', color: 'var(--success)' },
         'TITLE_SUGGESTED': { title: 'افزودن عنوان پیشنهادی', icon: 'fa-plus', color: 'var(--info)' },
-        'UPDATE_DETAILS_SUCCESS': { title: 'ویرایش اطلاعات کلی', icon: 'fa-pen-to-square', color: 'var(--info)' },
+        'SUGGESTED_TITLE_EDIT_SUCCESS': { title: 'ویرایش عنوان پیشنهادی', icon: 'fa-pen', color: 'var(--info)' },
+        'SUGGESTED_TITLE_DELETE_SUCCESS': { title: 'حذف عنوان پیشنهادی', icon: 'fa-trash', color: 'var(--danger)' },
+        'MESSAGE_SEND_TO_RESEARCHER': { title: 'ارسال پیام به محقق', icon: 'fa-paper-plane', color: 'var(--primary)' },
+        'MESSAGE_VIEW_FROM_RESEARCHER': { title: 'مشاهده پیام از محقق', icon: 'fa-envelope-open', color: 'var(--info)' },
+        'REVISION_NOTE_VIEWED': { title: 'مشاهده توضیحات محقق', icon: 'fa-eye', color: 'var(--info)' },
+        'ARTICLE_HISTORY_VIEWED': { title: 'مشاهده تاریخچه مقاله', icon: 'fa-history', color: 'var(--info)' },
+        'DASHBOARD_FILTER_APPLY': { title: 'اعمال فیلتر در داشبورد', icon: 'fa-filter', color: 'var(--info)' },
+        'ARTICLE_SEARCH_PERFORMED': { title: 'انجام جستجو در مقالات', icon: 'fa-search', color: 'var(--info)' },
+        'ARTICLE_ESCALATE_TO_ADMIN': { title: 'ارجاع مورد به مدیر', icon: 'fa-flag', color: 'var(--warning)' },
+        'SUPERVISION_TRANSFER_REQUEST': { title: 'درخواست انتقال راهنمایی', icon: 'fa-right-left', color: 'var(--primary)' },
+        'PASSWORD_CHANGE_SUCCESS_PROF': { title: 'تغییر موفق رمز عبور (استاد)', icon: 'fa-key', color: 'var(--success)' },
+        'NOTIFICATION_MARK_AS_READ': { title: 'خواندن اعلان', icon: 'fa-bell-slash', color: 'var(--info)' },
+        'BATCH_ACTION_REJECT_SUCCESS': { title: 'رد گروهی درخواست‌ها', icon: 'fa-folder-minus', color: 'var(--danger)' },
+        'REPORT_GENERATE_OWN_STATS': { title: 'تولید گزارش عملکرد شخصی', icon: 'fa-chart-pie', color: 'var(--info)' },
+        'ARTICLE_METADATA_VIEW': { title: 'مشاهده فراداده مقاله', icon: 'fa-info-circle', color: 'var(--info)' },
+        'ARTICLE_CONTENT_DOWNLOAD': { title: 'دانلود محتوای مقاله', icon: 'fa-file-download', color: 'var(--info)' },
+        'QUICK_REPLY_SENT': { title: 'ارسال پاسخ سریع', icon: 'fa-reply-all', color: 'var(--primary)' },
+        'DEADLINE_SET_FOR_REVISION': { title: 'تعیین مهلت ویرایش', icon: 'fa-calendar-day', color: 'var(--warning)' },
+        'DEADLINE_EXTENSION_GRANTED': { title: 'تمدید مهلت ویرایش', icon: 'fa-calendar-plus', color: 'var(--success)' },
+        'PLAGIARISM_CHECK_INITIATED': { title: 'درخواست بررسی سرقت ادبی', icon: 'fa-search-dollar', color: 'var(--primary)' },
+        'PLAGIARISM_REPORT_VIEWED': { title: 'مشاهده گزارش سرقت ادبی', icon: 'fa-file-contract', color: 'var(--info)' },
+        'ANNOTATION_ADD_SUCCESS': { title: 'افزودن یادداشت روی متن', icon: 'fa-highlighter', color: 'var(--info)' },
+        'VERSION_COMPARE_VIEW': { title: 'مشاهده تفاوت نسخه‌ها', icon: 'fa-code-compare', color: 'var(--info)' },
+        'ARTICLE_TAG_ADD': { title: 'افزودن برچسب به مقاله', icon: 'fa-tag', color: 'var(--info)' },
+        'ARTICLE_TAG_REMOVE': { title: 'حذف برچسب از مقاله', icon: 'fa-tags', color: 'var(--info)' },
+        'SIMILAR_ARTICLES_SEARCH': { title: 'جستجوی مقالات مشابه', icon: 'fa-copy', color: 'var(--info)' },
+        'GUIDANCE_COMPLETE_MANUAL': { title: 'تکمیل دستی فرآیند راهنمایی', icon: 'fa-check-circle', color: 'var(--success)' },
+        'LOGOUT_SUCCESS': { title: 'خروج موفق از سیستم', icon: 'fa-sign-out-alt', color: 'var(--info)' },
+        'TWO_FACTOR_DISABLE_REQUEST': { title: 'درخواست غیرفعال‌سازی تایید دو مرحله‌ای', icon: 'fa-shield-slash', color: 'var(--warning)' },
+        'EXPORT_OWN_ARTICLES_LIST': { title: 'دریافت خروجی مقالات', icon: 'fa-file-export', color: 'var(--info)' },
+        'HELP_DOCUMENTATION_VIEW': { title: 'مشاهده راهنمای پنل', icon: 'fa-question-circle', color: 'var(--info)' },
+        'MESSAGE_ARCHIVE_SUCCESS': { title: 'بایگانی کردن پیام', icon: 'fa-box-archive', color: 'var(--info)' },
+        'DECISION_SAVE_FAIL': { title: 'خطای ثبت تصمیم', icon: 'fa-triangle-exclamation', color: 'var(--danger)' },
+        'REMINDER_SET_FOR_RESEARCHER': { title: 'تنظیم یادآور برای محقق', icon: 'fa-bell', color: 'var(--primary)' },
+        'COMMUNICATION_LOG_VIEW': { title: 'مشاهده لاگ ارتباطات', icon: 'fa-comments', color: 'var(--info)' },
+        'ADMIN_LOGIN_SUCCESS': { title: 'ورود موفق مدیر', icon: 'fa-user-shield', color: 'var(--success)' },
+        'ADMIN_LOGIN_FAIL': { title: 'ورود ناموفق مدیر', icon: 'fa-user-shield', color: 'var(--danger)' },
+        'JOURNAL_ACCEPTED': { title: 'پذیرش نهایی مقاله', icon: 'fa-award', color: 'var(--success)' },
+        'JOURNAL_REJECTED': { title: 'رد نهایی مقاله', icon: 'fa-ban', color: 'var(--danger)' },
+        'SENT_FOR_FINAL_REVISION': { title: 'ارسال برای ویرایش نهایی', icon: 'fa-circle-exclamation', color: 'var(--warning)' },
+        'ARTICLE_ASSIGNED_TO_ISSUE': { title: 'تخصیص به شماره نشر', icon: 'fa-calendar-check', color: 'var(--info)' },
+        'ARTICLE_REMOVE_FROM_ISSUE': { title: 'حذف از شماره نشر', icon: 'fa-calendar-minus', color: 'var(--warning)' },
+        'ISSUE_CREATED': { title: 'ایجاد شماره نشر جدید', icon: 'fa-newspaper', color: 'var(--primary)' },
+        'ISSUE_UPDATED': { title: 'ویرایش شماره نشر', icon: 'fa-edit', color: 'var(--info)' },
+        'ISSUE_DELETED': { title: 'حذف شماره نشر', icon: 'fa-trash-can', color: 'var(--danger)' },
+        'ISSUE_PUBLISHED_FLAG': { title: 'علامت‌گذاری "منتشر شده"', icon: 'fa-check-double', color: 'var(--success)' },
         'USER_CREATED': { title: 'ایجاد کاربر جدید', icon: 'fa-user-plus', color: 'var(--success)' },
         'USER_UPDATED': { title: 'ویرایش اطلاعات کاربر', icon: 'fa-user-pen', color: 'var(--info)' },
+        'USER_DELETED': { title: 'حذف کاربر', icon: 'fa-user-times', color: 'var(--danger)' },
+        'USER_SUSPENDED': { title: 'معلق کردن کاربر', icon: 'fa-user-lock', color: 'var(--warning)' },
+        'USER_ACTIVATED': { title: 'فعال‌سازی کاربر', icon: 'fa-user-check', color: 'var(--success)' },
+        'USER_ROLE_CHANGED': { title: 'تغییر نقش کاربر', icon: 'fa-user-gear', color: 'var(--info)' },
+        'USER_BULK_IMPORT_SUCCESS': { title: 'افزودن گروهی کاربران', icon: 'fa-users', color: 'var(--success)' },
+        'PASSWORD_RESET_FOR_USER': { title: 'بازنشانی رمز عبور کاربر', icon: 'fa-key', color: 'var(--warning)' },
+        'SYSTEM_SETTINGS_UPDATED': { title: 'تغییر تنظیمات سیستم', icon: 'fa-cogs', color: 'var(--info)' },
+        'LOG_EXPORT_SUCCESS': { title: 'دریافت خروجی لاگ‌ها', icon: 'fa-file-csv', color: 'var(--info)' },
+        'DATA_EXPORT_ARTICLES_SUCCESS': { title: 'دریافت خروجی مقالات', icon: 'fa-file-excel', color: 'var(--info)' },
+        'DATA_EXPORT_USERS_SUCCESS': { title: 'دریافت خروجی کاربران', icon: 'fa-file-excel', color: 'var(--info)' },
+        'ARTICLE_STATUS_OVERRIDE': { title: 'تغییر دستی وضعیت مقاله', icon: 'fa-bolt', color: 'var(--danger)' },
+        'SUPERVISOR_CHANGE_MANUAL': { title: 'تغییر دستی استاد راهنما', icon: 'fa-user-edit', color: 'var(--warning)' },
+        'ARTICLE_METADATA_EDIT_ADMIN': { title: 'ویرایش اطلاعات مقاله (توسط مدیر)', icon: 'fa-edit', color: 'var(--warning)' },
+        'ARTICLE_DELETE_BY_ADMIN': { title: 'حذف مقاله (توسط مدیر)', icon: 'fa-trash-alt', color: 'var(--danger)' },
+        'EMAIL_TEMPLATE_UPDATE_SUCCESS': { title: 'ویرایش قالب ایمیل', icon: 'fa-envelope', color: 'var(--info)' },
+        'DEADLINE_SET_GLOBAL': { title: 'تنظیم مهلت سراسری', icon: 'fa-calendar-alt', color: 'var(--info)' },
+        'ANNOUNCEMENT_CREATE_SUCCESS': { title: 'ایجاد اطلاعیه', icon: 'fa-bullhorn', color: 'var(--primary)' },
+        'ANNOUNCEMENT_DELETE_SUCCESS': { title: 'حذف اطلاعیه', icon: 'fa-bullhorn', color: 'var(--danger)' },
+        'REPORT_GENERATE_SUBMISSION_STATS': { title: 'تولید گزارش آمار مقالات', icon: 'fa-chart-bar', color: 'var(--info)' },
+        'REPORT_GENERATE_USER_ACTIVITY': { title: 'تولید گزارش فعالیت کاربران', icon: 'fa-chart-line', color: 'var(--info)' },
+        'DATABASE_BACKUP_SUCCESS': { title: 'ایجاد نسخه پشتیبان', icon: 'fa-database', color: 'var(--success)' },
+        'DATABASE_RESTORE_INITIATED': { title: 'آغاز بازیابی از پشتیبان', icon: 'fa-database', color: 'var(--danger)' },
+        'PERMISSION_DENIED_ATTEMPT': { title: 'تلاش برای دسترسی غیرمجاز', icon: 'fa-hand-paper', color: 'var(--danger)' },
+        'SYSTEM_MAINTENANCE_MODE_ON': { title: 'فعال‌سازی حالت تعمیر', icon: 'fa-tools', color: 'var(--warning)' },
+        'SYSTEM_MAINTENANCE_MODE_OFF': { title: 'غیرفعال‌سازی حالت تعمیر', icon: 'fa-tools', color: 'var(--success)' },
+        'ARTICLE_ASSIGNED_TO_REVIEWER': { title: 'ارجاع به داور', icon: 'fa-user-check', color: 'var(--primary)' },
+        'REVIEWER_FEEDBACK_RECEIVED': { title: 'دریافت بازخورد از داور', icon: 'fa-comment-alt', color: 'var(--info)' },
+        'REVIEWER_INVITE_SENT': { title: 'ارسال دعوت‌نامه به داور', icon: 'fa-user-plus', color: 'var(--primary)' },
+        'CATEGORY_CREATE_SUCCESS': { title: 'ایجاد حیطه دانشی جدید', icon: 'fa-folder-plus', color: 'var(--info)' },
+        'CATEGORY_DELETE_SUCCESS': { title: 'حذف حیطه دانشی', icon: 'fa-folder-minus', color: 'var(--danger)' },
+        'USER_IMPERSONATION_START': { title: 'ورود به حساب کاربری دیگر', icon: 'fa-user-secret', color: 'var(--danger)' },
+        'USER_IMPERSONATION_END': { title: 'خروج از حساب کاربری دیگر', icon: 'fa-user-secret', color: 'var(--info)' },
+        'MANUAL_LOG_ENTRY_CREATED': { title: 'ثبت دستی رویداد در تاریخچه', icon: 'fa-pencil-alt', color: 'var(--info)' },
+        'API_SETTINGS_UPDATED': { title: 'تغییر تنظیمات API', icon: 'fa-code', color: 'var(--info)' },
+        'PAYMENT_GATEWAY_CONFIGURED': { title: 'پیکربندی درگاه پرداخت', icon: 'fa-credit-card', color: 'var(--info)' },
+        'ARTICLE_TRANSFER_APPROVED': { title: 'تایید انتقال راهنمایی', icon: 'fa-exchange-alt', color: 'var(--success)' },
+        'SYSTEM_HEALTH_CHECK_PERFORMED': { title: 'بررسی سلامت سیستم', icon: 'fa-heartbeat', color: 'var(--info)' },
         'default': { title: 'اقدام نامشخص', icon: 'fa-question-circle', color: 'var(--text-light)'}
     };
 
@@ -666,13 +784,21 @@
             document.getElementById('file-info').textContent = `فایل انتخاب شده: ${file.name}`;
             const reader = new FileReader();
             reader.onload = e => {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                parsedData = jsonData.slice(1).map(row => ({ name: row[0], nid: row[1], pass: row[2] })).filter(u => u.name && u.nid && u.pass);
-                document.getElementById('import-actions').classList.remove('hidden');
-                document.getElementById('file-info').textContent += ` - ${parsedData.length} کاربر معتبر یافت شد.`;
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    parsedData = jsonData.slice(1).map(row => ({ name: row[0], nid: row[1], pass: row[2] })).filter(u => u.name && u.nid && u.pass);
+                    if(parsedData.length > 0) {
+                        document.getElementById('import-actions').classList.remove('hidden');
+                        document.getElementById('file-info').textContent += ` - ${parsedData.length} کاربر معتبر یافت شد.`;
+                    } else {
+                        document.getElementById('file-info').textContent += ` - هیچ کاربر معتبری در فایل یافت نشد.`;
+                    }
+                } catch(err) {
+                    showToast('فایل اکسل نامعتبر است.', 'error');
+                }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -703,20 +829,20 @@
         
         let content = `
             <div style="text-align:center; margin-bottom: 20px;"><h1 style="font-size:22px; font-weight: 700;">${details.title}</h1></div>
-            <p><strong>محقق:</strong> ${details.researcherName}</p>
-            <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
-            <p><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
+            <p style="font-size: 14px;"><strong>محقق:</strong> ${details.researcherName}</p>
+            <p style="font-size: 14px;"><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
+            <p style="font-size: 14px;"><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
             <hr style="margin: 20px 0;">
             <h2 style="font-size: 18px; font-weight: 700;">چکیده</h2><p style="font-size: 14px; line-height: 1.8;">${details.abstract || '-'}</p>
             <p style="font-size: 14px;"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
             <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">مقدمه</h2><p style="font-size: 14px; line-height: 1.8;">${(details.introduction || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">مقدمه</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.introduction || '-'}</div>
             <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">بدنه اصلی</h2><p style="font-size: 14px; line-height: 1.8;">${(details.body || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">بدنه اصلی</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.body || '-'}</div>
             <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">نتیجه‌گیری</h2><p style="font-size: 14px; line-height: 1.8;">${(details.conclusion || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">نتیجه‌گیری</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.conclusion || '-'}</div>
             <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">منابع و مآخذ</h2><div style="white-space:pre-wrap; font-size: 14px; line-height: 1.8;">${details.references || '-'}</div>`;
+            <h2 style="font-size: 18px; font-weight: 700;">منابع و مآخذ</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.references || '-'}</div>`;
         
         renderContainer.innerHTML = content;
         
@@ -736,19 +862,20 @@
 
             let heightLeft = canvasHeight;
             let position = 0;
-            let page = 1;
-
+            
             pdf.addImage(imgData, 'PNG', margin, margin, canvasWidth, canvasHeight);
             pdf.setFontSize(10);
-            pdf.text(String(page), margin, pdfHeight - 10);
+            pdf.text('1', margin, pdfHeight - 10);
             heightLeft -= (pdfHeight - (2 * margin));
+            let page = 1;
 
             while (heightLeft > 0) {
                 position -= (pdfHeight - (2 * margin));
                 pdf.addPage();
+                page++;
                 pdf.addImage(imgData, 'PNG', margin, position + margin, canvasWidth, canvasHeight);
                 heightLeft -= (pdfHeight - (2 * margin));
-                page++;
+                pdf.setFontSize(10);
                 pdf.text(String(page), (page % 2 === 0 ? pdfWidth - margin : margin), pdfHeight - 10);
             }
 
@@ -760,4 +887,4 @@
 
 </script>
 </body>
-</html> 
+</html>
