@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -486,6 +485,20 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
+
+        /* START: Added for Instruction 1 */
+        .supervisor-acceptance-notice {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: var(--success-light);
+            border: 1px solid var(--success);
+            border-right: 4px solid var(--success);
+            color: #065f46;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        /* END: Added for Instruction 1 */
 
         .article-header-clickable {
             cursor: pointer;
@@ -1598,7 +1611,10 @@
         }
         
         function showEditArticleWizard(article) {
-            const isReadOnly = [5, 6, 8].includes(Number(article.articleStatus));
+            // START: Edited for Instruction 2 & 4
+            const isFullyLocked = [5, 6, 8, 11].includes(Number(article.articleStatus));
+            const isReadOnly = isFullyLocked;
+            // END: Edited for Instruction 2 & 4
             const isDraft = Number(article.articleStatus) === 9;
             const countWords = (str) => str ? str.trim().split(/\s+/).filter(Boolean).length : 0;
             const countKeywords = (str) => str ? str.trim().split(/[,،]/).filter(s => s.trim() !== "").length : 0;
@@ -1645,7 +1661,7 @@
                 </div>
                 <div class="tab-content" data-tab="6">${referenceManagerHTML}</div>
             </div>
-            ${isDraft ? `<div class="modal-footer"><button id="submit-draft-btn" class="btn-success"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال نهایی برای استاد</span></button></div>` : ''}
+            ${isDraft ? `<div class="modal-footer"><button id="submit-draft-btn" class="btn-success"><i class="fas fa-paper-plane"></i><span class="btn-text">ارسال برای استاد راهنما</span></button></div>` : ''}
         `;
             renderModal(`ویرایش مقاله: ${article.title}`, modalContent, 'modal-lg');
             
@@ -1809,7 +1825,8 @@
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
             const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--warning); text-align: center;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
             const step1 = document.querySelector('.tab-content[data-tab="1"]');
-            step1.innerHTML = `<h4>اطلاعات کلی</h4><div class="form-group"><label>عنوان مقاله</label><input type="text" value="${article.title}" disabled></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
+            // START: Edited for Instruction 4
+            step1.innerHTML = `<h4>اطلاعات کلی</h4><div class="form-group"><label for="edit-article-title">عنوان مقاله</label><input type="text" id="edit-article-title" value="${article.title}" ${isFullyLocked ? 'disabled' : ''}></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
             
             if (!isReadOnly) {
                 document.getElementById('edit-affiliation').onclick = () => showAffiliationModal('edit-affiliation', article.affiliation);
@@ -1824,15 +1841,17 @@
                 if (isReadOnly) return;
                 const user = getStoredUser();
                 const details = {
+                    title: document.getElementById('edit-article-title').value,
                     affiliation: document.getElementById('edit-affiliation').value,
                     knowledgeArea: document.getElementById('edit-knowledgeArea').value,
                     topicReason: document.getElementById('edit-topicReason').value
                 };
+                // END: Edited for Instruction 4
                 if (canChangeSupervisor && window.selectedSupervisorForEdit) details.supervisor = window.selectedSupervisorForEdit;
                 const res = await callApi('updateArticleDetails', { nationalId: user.nationalId, articleId: article.articleId, details }, e.target);
                 if (res?.status === 'success') {
                     showCustomAlert(res.message, 'success', () => {
-                        closeModalById('main-modal');
+                        closeAllModals();
                         loadArticles(user.nationalId, false);
                     });
                 } else {
@@ -1845,10 +1864,12 @@
             if (!supervisorName) {
                 return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید.', 'error');
             }
-            showCustomConfirm('آیا از ارسال مقاله برای استاد راهنما اطمینان دارید؟ پس از ارسال، مقاله قفل شده و منتظر تایید استاد خواهد ماند.', async (confirmed, btn, closeModal) => {
+            // START: Edited for Instruction 3
+            showCustomConfirm('آیا از ارسال مقاله برای استاد راهنما اطمینان دارید؟', async (confirmed, btn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
-                    const response = await callApi('submitDraftForReview', { articleId, nationalId: user.nationalId }, e.target);
+                    const response = await callApi('submitDraftToSupervisor', { articleId, nationalId: user.nationalId }, e.target);
+                    // END: Edited for Instruction 3
                     closeModal();
                     if (response?.status === 'success') {
                         showCustomAlert(response.message, 'success', () => {
@@ -1915,7 +1936,7 @@
                 const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
                 const isDraft = String(article.articleStatus) === '9';
                 const cardBorderColor = (isDraft || article.articleStatus == 5 || article.articleStatus == 0 || article.articleStatus == 4) ? articleStatusColor : supervisorStatusColor;
-                const isReadOnly = [5, 6, 8].includes(Number(article.articleStatus));
+                const isReadOnly = [5, 6, 8, 11].includes(Number(article.articleStatus));
                 const card = document.createElement('div');
                 card.className = 'article-card';
                 card.style.borderTopColor = cardBorderColor;
@@ -1936,8 +1957,20 @@
                 const acceptanceInfo = (String(article.articleStatus) === '5') ? `<div><strong>تاریخ پذیرش:</strong> <span>${acceptanceDateFormatted}</span></div><div><strong>تاریخ نشر:</strong> <span>${publicationDateFormatted}</span></div><div><strong>شماره مجله:</strong> <span>${article.issueNumber || 'نامشخص'}</span></div>` : '';
                 const supervisorContactInfo = article.supervisorContact ? `<div><strong>تماس با استاد:</strong> <span>${article.supervisorContact}</span></div>` : '';
                 const printButtonHTML = article.articleStatus == 5 ? `<button class="btn-print btn-success" title="چاپ مقاله"><i class="fas fa-print"></i></button>` : '';
+                
+                // START: Added for Instruction 1
+                let supervisorAcceptanceNotice = '';
+                if (article.supervisorStatus == 5) {
+                    supervisorAcceptanceNotice = `<div class="supervisor-acceptance-notice">استاد راهنما مقاله شما را جهت برسی قبول کرده، اگر مقاله نیازمند ویرایش است آن را ویرایش و ذخیره کنید.</div>`;
+                }
+                // END: Added for Instruction 1
 
-                card.innerHTML = `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+                // START: Added for Instruction 2
+                const canSendForFinalReview = (article.supervisorStatus == 5) && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
+                const finalReviewButtonHTML = canSendForFinalReview ? `<button class="btn-send-final-review btn-success" data-article-id="${article.articleId}">ارسال جهت برسی نهایی</button>` : '';
+                // END: Added for Instruction 2
+
+                card.innerHTML = `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
 
                 card.querySelector('.article-header-clickable').onclick = () => card.classList.toggle('expanded');
                 card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
@@ -1945,6 +1978,9 @@
                 if (article.articleStatus == 2) { card.querySelector('.btn-rereview').onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); }; }
                 if (canBeDeleted) { card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); }; }
                 if (article.articleStatus == 5) { card.querySelector('.btn-print').onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
+                // START: Added for Instruction 2
+                if (canSendForFinalReview) { card.querySelector('.btn-send-final-review').onclick = (e) => { e.stopPropagation(); handleSendForFinalReview(article.articleId, e.target.closest('button')); }; }
+                // END: Added for Instruction 2
                 container.appendChild(card);
             });
         }
@@ -1982,12 +2018,12 @@
             }
         }
 
-        async function handleRequestReReviewClick(button) {
-            const articleId = button.dataset.articleId;
-            showCustomConfirm('آیا از ارسال مقاله برای بررسی مجدد اطمینان دارید؟', async (confirmed, btn, closeModal) => {
+        // START: New function for Instruction 2
+        async function handleSendForFinalReview(articleId, button) {
+            showCustomConfirm('شما مقاله را برای بررسی نهایی به استاد راهنما ارسال کرده اید. آیا اطمینان دارید؟', async (confirmed, confirmBtn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
-                    const response = await callApi('requestReReview', { articleId: articleId, nationalId: user.nationalId });
+                    const response = await callApi('sendForFinalReview', { articleId: articleId, nationalId: user.nationalId }, button);
                     closeModal();
                     if (response?.status === 'success') {
                         showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
@@ -1997,6 +2033,67 @@
                 } else { closeModal(); }
             }, 'بله، ارسال کن', 'لغو');
         }
+        // END: New function for Instruction 2
+
+        // START: Edited for Instruction 4
+        async function handleRequestReReviewClick(button) {
+            const articleId = button.dataset.articleId;
+            const article = allUserArticles.find(a => a.articleId == articleId);
+            if (!article) {
+                showCustomAlert('خطا: مقاله یافت نشد.', 'error');
+                return;
+            }
+            const originalReason = article.rejectionReason || 'توضیحی توسط استاد ثبت نشده است.';
+
+            const modalContent = `
+                <div class="modal-body">
+                    <div class="editor-feedback-notice" style="margin-bottom: 20px;">
+                        <strong>درخواست استاد:</strong>
+                        <p>${originalReason.split('توضیحات محقق:')[0].replace('درخواست استاد:', '').trim()}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="researcher-revision-notes">ویرایش های انجام شده را بیان کنید (حداکثر 100 کلمه)</label>
+                        <textarea id="researcher-revision-notes" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-rereview-btn" class="btn-secondary">لغو</button>
+                    <button id="submit-rereview-btn" class="btn-info"><span class="btn-text">ارسال</span></button>
+                </div>
+            `;
+            renderModal('ارسال ویرایشات مقاله', modalContent, 'modal-sm');
+
+            const submitBtn = document.getElementById('submit-rereview-btn');
+            const cancelBtn = document.getElementById('cancel-rereview-btn');
+            const notesTextarea = document.getElementById('researcher-revision-notes');
+
+            cancelBtn.onclick = () => closeModalById('main-modal');
+
+            submitBtn.onclick = async () => {
+                const notes = notesTextarea.value.trim();
+                if (!notes) {
+                    return showCustomAlert('لطفاً توضیحات ویرایش را وارد کنید.', 'error');
+                }
+                if (notes.split(/\s+/).filter(Boolean).length > 100) {
+                    return showCustomAlert('توضیحات شما نباید بیشتر از ۱۰۰ کلمه باشد.', 'error');
+                }
+
+                const user = getStoredUser();
+                const response = await callApi('submitRevisions', {
+                    articleId: articleId,
+                    nationalId: user.nationalId,
+                    revisionNotes: notes
+                }, submitBtn);
+
+                if (response?.status === 'success') {
+                    closeModalById('main-modal');
+                    showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
+                } else {
+                    showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
+                }
+            };
+        }
+        // END: Edited for Instruction 4
 
         async function handleShowHistory(articleId, articleTitle, button) {
             const modalBodyId = 'history-modal-body';
@@ -2351,7 +2448,7 @@
         function getStoredUser() { return JSON.parse(localStorage.getItem('currentUser')); }
         function getStatusInfo(type, code) {
             const map = {
-                article: { '0': ['رد شده توسط نشریه', '#dc3545'], '1': ['در دست بررسی توسط استاد', '#0d6efd'], '2': ['نیازمند ویرایش', '#fd7e14'], '3': ['انصراف محقق', '#6c757d'], '4': ['انصراف استاد راهنما', '#ffc107'], '5': ['تایید نهایی و آماده نشر', '#198754'], '6': ['تایید استاد، منتظر بررسی نهایی', '#0dcaf0'], '8': ['در حال بررسی مجدد', '#6f42c1'], '9': ['پیش‌نویس', '#6c757d'] }
+                article: { '0': ['رد شده توسط نشریه', '#dc3545'], '1': ['در دست بررسی توسط استاد', '#0d6efd'], '2': ['نیازمند ویرایش', '#fd7e14'], '3': ['انصراف محقق', '#6c757d'], '4': ['انصراف استاد راهنما', '#ffc107'], '5': ['تایید نهایی و آماده نشر', '#198754'], '6': ['تایید استاد، منتظر بررسی نهایی', '#0dcaf0'], '8': ['در حال بررسی مجدد', '#6f42c1'], '9': ['پیش‌نویس', '#6c757d'], '11': ['ارسال برای بررسی نهایی', '#2563EB'], '12': ['ویرایش ارسال شد', '#8b5cf6'] }
             };
             return (map[type] && map[type][String(code)]) || ['نامشخص', '#6c757d'];
         }
