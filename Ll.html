@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نشریه علمی پژوهشی [نام نشریه شما]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary: #1e3a8a; /* Blue-800 */
+            --secondary: #1f2937; /* Gray-800 */
+            --bg-main: #f9fafb; /* Gray-50 */
+            --bg-header: #ffffff;
+            --text-dark: #111827; /* Gray-900 */
+            --text-light: #6b7280; /* Gray-500 */
+            --border-color: #e5e7eb; /* Gray-200 */
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--bg-header);
+            box-shadow: var(--shadow-md);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--primary);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        .logo p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav-button {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .nav-button:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        .login-dropdown {
+            position: relative;
+        }
+        .login-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        .login-button:hover {
+            background-color: var(--primary-dark);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 110%;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius);
+            z-index: 1;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: var(--text-dark);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.95rem;
+        }
+        .dropdown-content a:hover {
+            background-color: #f3f4f6;
+        }
+        .login-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Main Section */
+        #main {
+            padding: 40px 0;
+        }
+
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 40px;
+            display: flex;
+            gap: 15px;
+        }
+        #search-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+        }
+        #search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .search-button {
+            padding: 0 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Issues Section */
+        .issue {
+            margin-bottom: 25px;
+        }
+        .issue-header {
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .issue-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        .issue-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        .issue-header .issue-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .issue-articles {
+            display: none;
+            padding: 20px;
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .issue.open .issue-articles {
+            display: block;
+        }
+        .article-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .article-item:last-child {
+            border-bottom: none;
+        }
+        .article-item:hover {
+            background-color: #f3f4f6;
+        }
+        .article-item h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary-dark);
+        }
+        .article-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+        .modal-header {
+            padding: 15px 25px;
+            background-color: var(--secondary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+        }
+        .close-button {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover, .close-button:focus {
+            color: white;
+        }
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+        }
+        .loader-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        .loader {
+            width: 48px; height: 48px; border: 5px solid var(--border-color);
+            border-bottom-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            background: var(--secondary);
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <h1>نشریه علمی پژوهشی [نام نشریه]</h1>
+                <p>وابسته به [نام دانشگاه یا موسسه شما]</p>
+            </div>
+            <nav class="main-nav">
+                <button class="nav-button" id="info-button">درباره نشریه</button>
+                <div class="login-dropdown">
+                    <button class="nav-button login-button"><i class="fa-solid fa-right-to-bracket"></i> ورود به سامانه</button>
+                    <div class="dropdown-content">
+                        <!-- لینک پنل‌ها را در اینجا قرار دهید -->
+                        <a href="LINK_TO_RESEARCHER_PANEL" target="_blank">پنل محققان</a>
+                        <a href="LINK_TO_PROFESSOR_PANEL" target="_blank">پنل اساتید و داوران</a>
+                        <a href="LINK_TO_ADMIN_PANEL" target="_blank">پنل مدیریت</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <div class="container">
+            <section class="search-section">
+                <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان مقاله، نام محقق یا کلیدواژه...">
+                <button class="search-button"><i class="fa-solid fa-search"></i></button>
+            </section>
+            
+            <section id="issues-container">
+                <!-- محتوای مجلدها به صورت پویا در اینجا بارگذاری می‌شود -->
+                <div class="loader-wrapper">
+                    <div class="loader"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; تمامی حقوق برای [نام نشریه شما] محفوظ است.</p>
+    </footer>
+
+    <!-- Modal for Article/Info Details -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- محتوای مودال در اینجا قرار می‌گیرد -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // !مهم: آدرس دیپلوی اسکریپت خود را اینجا قرار دهید
+        const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_DEPLOYMENT_URL_HERE';
+        let allIssuesData = {};
+
+        document.addEventListener('DOMContentLoaded', fetchPublishedData);
+
+        async function callApi(action, params = {}) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action, params })
+                });
+                if (!response.ok) throw new Error('خطا در ارتباط با سرور');
+                const data = await response.json();
+                if (data.status === 'error') throw new Error(data.message);
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                document.getElementById('issues-container').innerHTML = `<p style="text-align:center; color: var(--danger);">${error.message}</p>`;
+                return null;
+            }
+        }
+
+        async function fetchPublishedData() {
+            const response = await callApi('getPublicationData');
+            if (response && response.data) {
+                allIssuesData = response.data;
+                renderIssues(allIssuesData.issues, allIssuesData.issueDetails);
+            }
+        }
+
+        function renderIssues(issues, issueDetails, filterTerm = '') {
+            const container = document.getElementById('issues-container');
+            container.innerHTML = '';
+            
+            const sortedIssueNumbers = Object.keys(issues).sort((a, b) => Number(b) - Number(a));
+
+            if (sortedIssueNumbers.length === 0) {
+                container.innerHTML = '<p style="text-align:center;">هنوز شماره‌ای منتشر نشده است.</p>';
+                return;
+            }
+            
+            let foundArticles = false;
+
+            sortedIssueNumbers.forEach(issueNumber => {
+                const issueInfo = issueDetails[issueNumber] || {};
+                const articles = issues[issueNumber];
+                
+                const filteredArticles = filterTerm ? articles.filter(a => 
+                    (a.title && a.title.toLowerCase().includes(filterTerm)) || 
+                    (a.researcherName && a.researcherName.toLowerCase().includes(filterTerm)) || 
+                    (a.keywords && a.keywords.toLowerCase().includes(filterTerm))
+                ) : articles;
+
+                if (filteredArticles.length > 0) {
+                    foundArticles = true;
+                    const issueElement = document.createElement('div');
+                    issueElement.className = 'issue';
+                    issueElement.innerHTML = `
+                        <div class="issue-header">
+                            <div>
+                                <h3>شماره ${issueNumber}</h3>
+                                <span class="issue-date">تاریخ نشر: ${formatDate(issueInfo.publishDate)}</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="issue-articles">
+                            ${filteredArticles.map(article => `
+                                <div class="article-item" data-article-id="${article.articleId}">
+                                    <h4>${article.title}</h4>
+                                    <p>${article.researcherName}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(issueElement);
+                }
+            });
+            
+            if (!foundArticles && filterTerm) {
+                 container.innerHTML = `<p style="text-align:center;">مقاله‌ای با عبارت جستجو شده یافت نشد.</p>`;
+            }
+        }
+        
+        // Event Listeners
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            renderIssues(allIssuesData.issues, allIssuesData.issueDetails, searchTerm);
+        });
+
+        document.getElementById('issues-container').addEventListener('click', function(e) {
+            const issueHeader = e.target.closest('.issue-header');
+            const articleItem = e.target.closest('.article-item');
+
+            if (issueHeader) {
+                issueHeader.parentElement.classList.toggle('open');
+            }
+            if (articleItem) {
+                const articleId = articleItem.dataset.articleId;
+                showArticleModal(articleId);
+            }
+        });
+        
+        const modal = document.getElementById('details-modal');
+        modal.querySelector('.close-button').onclick = () => modal.classList.remove('show');
+        window.onclick = (event) => { if (event.target == modal) modal.classList.remove('show'); }
+
+        document.getElementById('info-button').onclick = showInfoModal;
+
+        // Modal Functions
+        function showInfoModal() {
+            document.getElementById('modal-title').innerText = 'درباره نشریه';
+            document.getElementById('modal-body').innerHTML = `
+                <p><strong>[نام نشریه شما]</strong> یک نشریه علمی-پژوهشی است که با هدف ترویج و انتشار دستاوردهای نوین در حیطه [...] فعالیت می‌کند.</p>
+                <h4>اهداف و چشم‌اندازها</h4>
+                <ul>
+                    <li>انتشار مقالات تحقیقی اصیل و با کیفیت بالا.</li>
+                    <li>ایجاد بستری برای تبادل دانش میان پژوهشگران، اساتید و دانشجویان.</li>
+                    <li>کمک به پیشرفت مرزهای دانش در حوزه [...].</li>
+                </ul>
+                <h4>اطلاعات تماس</h4>
+                <p><strong>سردبیر:</strong> [نام سردبیر]</p>
+                <p><strong>ایمیل:</strong> [info@journal.com]</p>
+                <p><strong>تلفن تماس:</strong> [شماره تماس]</p>
+            `;
+            modal.classList.add('show');
+        }
+
+        async function showArticleModal(articleId) {
+            document.getElementById('modal-title').innerText = `مقاله: ${articleId}`;
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
+            modal.classList.add('show');
+            
+            const response = await callApi('getArticleDetails', { articleId });
+
+            if (response && response.data) {
+                const details = response.data.details;
+                modalBody.innerHTML = `
+                    <h3 style="color: var(--primary-dark);">${details.title}</h3>
+                    <p><strong>نویسنده:</strong> ${details.researcherName}</p>
+                    <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+                    <hr>
+                    <h4>چکیده</h4>
+                    <p>${details.abstract || 'محتوایی ثبت نشده است.'}</p>
+                `;
+            } else {
+                 modalBody.innerHTML = `<p>خطا در دریافت اطلاعات مقاله.</p>`;
+            }
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            return new Date(dateString).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+    </script>
+</body>
+</html>
