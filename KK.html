@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         :root {
-            --primary: #4338ca; --primary-light: #eef2ff; --primary-dark: #312e81;
+            --primary: #4f46e5; --primary-light: #e0e7ff; --primary-dark: #3730a3;
             --secondary: #1f2937; --secondary-light: #f3f4f6;
             --text-dark: #111827; --text-light: #6b7280; --bg-main: #f9fafb;
             --bg-card: #ffffff; --border-color: #e5e7eb; --success: #16a34a;
@@ -17,11 +17,18 @@
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --radius-lg: 12px; --radius-md: 8px; --transition: 0.2s ease-in-out;
         }
-        body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; font-size: 15px; }
         .hidden { display: none !important; }
         .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px; }
         .card { background: var(--bg-card); border-radius: var(--radius-lg); box-shadow: var(--shadow); border: 1px solid var(--border-color); }
-        h1,h2,h3,h4 { font-weight: 700; margin: 0 0 16px 0; }
+        h1,h2,h3,h4 { font-weight: 700; margin: 0 0 16px 0; color: var(--text-dark); }
+        h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; } h3 { font-size: 1.2rem; }
+        input, select, textarea {
+            width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; transition: var(--transition); background-color: #fff;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
         button {
             font-family: inherit; padding: 10px 16px; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 500;
             cursor: pointer; transition: var(--transition); display: inline-flex;
@@ -32,61 +39,82 @@
         .btn-success { background-color: var(--success); } .btn-danger { background-color: var(--danger); }
         .btn-warning { background-color: var(--warning); } .btn-secondary { background-color: var(--secondary); }
         .btn-light { background-color: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); }
+        .btn-loading .btn-text, .btn-loading .fas { visibility: hidden; }
         .btn-loading::after { content: ''; position: absolute; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Layout */
         #main-app { display: flex; min-height: 100vh; }
-        #sidebar { width: 250px; background: var(--secondary); color: white; padding: 20px; display: flex; flex-direction: column; flex-shrink: 0; }
-        #sidebar h2 { color: white; border-bottom: 1px solid #4b5563; padding-bottom: 15px; }
-        #main-nav button { background: none; width: 100%; justify-content: flex-start; padding: 12px 15px; margin-bottom: 5px; color: #d1d5db; }
+        #sidebar { width: 250px; background: var(--secondary); color: white; padding: 20px; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.3s; }
+        #sidebar h2 { color: white; border-bottom: 1px solid #4b5563; padding-bottom: 15px; text-align: center; }
+        #main-nav { flex-grow: 1; }
+        #main-nav button { background: none; width: 100%; justify-content: flex-start; padding: 12px 15px; margin-bottom: 5px; color: #d1d5db; font-size: 1rem; }
         #main-nav button:hover, #main-nav button.active { background: #374151; color: white; }
-        #main-nav button i { width: 20px; }
+        #main-nav button i { width: 25px; text-align: center; }
         #logout-btn { margin-top: auto; background: #374151; }
-        #main-content { flex-grow: 1; padding: 30px; }
+        #main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .loader-wrapper { display: flex; justify-content: center; align-items: center; padding: 60px; }
+        .loader { width: 48px; height: 48px; border: 5px solid var(--primary-light); border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
         
         /* Table */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border-color); }
-        th { background: var(--secondary-light); font-weight: 700; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        th { background: var(--secondary-light); font-weight: 700; white-space: nowrap; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f9fafb; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: white; display: inline-block; }
+        .actions-cell button { padding: 6px 10px; font-size: 0.85rem; }
 
         /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-box { background: var(--bg-card); border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 40px); }
-        .modal-lg { max-width: 900px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
+        .modal-box { background: var(--bg-card); border-radius: var(--radius-lg); width: 100%; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: calc(100vh - 40px); animation: zoomIn 0.3s; }
+        .modal-lg { max-width: 900px; } .modal-md { max-width: 600px; }
         .modal-header, .modal-footer { padding: 16px 24px; flex-shrink: 0; }
-        .modal-header { border-bottom: 1px solid var(--border-color); } .modal-footer { border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .modal-footer { border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; }
         .modal-body { overflow-y: auto; flex-grow: 1; padding: 24px; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-dark); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(0.9); } to { transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <div id="login-page">
-    <div class="card" style="max-width: 400px; margin: 100px auto; padding: 30px;">
-        <h2><i class="fas fa-shield-alt" style="margin-left: 10px;"></i>ورود به پنل مدیریت</h2>
+    <div class="card" style="max-width: 400px; margin: 100px auto; padding: 40px;">
+        <div style="text-align:center; margin-bottom: 2rem;">
+            <i class="fas fa-shield-alt fa-3x" style="color: var(--primary);"></i>
+            <h2 style="margin-top: 1rem;">ورود به پنل مدیریت</h2>
+            <p style="color: var(--text-light);">لطفا اطلاعات خود را برای ورود وارد کنید.</p>
+        </div>
         <form id="login-form">
-            <div style="margin-bottom: 16px;"><label for="username">نام کاربری</label><input type="text" id="username" required></div>
-            <div style="margin-bottom: 20px;"><label for="password">رمز عبور</label><input type="password" id="password" required></div>
-            <button type="submit" id="login-btn" style="width: 100%;">ورود</button>
+            <div class="form-group">
+                <label for="username">نام کاربری</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">رمز عبور</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" id="login-btn" style="width: 100%; padding: 12px;"><span class="btn-text">ورود به سیستم</span></button>
+            <p id="login-error" style="color:var(--danger); text-align: center; height: 1em; margin-top: 1em;"></p>
         </form>
     </div>
 </div>
 
 <div id="main-app" class="hidden">
     <aside id="sidebar">
-        <h2>پنل مدیریت</h2>
+        <h2><i class="fas fa-landmark"></i> نشریه</h2>
         <nav id="main-nav">
-            <button data-view="dashboard" class="active"><i class="fas fa-tachometer-alt fa-fw"></i> داشبورد</button>
-            <button data-view="articles"><i class="fas fa-file-alt fa-fw"></i> مدیریت مقالات</button>
-            <button data-view="publications"><i class="fas fa-newspaper fa-fw"></i> مدیریت انتشارات</button>
-            <button data-view="users"><i class="fas fa-users-cog fa-fw"></i> مدیریت کاربران</button>
-            <button data-view="logs"><i class="fas fa-history fa-fw"></i> گزارش وقایع</button>
+            <button data-view="dashboard" class="active"><i class="fas fa-tachometer-alt fa-fw"></i><span class="nav-text"> داشبورد</span></button>
+            <button data-view="articles"><i class="fas fa-file-alt fa-fw"></i><span class="nav-text"> مدیریت مقالات</span></button>
+            <button data-view="publications"><i class="fas fa-newspaper fa-fw"></i><span class="nav-text"> مدیریت انتشارات</span></button>
+            <button data-view="users"><i class="fas fa-users-cog fa-fw"></i><span class="nav-text"> مدیریت کاربران</span></button>
+            <button data-view="logs"><i class="fas fa-history fa-fw"></i><span class="nav-text"> گزارش وقایع</span></button>
         </nav>
-        <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> خروج از سیستم</button>
+        <button id="logout-btn"><i class="fas fa-sign-out-alt"></i><span class="nav-text"> خروج از سیستم</span></button>
     </aside>
 
     <main id="main-content">
@@ -98,26 +126,32 @@
 
 <script>
     // ==========================================================
-    // == پنل مدیریت نشریه - JavaScript
+    // == پنل مدیریت نشریه - JavaScript (نسخه نهایی)
     // ==========================================================
 
-    // !مهم: این آدرس باید با آدرس اسکریپت پنل مدیریت جایگزین شود
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwyLMcZ5mYDf07NPYU1T2IyWNkTjEdZF5Qj36yMLGSgJfJvNnKIxgSFXhnTpKcYfIt4g/exec';
+    // !مهم: این آدرس باید با آدرس دیپلوی اسکریپت پنل مدیریت جایگزین شود
+    const GOOGLE_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/1EMbhRCghY7x406DpfbwGHhc-gPrAMVdHZRrfkDgWj-k/edit?usp=drivesdk';
 
-    let currentUser = null;
-    let currentView = 'dashboard';
-    // Caching data to avoid repeated API calls
-    let cachedData = { articles: null, users: null, publications: null, logs: null };
-
-    // --- Core Functions: Authentication & Navigation ---
+    const appState = {
+        currentUser: null,
+        currentView: 'dashboard',
+        data: {
+            articles: null,
+            users: null,
+            publications: null,
+            logs: null,
+            dashboard: null
+        }
+    };
+    
+    // --- Core Functions: Initialization & API ---
     document.addEventListener('DOMContentLoaded', () => {
-        currentUser = JSON.parse(localStorage.getItem('journalAdmin'));
-        if (currentUser) {
+        appState.currentUser = JSON.parse(localStorage.getItem('journalAdmin'));
+        if (appState.currentUser) {
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             navigateTo('dashboard');
         }
-
         document.getElementById('login-form').addEventListener('submit', handleLogin);
         document.getElementById('logout-btn').addEventListener('click', handleLogout);
         document.querySelectorAll('#main-nav button').forEach(btn => {
@@ -125,171 +159,186 @@
         });
     });
 
+    async function callApi(action, params = {}, button = null) {
+        if (button) button.classList.add('btn-loading');
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action, params, adminUser: appState.currentUser })
+            });
+            if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
+            const data = await response.json();
+            if (data.status === 'error') throw new Error(data.message);
+            return data;
+        } catch (error) {
+            showModal('خطا', `<p>${error.message}</p>`);
+            return null;
+        } finally {
+            if (button) button.classList.remove('btn-loading');
+        }
+    }
+
     async function handleLogin(e) {
         e.preventDefault();
-        // In a real app, you would call an API for login.
-        // For this demo, we'll simulate a successful login.
-        currentUser = { username: document.getElementById('username').value };
-        localStorage.setItem('journalAdmin', JSON.stringify(currentUser));
-        document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        navigateTo('dashboard');
+        const button = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
+        loginError.textContent = '';
+        
+        const response = await callApi('adminLogin', {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        }, button);
+        
+        if (response?.status === 'success') {
+            appState.currentUser = response.user;
+            localStorage.setItem('journalAdmin', JSON.stringify(appState.currentUser));
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            navigateTo('dashboard');
+        } else {
+             loginError.textContent = 'نام کاربری یا رمز عبور اشتباه است.';
+        }
     }
 
     function handleLogout() {
         localStorage.removeItem('journalAdmin');
         window.location.reload();
     }
-
-    function navigateTo(view) {
-        currentView = view;
+    
+    // --- Navigation & View Rendering ---
+    async function navigateTo(view) {
+        appState.currentView = view;
         document.querySelectorAll('#main-nav button').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.view === view);
         });
         
         const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `<h2>در حال بارگذاری...</h2>`; // Loading state
+        mainContent.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
+
+        // Fetch all data on first load or refresh, then use cache
+        if (!appState.data.articles) {
+             const response = await callApi('getAllData');
+             if (response) appState.data = response.data;
+        }
 
         switch (view) {
-            case 'dashboard':
-                renderDashboardView();
-                break;
-            case 'articles':
-                renderArticlesView();
-                break;
-            case 'publications':
-                renderPublicationsView();
-                break;
-            case 'users':
-                renderUsersView();
-                break;
-            case 'logs':
-                renderLogsView();
-                break;
+            case 'dashboard': renderDashboardView(); break;
+            case 'articles': renderArticlesView(); break;
+            case 'publications': renderPublicationsView(); break;
+            case 'users': renderUsersView(); break;
+            case 'logs': renderLogsView(); break;
         }
     }
-
-    // --- Rendering Functions for each View ---
-
-    function renderDashboardView() {
-        // This view would show key metrics and charts.
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `
-            <h1>داشبورد</h1>
-            <p>اینجا آمارها و نمودارهای کلیدی نمایش داده خواهد شد.</p>
-            <div class="card" style="padding: 20px;">
-                <h4>مقالات جدید در انتظار بررسی</h4>
-                <p style="font-size: 2rem; font-weight: bold;">۵</p>
-            </div>
-        `;
+    
+    function refreshDataAndNavigate(view) {
+        appState.data = { articles: null, users: null, publications: null, logs: null, dashboard: null }; // Clear cache
+        navigateTo(view);
     }
-
+    
+    function renderDashboardView() {
+        // Simple dashboard for now, can be expanded with charts
+        const mainContent = document.getElementById('main-content');
+        mainContent.innerHTML = `<h1>داشبورد</h1><p>خلاصه وضعیت فعلی سیستم.</p>`;
+    }
+    
     function renderArticlesView() {
         const mainContent = document.getElementById('main-content');
+        const articles = appState.data.articles || [];
         mainContent.innerHTML = `
-            <h1>مدیریت مقالات</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <h1>مدیریت مقالات (${articles.length})</h1>
+            </div>
             <div class="card">
                 <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-                    <input type="text" id="article-search" placeholder="جستجو بر اساس عنوان، محقق یا استاد...">
+                    <input type="text" id="table-search" placeholder="جستجو در مقالات..." onkeyup="filterTable('articles-table-body', this.value)">
                 </div>
                 <div class="table-wrapper">
                     <table>
                         <thead><tr><th>شناسه</th><th>عنوان مقاله</th><th>محقق</th><th>استاد راهنما</th><th>وضعیت</th><th>عملیات</th></tr></thead>
                         <tbody id="articles-table-body">
-                           <tr><td colspan="6" style="text-align:center; padding: 40px;">در حال بارگذاری اطلاعات مقالات...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-        // In a real app, you would now fetch and populate the table.
-    }
-
-    function renderPublicationsView() {
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `
-            <h1>مدیریت انتشارات</h1>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="card">
-                    <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">تخصیص مقالات به شماره نشر</h3>
-                    <div style="padding: 20px;">
-                        <p>۱. مقالات آماده را انتخاب کنید:</p>
-                        <!-- List of accepted articles would go here -->
-                        <p>۲. شماره نشر را انتخاب کنید:</p>
-                        <select id="issue-select" style="width:100%;"></select>
-                        <button style="width:100%; margin-top: 15px;">تخصیص مقالات</button>
-                    </div>
-                </div>
-                <div class="card">
-                     <h3 style="padding: 20px; border-bottom: 1px solid var(--border-color);">مدیریت شماره‌های آتی</h3>
-                     <div style="padding: 20px;">
-                        <!-- List of upcoming issues would go here -->
-                        <hr style="margin: 20px 0;">
-                        <h4>افزودن شماره جدید</h4>
-                        <input type="text" placeholder="شماره نشر (مثلا: ۱۲)" style="margin-bottom:10px;">
-                        <input type="date" style="margin-bottom:10px;">
-                        <button class="btn-success" style="width:100%;">افزودن</button>
-                     </div>
-                </div>
-            </div>
-        `;
-    }
-
-    function renderUsersView() {
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                 <h1>مدیریت کاربران</h1>
-                 <div>
-                    <button class="btn-success"><i class="fas fa-user-plus"></i> افزودن محقق</button>
-                    <button class="btn-success"><i class="fas fa-user-tie"></i> افزودن استاد</button>
-                 </div>
-            </div>
-            <div class="card">
-                <!-- Tabs for Researchers and Professors would go here -->
-                <div class="table-wrapper">
-                    <table>
-                        <thead><tr><th>نام</th><th>کد ملی</th><th>وضعیت</th><th>عملیات</th></tr></thead>
-                        <tbody>
-                           <tr><td colspan="4" style="text-align:center; padding: 40px;">در حال بارگذاری اطلاعات کاربران...</td></tr>
+                           ${articles.map(a => `
+                                <tr>
+                                    <td>${a.articleId}</td>
+                                    <td>${a.title}</td>
+                                    <td>${a.researcherName}</td>
+                                    <td>${a.supervisorName}</td>
+                                    <td>${getStatusBadge(a.status)}</td>
+                                    <td class="actions-cell">
+                                        <button class="btn-light" onclick="showArticleDetailsModal('${a.articleId}')"><i class="fas fa-eye"></i> مشاهده</button>
+                                    </td>
+                                </tr>`).join('') || `<tr><td colspan="6" style="text-align:center; padding: 40px;">مقاله‌ای یافت نشد.</td></tr>`}
                         </tbody>
                     </table>
                 </div>
             </div>
         `;
     }
+    
+    // --- Modals & Dynamic Content ---
+    async function showArticleDetailsModal(articleId) {
+        showModal('جزئیات مقاله', `<div class="loader-wrapper"><div class="loader"></div></div>`, 'modal-lg');
+        const response = await callApi('getArticleDetails', { articleId });
+        if (!response) return;
 
-    function renderLogsView() {
-        const mainContent = document.getElementById('main-content');
-        mainContent.innerHTML = `
-            <h1>گزارش وقایع سیستم</h1>
-            <div class="card">
-                 <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-                    <input type="text" id="logs-search" placeholder="جستجو در لاگ‌ها...">
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead><tr><th>تاریخ</th><th>کاربر</th><th>اقدام</th><th>شناسه مقاله</th><th>جزئیات</th></tr></thead>
-                        <tbody>
-                           <tr><td colspan="5" style="text-align:center; padding: 40px;">در حال بارگذاری گزارشات...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+        const { details, history } = response.data;
+        const modalBody = `
+            <h3>${details.title}</h3>
+            <!-- More details can be displayed here -->
+            <hr>
+            <h4>تاریخچه کامل مقاله</h4>
+            <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-md); background: #f9fafb;">
+                ${history.map(h => `<p><small>${formatDate(h.timestamp)}</small> - <strong>${h.user}:</strong> ${h.action} - <em>${h.details || ''}</em></p>`).join('')}
             </div>
         `;
+        showModal(`بررسی مقاله: ${details.articleId}`, modalBody, 'modal-lg');
+
+        const footer = document.getElementById('main-modal-footer');
+        if (String(details.article_status) === '6') { // Only show actions if pending review
+             footer.innerHTML += `
+                <button class="btn-danger" id="reject-btn"><i class="fas fa-times"></i> رد نهایی</button>
+                <button class="btn-warning" id="revise-btn"><i class="fas fa-edit"></i> ارسال برای ویرایش</button>
+                <button class="btn-success" id="accept-btn"><i class="fas fa-check"></i> پذیرش نهایی</button>
+            `;
+            document.getElementById('accept-btn').onclick = async (e) => {
+                await callApi('decideOnArticle', { articleId, decision: 'accept' }, e.target);
+                closeModal('main-modal');
+                refreshDataAndNavigate('articles');
+            };
+            document.getElementById('reject-btn').onclick = () => showReasonModal(articleId, 'reject');
+            document.getElementById('revise-btn').onclick = () => showReasonModal(articleId, 'revise');
+        }
     }
 
-    // --- Modal & Utility Functions ---
-
+    function showReasonModal(articleId, decision) {
+        const title = decision === 'reject' ? 'رد نهایی مقاله' : 'ارسال برای ویرایش';
+        const content = `
+            <p>لطفاً دلیل خود را برای این تصمیم به صورت شفاف وارد کنید. این پیام برای محقق نمایش داده خواهد شد.</p>
+            <textarea id="decision-reason" rows="5" placeholder="دلیل ${decision === 'reject' ? 'رد مقاله' : 'نیاز به ویرایش'}..."></textarea>
+        `;
+        showModal(title, content, 'modal-md');
+        const footer = document.getElementById('main-modal-footer');
+        footer.innerHTML += `<button id="confirm-decision-btn" class="${decision === 'reject' ? 'btn-danger' : 'btn-warning'}">تایید و ارسال</button>`;
+        document.getElementById('confirm-decision-btn').onclick = async (e) => {
+            const reason = document.getElementById('decision-reason').value;
+            if(!reason) { alert('ارائه دلیل الزامی است.'); return; }
+            await callApi('decideOnArticle', { articleId, decision, reason }, e.target);
+            closeModal('main-modal');
+            refreshDataAndNavigate('articles');
+        };
+    }
+    
+    // --- Utility Functions ---
     function showModal(title, content, sizeClass = '') {
         const modalContainer = document.getElementById('modal-container');
         const modalId = 'main-modal';
         const modalHTML = `
-            <div class="modal-overlay" id="${modalId}">
+            <div class="modal-overlay" id="${modalId}" onclick="if (event.target.id === '${modalId}') closeModal('${modalId}');">
                 <div class="modal-box ${sizeClass}">
                     <div class="modal-header">
-                        <h2>${title}</h2>
-                        <button onclick="closeModal('${modalId}')" style="background:none; color: var(--text-light); font-size: 1.5rem;">&times;</button>
+                        <h3>${title}</h3>
+                        <button onclick="closeModal('${modalId}')" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--text-light);">&times;</button>
                     </div>
                     <div class="modal-body">${content}</div>
                     <div class="modal-footer" id="${modalId}-footer">
@@ -304,6 +353,33 @@
         const modal = document.getElementById(id);
         if (modal) modal.remove();
     }
+    
+    function getStatusBadge(status) {
+        const s = String(status);
+        const map = {
+            '0': { text: 'رد شده نهایی', color: 'var(--danger)' },
+            '5': { text: 'پذیرفته شده', color: 'var(--success)' },
+            '6': { text: 'منتظر بررسی نشریه', color: 'var(--warning)' },
+            '10': { text: 'نیازمند ویرایش نهایی', color: 'var(--info)' },
+        };
+        const info = map[s] || { text: `نامشخص (${s})`, color: 'var(--text-light)' };
+        return `<span class="status-badge" style="background-color: ${info.color};">${info.text}</span>`;
+    }
+
+    function filterTable(tableBodyId, searchTerm) {
+        const rows = document.getElementById(tableBodyId).getElementsByTagName('tr');
+        const term = searchTerm.toLowerCase();
+        for (let i = 0; i < rows.length; i++) {
+            const rowText = rows[i].textContent || rows[i].innerText;
+            rows[i].style.display = rowText.toLowerCase().indexOf(term) > -1 ? '' : 'none';
+        }
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return 'نامشخص';
+        return new Date(dateString).toLocaleString('fa-IR', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
 </script>
 
 </body>
