@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -42,7 +42,7 @@
         button:disabled { background-color: #d1d5db; cursor: not-allowed; }
         .btn-success { background-color: var(--success); } .btn-danger { background-color: var(--danger); } .btn-warning { background-color: var(--warning); } .btn-secondary { background-color: #4b5563; }
         .btn-light { background-color: var(--bg-card); color: var(--text-dark); border: 1px solid var(--border-color); }
-        /* دستور نهم: اصلاح لودینگ دکمه */
+        /* دستور چهارم (بخش لودینگ): اصلاح لودینگ دکمه ها */
         .btn-loading { color: transparent !important; }
         .btn-loading .btn-text, .btn-loading .fas, .btn-loading .fa-solid { opacity: 0; }
         .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -103,23 +103,24 @@
         .history-timeline { list-style: none; padding: 0; }
         .timeline-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); }
         .timeline-item:last-child { border-bottom: none; }
-        .timeline-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: var(--secondary-light); color: var(--secondary); }
+        .timeline-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .timeline-content { flex-grow: 1; }
         .timeline-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 5px; align-items: center; }
         .timeline-details { font-size: 0.9em; color: var(--text-light); word-break: break-word; }
         
         .issue-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 8px; }
-        .issue-list-item button { background: none; color: var(--danger); border: none; cursor: pointer; }
+        .issue-list-item button { background: none; border: none; cursor: pointer; }
+        .issue-list-item button.delete-btn { color: var(--danger); }
         .issue-list-item button:disabled { color: #ccc; cursor: not-allowed; }
         
         #drop-area { border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 30px; text-align: center; color: var(--text-light); cursor: pointer; }
         #drop-area.highlight { border-color: var(--primary); background-color: var(--primary-light); }
         #file-info { margin-top: 15px; font-weight: 500; }
         
-        /* دستور هشتم: Sticky accordion headers */
-        .sticky-header { position: sticky; top: 0; background: var(--bg-card); padding: 10px 0; z-index: 1; cursor: pointer; border-bottom: 1px solid var(--border-color); }
-        .sticky-header h4 { margin: 0; }
-        .content-section { padding-top: 1rem; }
+        .content-accordion details { border-bottom: 1px solid var(--border-color); }
+        .content-accordion summary { position: sticky; top: 0; background: var(--bg-card); padding: 15px 10px; z-index: 1; cursor: pointer; list-style: none; font-weight: 700; }
+        .content-accordion summary::-webkit-details-marker { display:none; }
+        .content-accordion .content-panel { padding: 1rem; }
     </style>
 </head>
 <body>
@@ -156,6 +157,7 @@
 </div>
 <div id="modal-container"></div>
 <div id="toast-container"></div>
+<!-- کانتینر مخفی برای رندر کردن محتوای PDF -->
 <div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm; padding: 1.5cm; box-sizing: border-box;"></div>
 
 <script>
@@ -163,7 +165,7 @@
     // == پنل مدیریت نشریه - JavaScript (نسخه نهایی و پایدار)
     // ==========================================================
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqsfCE7G7gbMANi-CqxBlIVPQHzIZt54IDQAY-f3PhC46kt5kBvLo1bpp4Xk3KscASvg/exec';
+    const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE';
 
     const appState = {
         currentUser: null,
@@ -171,32 +173,39 @@
         data: { articles: [], users: {researchers:[], professors:[]}, publications: {issues:[], readyArticles:[]}, logs: [] }
     };
     
+    // لیست جامع لاگ‌ها با آیکن و رنگ
     const LOG_ACTIONS = {
-        'LOGIN_SUCCESS': { title: 'ورود موفق', icon: 'fa-right-to-bracket', color: 'var(--success)' },
-        'SUBMIT_ARTICLE_SUCCESS': { title: 'ثبت نهایی مقاله', icon: 'fa-file-circle-plus', color: 'var(--primary)' },
-        'SAVE_DRAFT_SUCCESS': { title: 'ذخیره پیش‌نویس', icon: 'fa-floppy-disk', color: 'var(--text-light)' },
-        'SUBMIT_DRAFT_SUCCESS': { title: 'ارسال پیش‌نویس', icon: 'fa-paper-plane', color: 'var(--primary)' },
-        'UPDATE_DETAILS_SUCCESS': { title: 'ویرایش اطلاعات کلی', icon: 'fa-pen-to-square', color: 'var(--info)' },
-        'UPDATE_SECTION_SUCCESS': { title: 'ویرایش محتوای مقاله', icon: 'fa-file-lines', color: 'var(--info)' },
-        'SUBMIT_REVISIONS_SUCCESS': { title: 'ارسال ویرایشات برای استاد', icon: 'fa-file-pen', color: 'var(--primary)' },
-        'SEND_FINAL_REVIEW_SUCCESS': { title: 'ارسال برای بررسی نهایی', icon: 'fa-user-check', color: 'var(--primary-dark)' },
-        'DELETE_ARTICLE_SUCCESS': { title: 'حذف مقاله', icon: 'fa-trash', color: 'var(--danger)' },
+        'ADMIN_LOGIN_FAIL': { title: 'ورود ناموفق مدیر', icon: 'fa-user-shield', color: 'var(--danger)' },
+        'ADMIN_LOGIN_SUCCESS': { title: 'ورود موفق مدیر', icon: 'fa-user-shield', color: 'var(--success)' },
+        'APPROVED_FOR_JOURNAL': { title: 'تایید نهایی توسط استاد', icon: 'fa-user-graduate', color: 'var(--success)' },
+        'ARTICLE_ASSIGNED_TO_ISSUE': { title: 'تخصیص به شماره نشر', icon: 'fa-calendar-check', color: 'var(--info)' },
+        'DELETE_ARTICLE_SUCCESS': { title: 'حذف مقاله توسط محقق', icon: 'fa-trash', color: 'var(--danger)' },
         'GUIDANCE_ACCEPTED': { title: 'پذیرش راهنمایی', icon: 'fa-handshake', color: 'var(--success)' },
         'GUIDANCE_REJECTED': { title: 'عدم پذیرش راهنمایی', icon: 'fa-handshake-slash', color: 'var(--danger)' },
-        'SENT_FOR_REVISION': { title: 'ارجاع برای ویرایش (توسط استاد)', icon: 'fa-user-edit', color: 'var(--warning)' },
-        'APPROVED_FOR_JOURNAL': { title: 'تایید نهایی توسط استاد', icon: 'fa-user-graduate', color: 'var(--success)' },
-        'SUPERVISION_CANCELLED': { title: 'انصراف استاد از راهنمایی', icon: 'fa-user-slash', color: 'var(--danger)' },
-        'REVISION_FEEDBACK_UPDATED': { title: 'ویرایش بازخورد استاد', icon: 'fa-comment-dots', color: 'var(--info)' },
-        'ADMIN_LOGIN_SUCCESS': { title: 'ورود موفق مدیر', icon: 'fa-user-shield', color: 'var(--success)' },
-        'JOURNAL_ACCEPTED': { title: 'پذیرش نهایی توسط نشریه', icon: 'fa-award', color: 'var(--success)' },
-        'JOURNAL_REJECTED': { title: 'رد نهایی توسط نشریه', icon: 'fa-ban', color: 'var(--danger)' },
-        'SENT_FOR_FINAL_REVISION': { title: 'ارجاع برای ویرایش نهایی', icon: 'fa-circle-exclamation', color: 'var(--warning)' },
-        'ARTICLE_ASSIGNED_TO_ISSUE': { title: 'تخصیص به شماره نشر', icon: 'fa-calendar-check', color: 'var(--info)' },
         'ISSUE_CREATED': { title: 'ایجاد شماره نشر جدید', icon: 'fa-newspaper', color: 'var(--primary)' },
         'ISSUE_DELETED': { title: 'حذف شماره نشر', icon: 'fa-trash-can', color: 'var(--danger)'},
+        'JOURNAL_ACCEPTED': { title: 'پذیرش نهایی توسط نشریه', icon: 'fa-award', color: 'var(--success)' },
+        'JOURNAL_REJECTED': { title: 'رد نهایی توسط نشریه', icon: 'fa-ban', color: 'var(--danger)' },
+        'LOGIN_FAIL': { title: 'ورود ناموفق محقق', icon: 'fa-user-clock', color: 'var(--warning)' },
+        'LOGIN_SUCCESS': { title: 'ورود موفق محقق', icon: 'fa-user-check', color: 'var(--info)' },
+        'PROF_LOGIN_FAIL': { title: 'ورود ناموفق استاد', icon: 'fa-user-tie', color: 'var(--warning)' },
+        'PROF_LOGIN_SUCCESS': { title: 'ورود موفق استاد', icon: 'fa-user-tie', color: 'var(--info)' },
+        'PROFILE_UPDATED': { title: 'بروزرسانی پروفایل استاد', icon: 'fa-address-card', color: 'var(--info)' },
+        'RESEARCHER_WITHDRAWAL': { title: 'انصراف محقق', icon: 'fa-user-minus', color: 'var(--danger)' },
+        'REVISION_FEEDBACK_UPDATED': { title: 'ویرایش بازخورد استاد', icon: 'fa-comment-dots', color: 'var(--info)' },
+        'SAVE_DRAFT_SUCCESS': { title: 'ذخیره پیش‌نویس', icon: 'fa-floppy-disk', color: 'var(--text-light)' },
+        'SEND_FINAL_REVIEW_SUCCESS': { title: 'ارسال برای بررسی نهایی', icon: 'fa-user-check', color: 'var(--primary-dark)' },
+        'SENT_FOR_FINAL_REVISION': { title: 'ارجاع برای ویرایش نهایی', icon: 'fa-circle-exclamation', color: 'var(--warning)' },
+        'SENT_FOR_REVISION': { title: 'ارجاع برای ویرایش (توسط استاد)', icon: 'fa-user-edit', color: 'var(--warning)' },
+        'SUBMIT_ARTICLE_SUCCESS': { title: 'ثبت نهایی مقاله جدید', icon: 'fa-file-circle-plus', color: 'var(--primary)' },
+        'SUBMIT_DRAFT_SUCCESS': { title: 'ارسال پیش‌نویس برای استاد', icon: 'fa-paper-plane', color: 'var(--primary)' },
+        'SUBMIT_REVISIONS_SUCCESS': { title: 'ارسال ویرایشات توسط محقق', icon: 'fa-file-pen', color: 'var(--primary)' },
+        'SUPERVISION_CANCELLED': { title: 'انصراف استاد از راهنمایی', icon: 'fa-user-slash', color: 'var(--danger)' },
+        'SYSTEM_ERROR': { title: 'خطای داخلی سرور', icon: 'fa-server', color: 'var(--danger)' },
+        'TITLE_SUGGESTED': { title: 'افزودن عنوان پیشنهادی', icon: 'fa-plus', color: 'var(--info)' },
+        'UPDATE_DETAILS_SUCCESS': { title: 'ویرایش اطلاعات کلی', icon: 'fa-pen-to-square', color: 'var(--info)' },
         'USER_CREATED': { title: 'ایجاد کاربر جدید', icon: 'fa-user-plus', color: 'var(--success)' },
         'USER_UPDATED': { title: 'ویرایش اطلاعات کاربر', icon: 'fa-user-pen', color: 'var(--info)' },
-        // Add other logs as needed
         'default': { title: 'اقدام نامشخص', icon: 'fa-question-circle', color: 'var(--text-light)'}
     };
 
@@ -343,7 +352,7 @@
                                     <span>شماره ${i.issueNumber} - ${formatDate(i.publishDate, false)} (${i.assignedCount} مقاله)</span> 
                                     <div>
                                         <button title="مشاهده مقالات تخصیص یافته" class="btn-light" style="color: var(--primary); padding: 5px 8px;" onclick="showAssignedArticlesModal('${i.issueNumber}')"><i class="fas fa-list"></i></button>
-                                        <button ${isPast ? 'disabled title="امکان حذف شماره‌های گذشته وجود ندارد"' : `title="حذف شماره ${i.issueNumber}"`} onclick="handleDeleteIssue('${i.issueNumber}', this)"><i class="fas fa-trash"></i></button>
+                                        <button class="delete-btn" ${isPast ? 'disabled title="امکان حذف شماره‌های گذشته وجود ندارد"' : `title="حذف شماره ${i.issueNumber}"`} onclick="handleDeleteIssue('${i.issueNumber}', this)"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>`;
                             }).join('') || `<p style="color:var(--text-light); text-align:center;">شماره نشری ایجاد نشده است.</p>`}
@@ -420,11 +429,11 @@
                 <p><strong>وضعیت فعلی:</strong> ${getStatusBadge(details.articleStatus)}</p>
                 <hr style="margin: 20px 0;"><h4>اقدامات مدیریتی</h4><div id="admin-actions"></div>
             </div>
-            <div id="content-content" class="tab-content hidden" style="max-height: 400px; overflow-y:auto; line-height: 1.8;">
+            <div id="content-content" class="tab-content hidden content-accordion" style="max-height: 400px; overflow-y:auto; line-height: 1.8;">
                ${Object.entries({
                    'چکیده': details.abstract, 'کلیدواژه': details.keywords, 'مقدمه': details.introduction, 
                    'بدنه': details.body, 'نتیجه گیری': details.conclusion, 'منابع': details.references
-               }).map(([title, content]) => `<details open class="content-section"><summary class="sticky-header"><h4>${title}</h4></summary><div style="white-space:pre-wrap; padding: 0 10px;">${content || 'ثبت نشده'}</div></details>`).join('<hr style="margin: 1rem 0;">')}
+               }).map(([title, content]) => `<details><summary>${title}</summary><div class="content-panel" style="white-space:pre-wrap;">${content || 'ثبت نشده'}</div></details>`).join('')}
             </div>
             <div id="history-content" class="tab-content hidden" style="max-height: 400px; overflow-y: auto;">
                  <ul class="history-timeline">${history.map(h => {
@@ -574,6 +583,11 @@
         showModal('افزودن کاربر از اکسل', content, 'modal-md');
         setupExcelDropArea();
     }
+    function showAssignedArticlesModal(issueNumber) {
+        const assignedArticles = appState.data.articles.filter(a => String(a.issueNumber) === String(issueNumber));
+        const content = `<ul>${assignedArticles.map(a => `<li>${a.title} (محقق: ${a.researcherName})</li>`).join('') || '<li>مقاله‌ای به این شماره تخصیص نیافته است.</li>'}</ul>`;
+        showModal(`مقالات تخصیص یافته به شماره ${issueNumber}`, content, 'modal-md');
+    }
     function switchUserTab(tabName, clickedBtn) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         clickedBtn.classList.add('active');
@@ -614,11 +628,11 @@
         const s = String(status);
         const map = {
             '0': { t: 'رد نهایی', c: 'danger' }, '5': { t: 'پذیرفته', c: 'success' }, '6': { t: 'منتظر تصمیم نشریه', c: 'warning' },
-            '10': { t: 'ویرایش نهایی', c: 'info' }, '1': { t: 'در دست استاد', c: 'primary' }, '2': { t: 'ویرایش (دست محقق)', c: 'warning' },
-            '4': { t: 'انصراف استاد', c: 'secondary' }, '9': { t: 'پیش‌نویس', c: 'secondary' }, '8':{t:'در دست استاد (بازبینی)', c: 'primary'},
+            '10': { t: 'ویرایش نهایی (دست محقق)', c: 'info' }, '1': { t: 'در دست استاد', c: 'primary' }, '2': { t: 'ویرایش (دست محقق)', c: 'warning' },
+            '4': { t: 'انصراف استاد', c: 'secondary' }, '9': { t: 'پیش‌نویس محقق', c: 'secondary' }, '8':{t:'در دست استاد (بازبینی)', c: 'primary'},
             '11':{t:'در دست استاد (نهایی)', c:'primary-dark'}, '12':{t:'در دست استاد (بازبینی)', c: 'primary'}
         };
-        const info = map[s] || { t: `نامشخص(${s})`, c: 'secondary' };
+        const info = map[s] || { t: `نامشخص (${s})`, c: 'secondary' };
         return `<span class="status-badge" style="background-color: var(--${info.c}); color:white;">${info.t}</span>`;
     }
     function filterTable(tableBodyId, searchTerm) {
@@ -635,7 +649,35 @@
     
     // --- Excel & PDF Export ---
     function setupExcelDropArea() {
-        // ... (این تابع کامل است و نیاز به تغییر ندارد)
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        let parsedData = [];
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }));
+        ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight')));
+        ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight')));
+        
+        dropArea.onclick = () => fileInput.click();
+        fileInput.onchange = e => handleFile(e.target.files[0]);
+        dropArea.ondrop = e => handleFile(e.dataTransfer.files[0]);
+
+        function handleFile(file) {
+            if (!file) return;
+            document.getElementById('file-info').textContent = `فایل انتخاب شده: ${file.name}`;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                parsedData = jsonData.slice(1).map(row => ({ name: row[0], nid: row[1], pass: row[2] })).filter(u => u.name && u.nid && u.pass);
+                document.getElementById('import-actions').classList.remove('hidden');
+                document.getElementById('file-info').textContent += ` - ${parsedData.length} کاربر معتبر یافت شد.`;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        document.getElementById('import-researchers-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'researcher');
+        document.getElementById('import-professors-btn').onclick = (e) => handleBatchCreateUsers(e.target, parsedData, 'professor');
     }
     function handleExportExcel() {
         const dataToExport = appState.data.articles.map(a => ({
@@ -648,72 +690,71 @@
         XLSX.utils.sheet_add_json(ws, dataToExport, { origin: 'A2' });
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "گزارش مقالات");
-        XLSX.writeFile(wb, `ArticleReport-${new Date().toLocaleDateString('fa-IR').replace(/\//g,'-')}.xlsx`);
+        XLSX.writeFile(wb, `Report-${new Date().toLocaleDateString('fa-IR').replace(/\//g,'-')}.xlsx`);
     }
 
     async function handleDownloadPDF(articleId, button) {
         if (button) button.classList.add('btn-loading');
         const response = await callApi('getArticleDetails', { articleId });
-        if (button) button.classList.remove('btn-loading');
-        if (!response) return;
+        if (!response) { if (button) button.classList.remove('btn-loading'); return; }
 
         const details = response.data.details;
         const renderContainer = document.getElementById('pdf-render-container');
         
         let content = `
-            <div style="text-align:center;"><h1 style="font-size:22px;">${details.title}</h1></div>
+            <div style="text-align:center; margin-bottom: 20px;"><h1 style="font-size:22px; font-weight: 700;">${details.title}</h1></div>
             <p><strong>محقق:</strong> ${details.researcherName}</p>
             <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
             <p><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
-            <hr>
-            <h2>چکیده</h2><p>${details.abstract || '-'}</p>
-            <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+            <hr style="margin: 20px 0;">
+            <h2 style="font-size: 18px; font-weight: 700;">چکیده</h2><p style="font-size: 14px; line-height: 1.8;">${details.abstract || '-'}</p>
+            <p style="font-size: 14px;"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
             <div style="page-break-before: always;"></div>
-            <h2>مقدمه</h2><p>${(details.introduction || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">مقدمه</h2><p style="font-size: 14px; line-height: 1.8;">${(details.introduction || '-').replace(/\n/g, '<br>')}</p>
             <div style="page-break-before: always;"></div>
-            <h2>بدنه</h2><p>${(details.body || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">بدنه اصلی</h2><p style="font-size: 14px; line-height: 1.8;">${(details.body || '-').replace(/\n/g, '<br>')}</p>
             <div style="page-break-before: always;"></div>
-            <h2>نتیجه‌گیری</h2><p>${(details.conclusion || '-').replace(/\n/g, '<br>')}</p>
+            <h2 style="font-size: 18px; font-weight: 700;">نتیجه‌گیری</h2><p style="font-size: 14px; line-height: 1.8;">${(details.conclusion || '-').replace(/\n/g, '<br>')}</p>
             <div style="page-break-before: always;"></div>
-            <h2>منابع و مآخذ</h2><div style="white-space:pre-wrap;">${details.references || '-'}</div>`;
+            <h2 style="font-size: 18px; font-weight: 700;">منابع و مآخذ</h2><div style="white-space:pre-wrap; font-size: 14px; line-height: 1.8;">${details.references || '-'}</div>`;
         
         renderContainer.innerHTML = content;
         
-        html2canvas(renderContainer, { scale: 2 }).then(canvas => {
+        html2canvas(renderContainer, { scale: 3, useCORS: true }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
+            const margin = 15; // 1.5cm
+            
             const imgProps = pdf.getImageProperties(imgData);
             const ratio = imgProps.height / imgProps.width;
-            
-            const canvasWidth = pdfWidth - 30; // 1.5cm margins
+            const canvasWidth = pdfWidth - (2 * margin);
             const canvasHeight = canvasWidth * ratio;
 
             let heightLeft = canvasHeight;
             let position = 0;
-            const margin = 15; // 1.5cm
+            let page = 1;
 
             pdf.addImage(imgData, 'PNG', margin, margin, canvasWidth, canvasHeight);
-            heightLeft -= (pdfHeight - 2 * margin);
-            
-            let page = 1;
             pdf.setFontSize(10);
-            pdf.text(String(page), 10, pdfHeight - 10);
+            pdf.text(String(page), margin, pdfHeight - 10);
+            heightLeft -= (pdfHeight - (2 * margin));
 
             while (heightLeft > 0) {
-                position -= (pdfHeight - 2 * margin);
+                position -= (pdfHeight - (2 * margin));
                 pdf.addPage();
                 pdf.addImage(imgData, 'PNG', margin, position + margin, canvasWidth, canvasHeight);
-                heightLeft -= (pdfHeight - 2 * margin);
+                heightLeft -= (pdfHeight - (2 * margin));
                 page++;
-                pdf.text(String(page), (page % 2 === 0 ? pdfWidth - 10 : 10) , pdfHeight - 10);
+                pdf.text(String(page), (page % 2 === 0 ? pdfWidth - margin : margin), pdfHeight - 10);
             }
 
             pdf.save(`Article-${details.articleId}.pdf`);
             renderContainer.innerHTML = '';
+            if (button) button.classList.remove('btn-loading');
         });
     }
 
