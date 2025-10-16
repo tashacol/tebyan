@@ -37,7 +37,6 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
             margin: 0;
-            /* دستور دوم: کاهش فاصله از بالای صفحه */
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -53,7 +52,6 @@
         .container {
             width: 100%;
             max-width: 900px;
-            /* دستور دوم: حذف فاصله عمودی اضافه برای فیت شدن با بالا */
             margin: 0 auto;
         }
 
@@ -111,11 +109,13 @@
             color: #6c757d;
             cursor: not-allowed;
         }
-
+        
+        /* START: Edited for Instruction 2 */
         input[readonly] {
             cursor: pointer;
-            background-color: #e9ecef;
+            /* background-color: #e9ecef; --- This line was removed */
         }
+        /* END: Edited for Instruction 2 */
 
         input:focus,
         select:focus,
@@ -357,6 +357,18 @@
             animation: spin-center 1s linear infinite;
             display: inline-block;
         }
+        
+        /* START: Added for Instruction 5 */
+        .status-loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin-center 1s linear infinite;
+            display: inline-block;
+        }
+        /* END: Added for Instruction 5 */
 
         .dashboard-controls {
             display: flex;
@@ -388,8 +400,6 @@
             color: var(--text-light);
             font-size: 1.3rem;
         }
-        
-        /* دستور اول: حذف استایل لودینگ جستجو */
         
         .article-card {
             background: var(--bg-card);
@@ -430,6 +440,8 @@
             display: flex;
             gap: 8px;
             flex-shrink: 0;
+            min-height: 28px; /* Added for loader consistency */
+            align-items: center;
         }
 
         .status-badge {
@@ -485,8 +497,7 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
-
-        /* START: Added for Instruction 1 */
+        
         .supervisor-acceptance-notice {
             margin-top: 15px;
             padding: 12px;
@@ -498,7 +509,6 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
-        /* END: Added for Instruction 1 */
 
         .article-header-clickable {
             cursor: pointer;
@@ -1326,7 +1336,6 @@
                     <div class="search-field-wrapper">
                         <input type="text" id="article-search-input"
                             placeholder="جستجو در مقالات...">
-                        <!-- دستور اول: حذف کانتینر لودر جستجو -->
                         <i class="fas fa-search search-icon"></i>
                     </div>
                     <button id="add-new-article-btn"><i class="fas fa-plus"></i><span class="btn-text">افزودن مقاله
@@ -1435,7 +1444,6 @@
             
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchDebounce);
-                // دستور اول: حذف کامل نمایش لودینگ
                 searchDebounce = setTimeout(() => {
                     currentSearchTerm = e.target.value.trim();
                     loadArticles(user.nationalId, false);
@@ -1610,11 +1618,41 @@
             }
         }
         
+        // START: New Function for Instruction 5 & 6
+        async function updateCardInPlace(articleId) {
+            const card = document.querySelector(`.article-card[data-article-id="${articleId}"]`);
+            if (!card) return;
+
+            const statusContainer = card.querySelector('.status-badges');
+            if (statusContainer) {
+                statusContainer.innerHTML = '<div class="status-loader"></div>';
+            }
+
+            const user = getStoredUser();
+            const response = await callApi('getSingleArticle', { nationalId: user.nationalId, articleId });
+
+            if (response?.status === 'success' && response.article) {
+                const newArticleData = response.article;
+                const articleIndex = allUserArticles.findIndex(a => a.articleId == articleId);
+                if (articleIndex > -1) {
+                    allUserArticles[articleIndex] = newArticleData;
+                }
+                
+                const cardContent = generateArticleCardInnerHTML(newArticleData);
+                card.innerHTML = cardContent;
+                card.style.borderTopColor = getCardBorderColor(newArticleData);
+                bindArticleCardEvents(card, newArticleData);
+            } else {
+                showCustomAlert('خطا در به‌روزرسانی کارت مقاله. لطفا صفحه را رفرش کنید.', 'error');
+                // Restore previous content or simply reload all
+                if(statusContainer) statusContainer.innerHTML = 'خطا';
+            }
+        }
+        // END: New Function for Instruction 5 & 6
+
         function showEditArticleWizard(article) {
-            // START: Edited for Instruction 2 & 4
             const isFullyLocked = [5, 6, 8, 11].includes(Number(article.articleStatus));
             const isReadOnly = isFullyLocked;
-            // END: Edited for Instruction 2 & 4
             const isDraft = Number(article.articleStatus) === 9;
             const countWords = (str) => str ? str.trim().split(/\s+/).filter(Boolean).length : 0;
             const countKeywords = (str) => str ? str.trim().split(/[,،]/).filter(s => s.trim() !== "").length : 0;
@@ -1730,6 +1768,9 @@
                     const res = await callApi('updateArticleSection', { nationalId: user.nationalId, articleId: article.articleId, section, content }, e.target);
                     if (res?.status === 'success') {
                         showCustomAlert(res.message, 'success');
+                        // START: Edited for Instruction 5 & 6
+                        updateCardInPlace(article.articleId);
+                        // END: Edited for Instruction 5 & 6
                         if (section === 'keywords_abstract') {
                             localStorage.removeItem(getStorageKey('abstract'));
                             localStorage.removeItem(getStorageKey('keywords'));
@@ -1825,7 +1866,6 @@
             const canChangeSupervisor = (article.supervisorStatus != 5) || (article.articleStatus == 4) || isDraft;
             const supervisorChangeNotice = canChangeSupervisor ? '' : '<p style="font-size: 0.9rem; color: var(--warning); text-align: center;">استاد راهنما این مقاله را تایید کرده و قابل تغییر نیست.</p>';
             const step1 = document.querySelector('.tab-content[data-tab="1"]');
-            // START: Edited for Instruction 4
             step1.innerHTML = `<h4>اطلاعات کلی</h4><div class="form-group"><label for="edit-article-title">عنوان مقاله</label><input type="text" id="edit-article-title" value="${article.title}" ${isFullyLocked ? 'disabled' : ''}></div><div class="form-group"><label for="edit-affiliation">وابستگی سازمانی</label><input type="text" id="edit-affiliation" value="${article.affiliation || ''}" readonly></div><div class="form-group"><label for="edit-knowledgeArea">حیطه دانشی</label><select id="edit-knowledgeArea" ${isReadOnly ? 'disabled' : ''}>${getKnowledgeAreaOptions(article.knowledgeArea)}</select></div><div class="form-group"><label for="edit-topicReason">دلیل انتخاب موضوع</label><textarea id="edit-topicReason" rows="3" ${isReadOnly ? 'disabled' : ''}>${article.topicReason || ''}</textarea></div><div class="form-group"><label for="edit-supervisor">استاد راهنما</label>${supervisorChangeNotice}<input type="text" id="edit-supervisor" value="${article.supervisorName || ''}" readonly ${!canChangeSupervisor || isReadOnly ? '' : 'style="cursor:pointer;"'}></div><button id="save-details-btn" style="width:100%" ${isReadOnly ? 'disabled' : ''}><span class="btn-text">ذخیره اطلاعات کلی</span></button>`;
             
             if (!isReadOnly) {
@@ -1846,14 +1886,16 @@
                     knowledgeArea: document.getElementById('edit-knowledgeArea').value,
                     topicReason: document.getElementById('edit-topicReason').value
                 };
-                // END: Edited for Instruction 4
-                if (canChangeSupervisor && window.selectedSupervisorForEdit) details.supervisor = window.selectedSupervisorForEdit;
+                if (canChangeSupervisor && window.selectedSupervisorForEdit) {
+                    details.supervisor = window.selectedSupervisorForEdit;
+                }
                 const res = await callApi('updateArticleDetails', { nationalId: user.nationalId, articleId: article.articleId, details }, e.target);
                 if (res?.status === 'success') {
-                    showCustomAlert(res.message, 'success', () => {
-                        closeAllModals();
-                        loadArticles(user.nationalId, false);
-                    });
+                    // START: Edited for Instruction 6
+                    showCustomAlert(res.message, 'success');
+                    updateCardInPlace(article.articleId);
+                    window.selectedSupervisorForEdit = null; // Reset unsaved supervisor
+                    // END: Edited for Instruction 6
                 } else {
                     showCustomAlert(res.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا: ' + res.message, 'error');
                 }
@@ -1861,15 +1903,23 @@
         }
 
         async function handleSubmitDraft(e, articleId, supervisorName) {
+            // START: Edited for Instruction 1
+            // supervisorName is the SAVED name.
             if (!supervisorName) {
-                return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید.', 'error');
+                // No supervisor is saved for this draft. Check if one is selected in UI but not saved.
+                const supervisorInput = document.getElementById('edit-supervisor');
+                const uiSupervisorName = supervisorInput ? supervisorInput.value : '';
+                if (uiSupervisorName) {
+                    return showCustomAlert('استاد راهنما انتخاب شده اما تغییرات ذخیره نشده است. لطفا ابتدا اطلاعات کلی مقاله را ذخیره کنید.', 'error');
+                } else {
+                    return showCustomAlert('لطفا ابتدا یک استاد راهنما برای مقاله انتخاب کنید و سپس اطلاعات را ذخیره کنید.', 'error');
+                }
             }
-            // START: Edited for Instruction 3
+            // END: Edited for Instruction 1
             showCustomConfirm('آیا از ارسال مقاله برای استاد راهنما اطمینان دارید؟', async (confirmed, btn, closeModal) => {
                 if (confirmed) {
                     const user = getStoredUser();
                     const response = await callApi('submitDraftToSupervisor', { articleId, nationalId: user.nationalId }, e.target);
-                    // END: Edited for Instruction 3
                     closeModal();
                     if (response?.status === 'success') {
                         showCustomAlert(response.message, 'success', () => {
@@ -1914,6 +1964,97 @@
                 loadMoreContainer.appendChild(loadMoreBtn);
             }
         }
+        
+        // START: New Function for Instruction 5
+        function getCardBorderColor(article){
+            const isDraft = String(article.articleStatus) === '9';
+            let supervisorStatusColor;
+            if (article.supervisorStatus == 5) { supervisorStatusColor = '#198754'; } 
+            else if (article.supervisorStatus == 1) { supervisorStatusColor = '#ffc107'; } 
+            else if (article.supervisorStatus == 0) { supervisorStatusColor = '#dc3545'; } 
+            else { supervisorStatusColor = '#6c757d'; }
+            const [, articleStatusColor] = getStatusInfo('article', article.articleStatus);
+            return (isDraft || article.articleStatus == 5 || article.articleStatus == 0 || article.articleStatus == 4) ? articleStatusColor : supervisorStatusColor;
+        }
+        
+        function generateArticleCardInnerHTML(article) {
+            let supervisorStatusText, supervisorStatusColor;
+            if (article.supervisorStatus == 5) {
+                supervisorStatusText = `راهنما: ${article.supervisorName}`; supervisorStatusColor = '#198754';
+            } else if (article.supervisorStatus == 1) {
+                supervisorStatusText = 'بررسی پذیرش توسط استاد'; supervisorStatusColor = '#ffc107';
+            } else if (article.supervisorStatus == 0) {
+                supervisorStatusText = 'نپذیرفته'; supervisorStatusColor = '#dc3545';
+            } else {
+                supervisorStatusText = 'منتظر ارسال'; supervisorStatusColor = '#6c757d';
+            }
+            const [articleStatusText, articleStatusColor] = getStatusInfo('article', article.articleStatus);
+            const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
+            const isDraft = String(article.articleStatus) === '9';
+            const isReadOnly = [5, 6, 8, 11].includes(Number(article.articleStatus));
+            
+            let editorFeedbackHTML = '';
+            if ((article.articleStatus == 2 || article.articleStatus == 0) && article.rejectionReason) {
+                const noticeClass = article.articleStatus == 0 ? 'editor-feedback-notice rejected' : 'editor-feedback-notice';
+                editorFeedbackHTML = `<div class="${noticeClass}"><strong>توضیحات:</strong> ${article.rejectionReason}</div>`;
+            }
+            
+            let supervisorCancellationNotice = '';
+            if (article.articleStatus == 4) {
+                supervisorCancellationNotice = `<div class="supervisor-cancellation-notice">استاد از بررسی مقاله شما انصراف داده است. لطفاً از بخش ویرایش، استاد راهنمای مقاله را تغییر دهید.</div>`;
+            }
+            
+            const reReviewButtonHTML = article.articleStatus == 2 ? `<button class="btn-rereview btn-info" data-article-id="${article.articleId}">ارسال جهت بررسی مجدد</button>` : '';
+            const supervisorRejectionNotice = article.supervisorStatus == 0 ? `<div class="supervisor-rejection-notice">استاد راهنما این درخواست را نپذیرفته است. لطفاً از بخش ویرایش، استاد راهنمای دیگری انتخاب کنید.</div>` : '';
+            const requestDateFormatted = article.requestDate ? new Date(article.requestDate).toLocaleDateString('fa-IR') : 'نامشخص';
+            const acceptanceDateFormatted = article.acceptanceDate ? new Date(article.acceptanceDate).toLocaleDateString('fa-IR') : 'نامشخص';
+            const publicationDateFormatted = article.publishDate ? new Date(article.publishDate).toLocaleDateString('fa-IR') : 'نامشخص';
+            const acceptanceInfo = (String(article.articleStatus) === '5') ? `<div><strong>تاریخ پذیرش:</strong> <span>${acceptanceDateFormatted}</span></div><div><strong>تاریخ نشر:</strong> <span>${publicationDateFormatted}</span></div><div><strong>شماره مجله:</strong> <span>${article.issueNumber || 'نامشخص'}</span></div>` : '';
+            const supervisorContactInfo = article.supervisorContact ? `<div><strong>تماس با استاد:</strong> <span>${article.supervisorContact}</span></div>` : '';
+            const printButtonHTML = article.articleStatus == 5 ? `<button class="btn-print btn-success" title="چاپ مقاله"><i class="fas fa-print"></i></button>` : '';
+            
+            // START: Edited for Instruction 4
+            let supervisorAcceptanceNotice = '';
+            if (String(article.supervisorStatus) === '5' && String(article.articleStatus) === '1') {
+                supervisorAcceptanceNotice = `<div class="supervisor-acceptance-notice">استاد راهنما مقاله شما را جهت برسی قبول کرده، اگر مقاله نیازمند ویرایش است آن را ویرایش و ذخیره کنید.</div>`;
+            }
+            // END: Edited for Instruction 4
+
+            // START: Edited for Instruction 3
+            const isContentComplete = article.title && article.affiliation && article.knowledgeArea && article.topicReason && article.abstract && article.keywords && article.introduction && article.body && article.conclusion && article.references;
+            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
+            const finalReviewButtonHTML = canSendForFinalReview ? `<button class="btn-send-final-review btn-success" data-article-id="${article.articleId}">ارسال جهت برسی نهایی</button>` : '';
+            // END: Edited for Instruction 3
+
+            return `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+        }
+
+        function bindArticleCardEvents(card, article) {
+            const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
+            const isContentComplete = article.title && article.affiliation && article.knowledgeArea && article.topicReason && article.abstract && article.keywords && article.introduction && article.body && article.conclusion && article.references;
+            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
+            
+            card.querySelector('.article-header-clickable').onclick = () => card.classList.toggle('expanded');
+            card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
+            card.querySelector('.btn-history').onclick = (e) => { e.stopPropagation(); handleShowHistory(article.articleId, article.title, e.target.closest('button')); };
+            
+            const rereviewBtn = card.querySelector('.btn-rereview');
+            if (rereviewBtn) { rereviewBtn.onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); }; }
+
+            if (canBeDeleted) {
+                const deleteBtn = card.querySelector('.btn-delete');
+                if(deleteBtn) { deleteBtn.onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); }; }
+            }
+
+            const printBtn = card.querySelector('.btn-print');
+            if(printBtn) { printBtn.onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
+            
+            if (canSendForFinalReview) { 
+                const finalReviewBtn = card.querySelector('.btn-send-final-review');
+                if(finalReviewBtn) { finalReviewBtn.onclick = (e) => { e.stopPropagation(); handleSendForFinalReview(article.articleId, e.target.closest('button')); }; }
+            }
+        }
+        // END: New Function for Instruction 5
 
         function renderGroup(title, articles, container) {
             if (articles.length === 0) return;
@@ -1922,65 +2063,12 @@
             groupTitle.textContent = title;
             container.appendChild(groupTitle);
             articles.forEach(article => {
-                let supervisorStatusText, supervisorStatusColor;
-                if (article.supervisorStatus == 5) {
-                    supervisorStatusText = `راهنما: ${article.supervisorName}`; supervisorStatusColor = '#198754';
-                } else if (article.supervisorStatus == 1) {
-                    supervisorStatusText = 'بررسی پذیرش توسط استاد'; supervisorStatusColor = '#ffc107';
-                } else if (article.supervisorStatus == 0) {
-                    supervisorStatusText = 'نپذیرفته'; supervisorStatusColor = '#dc3545';
-                } else {
-                    supervisorStatusText = 'منتظر ارسال'; supervisorStatusColor = '#6c757d';
-                }
-                const [articleStatusText, articleStatusColor] = getStatusInfo('article', article.articleStatus);
-                const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
-                const isDraft = String(article.articleStatus) === '9';
-                const cardBorderColor = (isDraft || article.articleStatus == 5 || article.articleStatus == 0 || article.articleStatus == 4) ? articleStatusColor : supervisorStatusColor;
-                const isReadOnly = [5, 6, 8, 11].includes(Number(article.articleStatus));
                 const card = document.createElement('div');
                 card.className = 'article-card';
-                card.style.borderTopColor = cardBorderColor;
-                let editorFeedbackHTML = '';
-                if ((article.articleStatus == 2 || article.articleStatus == 0) && article.rejectionReason) {
-                    const noticeClass = article.articleStatus == 0 ? 'editor-feedback-notice rejected' : 'editor-feedback-notice';
-                    editorFeedbackHTML = `<div class="${noticeClass}"><strong>توضیحات:</strong> ${article.rejectionReason}</div>`;
-                }
-                let supervisorCancellationNotice = '';
-                if (article.articleStatus == 4) {
-                    supervisorCancellationNotice = `<div class="supervisor-cancellation-notice">استاد از بررسی مقاله شما انصراف داده است. لطفاً از بخش ویرایش، استاد راهنمای مقاله را تغییر دهید.</div>`;
-                }
-                const reReviewButtonHTML = article.articleStatus == 2 ? `<button class="btn-rereview btn-info" data-article-id="${article.articleId}">ارسال جهت بررسی مجدد</button>` : '';
-                const supervisorRejectionNotice = article.supervisorStatus == 0 ? `<div class="supervisor-rejection-notice">استاد راهنما این درخواست را نپذیرفته است. لطفاً از بخش ویرایش، استاد راهنمای دیگری انتخاب کنید.</div>` : '';
-                const requestDateFormatted = article.requestDate ? new Date(article.requestDate).toLocaleDateString('fa-IR') : 'نامشخص';
-                const acceptanceDateFormatted = article.acceptanceDate ? new Date(article.acceptanceDate).toLocaleDateString('fa-IR') : 'نامشخص';
-                const publicationDateFormatted = article.publishDate ? new Date(article.publishDate).toLocaleDateString('fa-IR') : 'نامشخص';
-                const acceptanceInfo = (String(article.articleStatus) === '5') ? `<div><strong>تاریخ پذیرش:</strong> <span>${acceptanceDateFormatted}</span></div><div><strong>تاریخ نشر:</strong> <span>${publicationDateFormatted}</span></div><div><strong>شماره مجله:</strong> <span>${article.issueNumber || 'نامشخص'}</span></div>` : '';
-                const supervisorContactInfo = article.supervisorContact ? `<div><strong>تماس با استاد:</strong> <span>${article.supervisorContact}</span></div>` : '';
-                const printButtonHTML = article.articleStatus == 5 ? `<button class="btn-print btn-success" title="چاپ مقاله"><i class="fas fa-print"></i></button>` : '';
-                
-                // START: Added for Instruction 1
-                let supervisorAcceptanceNotice = '';
-                if (article.supervisorStatus == 5) {
-                    supervisorAcceptanceNotice = `<div class="supervisor-acceptance-notice">استاد راهنما مقاله شما را جهت برسی قبول کرده، اگر مقاله نیازمند ویرایش است آن را ویرایش و ذخیره کنید.</div>`;
-                }
-                // END: Added for Instruction 1
-
-                // START: Added for Instruction 2
-                const canSendForFinalReview = (article.supervisorStatus == 5) && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
-                const finalReviewButtonHTML = canSendForFinalReview ? `<button class="btn-send-final-review btn-success" data-article-id="${article.articleId}">ارسال جهت برسی نهایی</button>` : '';
-                // END: Added for Instruction 2
-
-                card.innerHTML = `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
-
-                card.querySelector('.article-header-clickable').onclick = () => card.classList.toggle('expanded');
-                card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
-                card.querySelector('.btn-history').onclick = (e) => { e.stopPropagation(); handleShowHistory(article.articleId, article.title, e.target.closest('button')); };
-                if (article.articleStatus == 2) { card.querySelector('.btn-rereview').onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); }; }
-                if (canBeDeleted) { card.querySelector('.btn-delete').onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); }; }
-                if (article.articleStatus == 5) { card.querySelector('.btn-print').onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
-                // START: Added for Instruction 2
-                if (canSendForFinalReview) { card.querySelector('.btn-send-final-review').onclick = (e) => { e.stopPropagation(); handleSendForFinalReview(article.articleId, e.target.closest('button')); }; }
-                // END: Added for Instruction 2
+                card.dataset.articleId = article.articleId; // For easy selection
+                card.style.borderTopColor = getCardBorderColor(article);
+                card.innerHTML = generateArticleCardInnerHTML(article);
+                bindArticleCardEvents(card, article);
                 container.appendChild(card);
             });
         }
@@ -2018,7 +2106,6 @@
             }
         }
 
-        // START: New function for Instruction 2
         async function handleSendForFinalReview(articleId, button) {
             showCustomConfirm('شما مقاله را برای بررسی نهایی به استاد راهنما ارسال کرده اید. آیا اطمینان دارید؟', async (confirmed, confirmBtn, closeModal) => {
                 if (confirmed) {
@@ -2033,9 +2120,7 @@
                 } else { closeModal(); }
             }, 'بله، ارسال کن', 'لغو');
         }
-        // END: New function for Instruction 2
 
-        // START: Edited for Instruction 4
         async function handleRequestReReviewClick(button) {
             const articleId = button.dataset.articleId;
             const article = allUserArticles.find(a => a.articleId == articleId);
@@ -2093,7 +2178,6 @@
                 }
             };
         }
-        // END: Edited for Instruction 4
 
         async function handleShowHistory(articleId, articleTitle, button) {
             const modalBodyId = 'history-modal-body';
