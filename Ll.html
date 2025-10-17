@@ -1,4 +1,5 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -9,134 +10,135 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
-        
-        :root {
-            --primary-color: #0a2351;
-            --secondary-color: #334155;
-            --accent-color: #b48d40;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --bg-main: #f1f5f9;
-            --bg-card: #ffffff;
-            --border-color: #e2e8f0;
-            --font-family: 'Vazirmatn', sans-serif;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --transition: 0.3s ease;
-        }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-main);
-            color: var(--text-dark);
-            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23dce2ec" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-        }
-        body.modal-open { overflow: hidden; }
-        
-        #loading-overlay { position: fixed; inset: 0; background-color: var(--bg-card); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
-        .loader { width: 50px; height: 50px; position: relative; }
-        .loader::before, .loader::after { content: ''; position: absolute; width: inherit; height: inherit; border-radius: 50%; mix-blend-mode: multiply; animation: spin 2s infinite cubic-bezier(0.77, 0, 0.175, 1); }
-        .loader::before { background-color: var(--primary-color); }
-        .loader::after { background-color: var(--accent-color); animation-delay: -1s; }
-        @keyframes spin { 0%, 100% { transform: translateX(0) scale(1); } 50% { transform: translateX(-20px) scale(0.7); } }
-        #loading-overlay p { margin-top: 25px; font-size: 1.1rem; color: var(--text-dark); }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        .top-bar { background-color: var(--primary-color); padding: 0.5rem 0; }
-        .top-bar-content { display: flex; justify-content: space-between; align-items: center; }
-        .site-info p { color: #cbd5e1; margin: 0; font-size: 0.9rem; }
-        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; position: relative; }
-        .btn-accent { background-color: var(--accent-color); color: var(--primary-color); font-weight: bold; }
-        .btn-accent:hover { background-color: #eab308; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-        .btn-secondary { background-color: var(--secondary-color); color: white; }
-        .btn-secondary:hover { background-color: #1f2937; }
-        
-        .main-header { background-color: var(--bg-card); padding: 2rem 0; border-bottom: 1px solid var(--border-color); text-align: center; }
-        .main-header h1 { font-size: 2.8rem; color: var(--primary-color); font-weight: 700; margin: 0; }
-        .main-header p { font-size: 1.2rem; color: var(--text-light); margin-top: 5px; }
-        
-        .main-nav { background-color: var(--bg-card); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 998; border-bottom: 1px solid var(--border-color); }
-        .main-nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
-        .main-nav a { display: block; padding: 1rem 1.5rem; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 3px solid transparent; transition: var(--transition); }
-        .main-nav a:hover, .main-nav a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-        
-        .login-dropdown { position: relative; }
-        .login-dropdown .btn-accent { border-radius: 30px; padding: 10px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .dropdown-menu { position: absolute; top: 120%; left: 0; background-color: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); list-style: none; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); border: 1px solid var(--border-color); padding: 5px; }
-        .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        .dropdown-menu a { display: flex; align-items: center; gap: 10px; color: var(--text-dark); padding: 12px 15px; border-radius: 6px; }
-        .dropdown-menu a:hover { background-color: var(--bg-main); color: var(--primary-color); }
-        .dropdown-menu i { width: 20px; text-align: center; color: var(--accent-color); }
+:root {
+        --primary-color: #0a2351;
+        --secondary-color: #334155;
+        --accent-color: #b48d40;
+        --text-dark: #1e293b;
+        --text-light: #64748b;
+        --bg-main: #f1f5f9;
+        --bg-card: #ffffff;
+        --border-color: #e2e8f0;
+        --font-family: 'Vazirmatn', sans-serif;
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --transition: 0.3s ease;
+    }
 
-        .main-content { padding-top: 2.5rem; }
-        .page-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
-        @media (min-width: 1024px) { .page-grid { grid-template-columns: 3fr 1fr; } }
-        
-        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; box-shadow: var(--shadow-sm); }
-        .sidebar .card { margin-bottom: 25px; }
-        .sidebar h3 { font-size: 1.2rem; color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 15px; }
-        .sidebar ul { list-style: none; }
-        .sidebar li { margin-bottom: 10px; }
-        
-        .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
-        .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
-        #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
-        #search-input:focus { outline: none; }
-        .search-bar-buttons { display: flex; }
-        #search-filter-btn { background-color: #f8fafc; color: var(--text-dark); border: none; border-left: 1px solid var(--border-color); padding: 0 15px; cursor: pointer; transition: background-color var(--transition); }
-        #search-filter-btn:hover { background-color: #f1f5f9; }
-        #search-filter-btn i { transition: transform var(--transition); }
-        #search-filter-btn.active i { transform: rotate(180deg); }
-        #search-button { background-color: var(--primary-color); color: white; border: none; padding: 0 18px; cursor: pointer; transition: background-color var(--transition); }
-        #search-button:hover { background-color: var(--secondary-color); }
-        #search-filter-dropdown { position: absolute; top: calc(100% + 10px); right: 0; left: 0; background: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border-color); padding: 20px; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); }
-        #search-filter-dropdown.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        .filter-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
-        .filter-checkbox { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background-color var(--transition); user-select: none; }
-        .filter-checkbox:hover { background-color: var(--bg-main); }
-        .filter-checkbox input { display: none; }
-        .filter-checkbox .checkmark { width: 20px; height: 20px; border: 2px solid var(--border-color); border-radius: 4px; display: inline-block; position: relative; margin-left: 10px; transition: var(--transition); background-color: #fff; }
-        .filter-checkbox input:checked + .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
-        .filter-checkbox .checkmark::after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
-        .filter-checkbox input:checked + .checkmark::after { display: block; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+        font-family: var(--font-family);
+        background-color: var(--bg-main);
+        color: var(--text-dark);
+        background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23dce2ec" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+    }
+    body.modal-open { overflow: hidden; }
+    
+    #loading-overlay { position: fixed; inset: 0; background-color: var(--bg-card); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+    .loader { width: 50px; height: 50px; position: relative; }
+    .loader::before, .loader::after { content: ''; position: absolute; width: inherit; height: inherit; border-radius: 50%; mix-blend-mode: multiply; animation: spin 2s infinite cubic-bezier(0.77, 0, 0.175, 1); }
+    .loader::before { background-color: var(--primary-color); }
+    .loader::after { background-color: var(--accent-color); animation-delay: -1s; }
+    @keyframes spin { 0%, 100% { transform: translateX(0) scale(1); } 50% { transform: translateX(-20px) scale(0.7); } }
+    #loading-overlay p { margin-top: 25px; font-size: 1.1rem; color: var(--text-dark); }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    
+    .top-bar { background-color: var(--primary-color); padding: 0.5rem 0; }
+    .top-bar-content { display: flex; justify-content: space-between; align-items: center; }
+    .site-info p { color: #cbd5e1; margin: 0; font-size: 0.9rem; }
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; position: relative; }
+    .btn-accent { background-color: var(--accent-color); color: var(--primary-color); font-weight: bold; }
+    .btn-accent:hover { background-color: #eab308; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+    .btn-secondary { background-color: var(--secondary-color); color: white; }
+    .btn-secondary:hover { background-color: #1f2937; }
+    
+    .main-header { background-color: var(--bg-card); padding: 2rem 0; border-bottom: 1px solid var(--border-color); text-align: center; }
+    .main-header h1 { font-size: 2.8rem; color: var(--primary-color); font-weight: 700; margin: 0; }
+    .main-header p { font-size: 1.2rem; color: var(--text-light); margin-top: 5px; }
+    
+    .main-nav { background-color: var(--bg-card); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 998; border-bottom: 1px solid var(--border-color); }
+    .main-nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
+    .main-nav a { display: block; padding: 1rem 1.5rem; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 3px solid transparent; transition: var(--transition); }
+    .main-nav a:hover, .main-nav a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+    
+    .login-dropdown { position: relative; }
+    .login-dropdown .btn-accent { border-radius: 30px; padding: 10px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .dropdown-menu { position: absolute; top: 120%; left: 0; background-color: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); list-style: none; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); border: 1px solid var(--border-color); padding: 5px; }
+    .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-menu a { display: flex; align-items: center; gap: 10px; color: var(--text-dark); padding: 12px 15px; border-radius: 6px; }
+    .dropdown-menu a:hover { background-color: var(--bg-main); color: var(--primary-color); }
+    .dropdown-menu i { width: 20px; text-align: center; color: var(--accent-color); }
 
-        details.issue-accordion { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; background: var(--bg-card); overflow: hidden; }
-        details.issue-accordion[open] { box-shadow: var(--shadow); }
-        summary.issue-header { padding: 1.5rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        summary.issue-header::-webkit-details-marker { display: none; }
-        .issue-title h3 { margin: 0; font-size: 1.4rem; color: var(--primary-color); }
-        .issue-title span { color: var(--text-light); font-size: 0.9rem; }
-        .article-list { padding: 0 1.5rem 1.5rem; border-top: 1px solid var(--border-color); }
-        
-        .article-card { border-bottom: 1px solid var(--border-color); padding: 20px 0; }
-        .article-card:last-child { border-bottom: none; }
-        .article-title { font-size: 1.3rem; font-weight: bold; color: var(--secondary-color); margin-bottom: 10px; cursor: pointer; transition: color 0.3s; }
-        .article-title:hover { color: var(--primary-color); }
-        .article-meta { font-size: 0.9rem; color: var(--text-light); }
-        
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10, 35, 81, 0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.3s ease-in-out; }
-        .modal-overlay.visible { display: flex; opacity: 1; }
-        .modal-content { background: var(--bg-main); border: 1px solid var(--border-color); padding: 0; border-radius: 8px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s ease-in-out; overflow: hidden; }
-        .modal-overlay.visible .modal-content { transform: scale(1); }
-        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); position: relative; background: var(--bg-card); }
-        .modal-header h2 { font-size: 1.5rem; color: var(--primary-color); margin: 0; padding-left: 30px; }
-        .modal-body { flex-grow: 1; overflow-y: auto; padding: 30px; line-height: 2; }
-        .modal-body-meta { background-color: var(--bg-card); padding: 15px 30px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-light); }
-        .modal-body-meta p { margin: 0 0 8px 0; }
-        .modal-body-meta p:last-child { margin-bottom: 0; }
-        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-card); }
-        .modal-close-button { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #aaa; position: absolute; top: 15px; left: 20px; transition: color 0.2s; }
-        .modal-close-button:hover { color: #333; }
+    .main-content { padding-top: 2.5rem; }
+    .page-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+    @media (min-width: 1024px) { .page-grid { grid-template-columns: 3fr 1fr; } }
+    
+    .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; box-shadow: var(--shadow-sm); }
+    .sidebar .card { margin-bottom: 25px; }
+    .sidebar h3 { font-size: 1.2rem; color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 15px; }
+    .sidebar ul { list-style: none; }
+    .sidebar li { margin-bottom: 10px; }
+    
+    /* دستور اول: استایل فیلتر جستجوی جدید */
+    .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
+    .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
+    #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
+    #search-input:focus { outline: none; }
+    .search-bar-buttons { display: flex; }
+    #search-filter-btn { background-color: #f8fafc; color: var(--text-dark); border: none; border-left: 1px solid var(--border-color); padding: 0 15px; cursor: pointer; transition: background-color var(--transition); }
+    #search-filter-btn:hover { background-color: #f1f5f9; }
+    #search-filter-btn i { transition: transform var(--transition); }
+    #search-filter-btn.active i { transform: rotate(180deg); }
+    #search-button { background-color: var(--primary-color); color: white; border: none; padding: 0 18px; cursor: pointer; transition: background-color var(--transition); }
+    #search-button:hover { background-color: var(--secondary-color); }
+    #search-filter-dropdown { position: absolute; top: calc(100% + 10px); right: 0; left: 0; background: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border-color); padding: 20px; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); }
+    #search-filter-dropdown.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+    .filter-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
+    .filter-checkbox { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background-color var(--transition); user-select: none; }
+    .filter-checkbox:hover { background-color: var(--bg-main); }
+    .filter-checkbox input { display: none; }
+    .filter-checkbox .checkmark { width: 20px; height: 20px; border: 2px solid var(--border-color); border-radius: 4px; display: inline-block; position: relative; margin-left: 10px; transition: var(--transition); background-color: #fff; }
+    .filter-checkbox input:checked + .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
+    .filter-checkbox .checkmark::after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+    .filter-checkbox input:checked + .checkmark::after { display: block; }
 
-        .btn-loading { pointer-events: none; }
-        .btn-loading .btn-text, .btn-loading i { opacity: 0; }
-        .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid; border-color: currentColor currentColor transparent transparent; border-radius: 50%; animation: spin-btn 0.8s linear infinite; }
-        @keyframes spin-btn { to { transform: rotate(360deg); } }
+    details.issue-accordion { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; background: var(--bg-card); overflow: hidden; }
+    details.issue-accordion[open] { box-shadow: var(--shadow); }
+    summary.issue-header { padding: 1.5rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    summary.issue-header::-webkit-details-marker { display: none; }
+    .issue-title h3 { margin: 0; font-size: 1.4rem; color: var(--primary-color); }
+    .issue-title span { color: var(--text-light); font-size: 0.9rem; }
+    .article-list { padding: 0 1.5rem 1.5rem; border-top: 1px solid var(--border-color); }
+    
+    .article-card { border-bottom: 1px solid var(--border-color); padding: 20px 0; }
+    .article-card:last-child { border-bottom: none; }
+    .article-title { font-size: 1.3rem; font-weight: bold; color: var(--secondary-color); margin-bottom: 10px; cursor: pointer; transition: color 0.3s; }
+    .article-title:hover { color: var(--primary-color); }
+    .article-meta { font-size: 0.9rem; color: var(--text-light); }
+    
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10, 35, 81, 0.7); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.3s ease-in-out; }
+    .modal-overlay.visible { display: flex; opacity: 1; }
+    .modal-content { background: var(--bg-main); border: 1px solid var(--border-color); padding: 0; border-radius: 8px; max-width: 800px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.95); transition: transform 0.3s ease-in-out; overflow: hidden; }
+    .modal-overlay.visible .modal-content { transform: scale(1); }
+    .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); position: relative; background: var(--bg-card); }
+    .modal-header h2 { font-size: 1.5rem; color: var(--primary-color); margin: 0; padding-left: 30px; }
+    .modal-body { flex-grow: 1; overflow-y: auto; padding: 30px; line-height: 2; }
+    .modal-body-meta { background-color: var(--bg-card); padding: 15px 30px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-light); }
+    .modal-body-meta p { margin: 0 0 8px 0; }
+    .modal-body-meta p:last-child { margin-bottom: 0; }
+    .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-card); }
+    .modal-close-button { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #aaa; position: absolute; top: 15px; left: 20px; transition: color 0.2s; }
+    .modal-close-button:hover { color: #333; }
 
-        footer { text-align: center; padding: 2.5rem; margin-top: 3rem; background: var(--secondary-color); color: #d1d5db; border-top: 5px solid var(--accent-color); }
-    </style>
+    .btn-loading { pointer-events: none; }
+    .btn-loading .btn-text, .btn-loading i { opacity: 0; }
+    .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid; border-color: currentColor currentColor transparent transparent; border-radius: 50%; animation: spin-btn 0.8s linear infinite; }
+    @keyframes spin-btn { to { transform: rotate(360deg); } }
+
+    footer { text-align: center; padding: 2.5rem; margin-top: 3rem; background: var(--secondary-color); color: #d1d5db; border-top: 5px solid var(--accent-color); }
+</style>
 </head>
 <body>
 
@@ -172,63 +174,65 @@
         </nav>
     </header>
 
-    <main class="container page-grid">
-        <div class="main-column">
-            <div class="search-container">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
-                    <div class="search-bar-buttons">
-                        <button id="search-filter-btn"><i class="fas fa-chevron-down"></i></button>
-                        <button id="search-button" class="btn"><i class="fas fa-search"></i></button>
-                    </div>
-                </div>
-                <div id="search-filter-dropdown">
-                    <p style="margin-bottom: 15px; font-weight: 500; color: var(--text-dark);">جستجو بر اساس:</p>
-                    <div class="filter-options">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="search-category" value="title" checked>
-                            <span class="checkmark"></span> عنوان
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="search-category" value="researcherName" checked>
-                            <span class="checkmark"></span> نویسنده
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="search-category" value="supervisorName" checked>
-                            <span class="checkmark"></span> استاد راهنما
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="search-category" value="keywords" checked>
-                            <span class="checkmark"></span> کلیدواژه
-                        </label>
-                    </div>
+<main class="container page-grid">
+    <div class="main-column">
+        <!-- دستور اول: ساختار جدید فیلد جستجو با فیلترهای تیک‌دار -->
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
+                <div class="search-bar-buttons">
+                    <button id="search-filter-btn"><i class="fas fa-chevron-down"></i></button>
+                    <button id="search-button" class="btn"><i class="fas fa-search"></i></button>
                 </div>
             </div>
-            <div id="issues-container"></div>
-            <div id="load-more-container" style="text-align: center; margin-top: 2rem;"></div>
+            <div id="search-filter-dropdown">
+                <p style="margin-bottom: 15px; font-weight: 500; color: var(--text-dark);">جستجو بر اساس:</p>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="search-category" value="title" checked>
+                        <span class="checkmark"></span> عنوان
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="search-category" value="researcherName" checked>
+                        <span class="checkmark"></span> نویسنده
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="search-category" value="supervisorName" checked>
+                        <span class="checkmark"></span> استاد راهنما
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="search-category" value="keywords" checked>
+                        <span class="checkmark"></span> کلیدواژه
+                    </label>
+                </div>
+            </div>
         </div>
-        <aside class="sidebar">
-            <div class="card">
-                <h3>درباره نشریه</h3>
-                <p><strong>سالنامه علمی تبیان</strong> یک نشریه تخصصی در زمینه علوم حوزوی و اسلامی است که توسط <strong>حوزه علمیه امام صادق (ع) جیرفت</strong> منتشر می‌شود...</p>
-                <a href="#" onclick="showAboutModal(event)">اطلاعات بیشتر...</a>
-            </div>
-             <div class="card">
-                <h3>هیئت تحریریه</h3>
-                <ul>
-                    <li><strong>صاحب امتیاز:</strong> حوزه علمیه امام صادق (ع) جیرفت</li>
-                    <li><strong>مدیر مسئول:</strong> حجت الاسلام شهدادنژاد</li>
-                    <li><strong>سردبیر:</strong> حجت الاسلام پرموده</li>
-                </ul>
-            </div>
-        </aside>
-    </main>
+        <div id="issues-container"></div>
+        <div id="load-more-container" style="text-align: center; margin-top: 2rem;"></div>
+    </div>
+    <aside class="sidebar">
+        <div class="card">
+            <h3>درباره نشریه</h3>
+            <p><strong>سالنامه علمی تبیان</strong> یک نشریه تخصصی در زمینه علوم حوزوی و اسلامی است که توسط <strong>حوزه علمیه امام صادق (ع) جیرفت</strong> منتشر می‌شود...</p>
+            <a href="#" onclick="showAboutModal(event)">اطلاعات بیشتر...</a>
+        </div>
+         <div class="card">
+            <h3>هیئت تحریریه</h3>
+            <ul>
+                <li><strong>صاحب امتیاز:</strong> حوزه علمیه امام صادق (ع) جیرفت</li>
+                <li><strong>مدیر مسئول:</strong> حجت الاسلام شهدادنژاد</li>
+                <li><strong>سردبیر:</strong> حجت الاسلام پرموده</li>
+            </ul>
+        </div>
+    </aside>
+</main>
 
-    <footer class="main-footer"><p>&copy; تمامی حقوق برای سالنامه علمی تبیان محفوظ است.</p></footer>
+<footer class="main-footer"><p>&copy; تمامی حقوق برای سالنامه علمی تبیان محفوظ است.</p></footer>
 </div>
 
 <div id="modal-container"></div>
-<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 170mm;"></div>
+<!-- دستور چهارم تا هفتم: کانتینر رندر PDF برای چاپ -->
+<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm;"></div>
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
@@ -246,6 +250,7 @@
         const loginMenuBtn = document.getElementById('login-menu-btn');
         const loginDropdownMenu = document.getElementById('login-dropdown-menu');
         
+        // دستور اول: منطق فیلتر جستجوی جدید
         const filterBtn = document.getElementById('search-filter-btn');
         const filterDropdown = document.getElementById('search-filter-dropdown');
         
@@ -352,6 +357,7 @@
         }, 300);
     }
 
+    // دستور اول: تابع جستجو برای کار با فیلترهای چندگانه
     function handleSearch() {
         const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
         const checkedCategories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
@@ -397,6 +403,7 @@
         showModal(content + `</div>`);
     }
     
+    // دستور سوم: نمایش وابستگی در صفحه مقاله
     function showArticleModal(articleId) {
         const d = allArticles.find(a => String(a.articleId) === String(articleId));
         if (d) {
@@ -472,110 +479,105 @@
         if (button) button.classList.remove('btn-loading');
     }
 
-    // تابع تولید PDF با پیاده‌سازی کامل دستورات جدید
+    // دستورات چهارم، پنجم، ششم و هفتم: تابع تولید PDF با تمام جزئیات جدید
     async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
         const renderContainer = document.getElementById('pdf-render-container');
-        let fullContent = '';
-        
-        if (collectionTitle) {
-            fullContent += `<div style="page-break-after: always; text-align:center; padding-top: 40vh;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>`;
-        }
+        let fullContent = collectionTitle ? `<div style="text-align:center; margin-bottom: 30px;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
         
         articles.forEach((details, index) => {
-            const pageContentStyle = `font-size: 14pt; line-height: 1.5; text-align: justify;`;
-            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem; text-align: right;`;
+            /* <<<< ویرایش دستور اول: فاصله ۲ سانت از بالا و پایین و طرفین */
+            const pageStyle = `padding: 20mm 20mm; font-size: 14pt; line-height: 1.5; min-height: 257mm;`; // 297mm - 20mm - 20mm = 257mm
+            /* <<<< ویرایش دستور دوم: حذف فاصله بالای عناوین برای قرارگیری در ابتدای صفحه */
+            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem; margin-top: 0;`; 
 
             fullContent += `
-                <!-- Wrapper برای هر مقاله تا شکست صفحه بین مقالات در یک شماره درست عمل کند -->
-                <div style="${index > 0 ? 'page-break-before: always;' : ''}">
-                    <!-- دستور دوم: صفحه اول شامل کلیات و چکیده -->
-                    <div style="page-break-after: always;">
+                <div style="page-break-after: always;">
+                    <!-- صفحه اول: اطلاعات اصلی و چکیده -->
+                    <div style="${pageStyle}">
                         <div style="text-align:center; margin-bottom: 20px;">
                             <p>${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
                             <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
                         </div>
-                        <p style="${pageContentStyle}"><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
-                        <p style="${pageContentStyle}"><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
-                        <p style="${pageContentStyle}"><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
-                        <p style="${pageContentStyle}"><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
-                        <p style="${pageContentStyle}"><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
+                        <p><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
+                        <p><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
+                        <p><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
+                        <p><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
+                        <p><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
                         <hr style="margin: 20px 0;">
                         <h2 style="${titleStyle}">چکیده</h2>
-                        <div style="${pageContentStyle}">${details.abstract || '-'}</div>
-                        <p style="${pageContentStyle}"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+                        <p style="text-align: justify;">${details.abstract || '-'}</p>
+                        <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
                     </div>
-                    <!-- دستور دوم: مقدمه در ابتدای صفحه بعد -->
-                    <div style="page-break-after: always;">
-                        <h2 style="${titleStyle}">مقدمه</h2>
-                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.introduction || '-'}</div>
-                    </div>
-                    <!-- دستور دوم: بدنه در ابتدای صفحه بعد -->
-                    <div style="page-break-after: always;">
-                        <h2 style="${titleStyle}">بدنه اصلی</h2>
-                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.body || '-'}</div>
-                    </div>
-                    <!-- دستور دوم: نتیجه‌گیری در ابتدای صفحه بعد -->
-                    <div style="page-break-after: always;">
-                        <h2 style="${titleStyle}">نتیجه‌گیری</h2>
-                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.conclusion || '-'}</div>
-                    </div>
-                    <!-- دستور دوم: منابع در ابتدای صفحه بعد (آخرین بخش) -->
-                    <div>
-                        <h2 style="${titleStyle}">منابع و مآخذ</h2>
-                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.references || '-'}</div>
-                    </div>
-                </div>`;
+                </div>
+                <!-- دستور دوم: شکستن صفحات برای هر بخش (این ساختار از قبل صحیح بود) -->
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="white-space: pre-wrap; text-align: justify;">${details.introduction || '-'}</div></div>
+                </div>
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="white-space: pre-wrap; text-align: justify;">${details.body || '-'}</div></div>
+                </div>
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="white-space: pre-wrap; text-align: justify;">${details.conclusion || '-'}</div></div>
+                </div>
+                <div>
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="white-space: pre-wrap;">${details.references || '-'}</div></div>
+                </div>
+                `;
         });
+        
+        // این بخش برای جلوگیری از ایجاد یک صفحه خالی اضافی در انتهای PDF مقالات گروهی است
+         if (articles.length > 1) {
+            fullContent += `<div style="page-break-before: ${articles.length > 1 ? 'always' : 'auto'};"></div>`;
+         }
 
         renderContainer.innerHTML = fullContent;
         try {
             const { jsPDF } = window.jspdf; 
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
-
-            // دستور اول: تعریف حاشیه 2 سانتی‌متری
-            const margin = 20;
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
             
-            // عرض و ارتفاع قابل استفاده داخل حاشیه‌ها
-            const usableWidth = pdfWidth - (2 * margin);
-            const usableHeight = pdfHeight - (2 * margin);
+            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+            const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+            const margin = 20; // 2cm
 
-            const imgProps = pdf.getImageProperties(canvas);
-            const canvasWidth = imgProps.width;
-            const canvasHeight = (imgProps.height * usableWidth) / canvasWidth;
+            const addPageContent = (pdfDoc, pageNum, totalPages) => {
+                pdfDoc.setFontSize(9);
+                pdfDoc.setTextColor(100);
+                /* <<<< ویرایش دستور اول: تنظیم موقعیت سربرگ برای رعایت فاصله ۲ سانت */
+                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, 15, { align: 'center' }); // کمی بالاتر برای زیبایی
+                const pageNumPersian = toPersianNumerals(String(pageNum));
+                /* <<<< ویرایش دستور سوم: تنظیم موقعیت شماره صفحه در پایین، وسط و با رعایت فاصله ۲ سانت */
+                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - 15, { align: 'center' });
+            };
 
-            let heightLeft = canvasHeight;
+            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgWidth = 210; 
+            const pageHeight = 297;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
             let position = 0;
             let page = 1;
 
-            // دستور سوم: تابع افزودن هدر و فوتر (شامل شماره صفحه)
-            const addPageContent = (pdfDoc, pageNum) => {
-                pdfDoc.setFontSize(9);
-                pdfDoc.setTextColor(100);
-                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
-                const pageNumPersian = toPersianNumerals(String(pageNum));
-                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
-            };
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            let totalPages = pdf.internal.getNumberOfPages();
 
-            // افزودن صفحه اول
-            pdf.addImage(canvas, 'PNG', margin, margin - position, usableWidth, canvasHeight);
-            addPageContent(pdf, page);
-            heightLeft -= usableHeight;
-
-            // افزودن صفحات بعدی در صورت وجود
-            while (heightLeft > 0) {
-                position += usableHeight;
-                pdf.addPage();
-                page++;
-                pdf.addImage(canvas, 'PNG', margin, margin - position, usableWidth, canvasHeight);
-                addPageContent(pdf, page);
-                heightLeft -= usableHeight;
+            while (heightLeft >= 0) {
+              position = -pageHeight * page;
+              pdf.addPage();
+              pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+              page++;
+              totalPages++;
+            }
+            
+            for(let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                addPageContent(pdf, i, totalPages);
             }
 
             pdf.save(filename);
-
         } catch (error) { console.error("PDF Generation Error:", error); } 
         finally { renderContainer.innerHTML = ''; }
     }
@@ -608,6 +610,7 @@
         }
     }
 
+    // دستور پنجم: تابع تبدیل اعداد به فارسی
     function toPersianNumerals(str) {
         if (str === null || str === undefined) return '';
         if (typeof str !== 'string') str = String(str);
