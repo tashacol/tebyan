@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="fa" dir="rtl">
 <head>
@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سالنامه علمی تبیان - حوزه علمیه امام صادق (ع) جیرفت</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
 
@@ -532,12 +530,6 @@
         } catch(e) {
             return '';
         }
-    }
-    function toPersianNumerals(str) {
-        if (str === null || str === undefined) return '';
-        if (typeof str !== 'string') str = String(str);
-        const persian = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
-        return str.replace(/[0-9]/g, (w) => persian[w]);
     }
 </script>
 
