@@ -11,18 +11,29 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         
         :root {
-            --primary-color: #003366; --secondary-color: #334155; --accent-color: #D4AF37;
-            --text-dark: #1e293b; --text-light: #64748b; --bg-main: #f1f5f9;
-            --bg-card: #ffffff; --border-color: #e2e8f0; --font-family: 'Vazirmatn', sans-serif;
+            --primary-color: #0a2351; /* آبی لاجوردی بسیار تیره */
+            --secondary-color: #334155; /* خاکستری سربی */
+            --accent-color: #b48d40; /* طلایی با وقار */
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --font-family: 'Vazirmatn', sans-serif;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --transition: 0.3s ease;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: var(--font-family); background-color: var(--bg-main); color: var(--text-dark); }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23dce2ec" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        }
         body.modal-open { overflow: hidden; }
-
+        
         #loading-overlay {
             position: fixed; inset: 0; background-color: var(--bg-card);
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
@@ -37,28 +48,46 @@
         
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
-        .site-header { background-color: var(--primary-color); color: white; padding: 20px 0; text-align: center; border-bottom: 5px solid var(--accent-color); }
-        .site-header h1 { font-size: 2.5rem; margin-bottom: 5px; font-weight: bold; }
-        .site-header .subtitle { font-size: 1.1rem; opacity: 0.9; }
+        .top-bar { background-color: var(--primary-color); padding: 0.5rem 0; }
+        .top-bar-content { display: flex; justify-content: space-between; align-items: center; }
+        .site-info p { color: #cbd5e1; margin: 0; font-size: 0.9rem; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+        .btn-accent { background-color: var(--accent-color); color: var(--primary-color); font-weight: bold; }
+        .btn-accent:hover { background-color: #eab308; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover { background-color: #1f2937; }
         
-        .main-nav { background-color: var(--secondary-color); position: sticky; top: 0; z-index: 998; }
+        .main-header { background-color: var(--bg-card); padding: 2rem 0; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .main-header h1 { font-size: 2.8rem; color: var(--primary-color); font-weight: 700; margin: 0; }
+        .main-header p { font-size: 1.2rem; color: var(--text-light); margin-top: 5px; }
+        
+        .main-nav { background-color: var(--bg-card); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 998; border-bottom: 1px solid var(--border-color); }
         .main-nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
-        .main-nav a, .login-button { color: #e9ecef; font-weight: bold; padding: 12px 18px; text-decoration: none; transition: background-color 0.3s ease; display: inline-block; }
-        .main-nav a:hover, .main-nav a.active, .login-button:hover { background-color: var(--primary-color); }
-        
+        .main-nav a { display: block; padding: 1rem 1.5rem; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 3px solid transparent; transition: var(--transition); }
+        .main-nav a:hover, .main-nav a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
         .login-dropdown { position: relative; }
-        .dropdown-menu { position: absolute; top: 100%; left: 0; background-color: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: var(--shadow); list-style: none; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); }
+        .dropdown-menu { position: absolute; top: 120%; left: 0; background-color: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); list-style: none; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); border: 1px solid var(--border-color); }
         .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
         .dropdown-menu a { display: flex; align-items: center; gap: 10px; color: var(--text-dark); padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
         .dropdown-menu a:last-child { border-bottom: none; }
         .dropdown-menu a:hover { background-color: var(--bg-main); color: var(--primary-color); }
+        .dropdown-menu i { width: 20px; text-align: center; }
+
+        .main-content { padding-top: 2.5rem; }
+        .page-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 1024px) { .page-grid { grid-template-columns: 3fr 1fr; } }
         
-        .main-content { padding: 30px 0; }
-        .card { background-color: var(--card-bg-color); border-radius: 8px; padding: 25px; box-shadow: var(--shadow); }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; box-shadow: var(--shadow-sm); }
+        .sidebar .card { margin-bottom: 25px; }
+        .sidebar h3 { font-size: 1.2rem; color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 10px; }
         
-        .advanced-search { display: flex; margin-bottom: 30px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); }
-        #search-category { border: none; background-color: #f8f9fa; font-family: inherit; font-size: 0.9rem; padding: 0 15px; border-left: 1px solid var(--border-color); cursor: pointer; }
+        .advanced-search { display: flex; margin-bottom: 2rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); }
+        #search-category { border: none; background-color: #f1f5f9; font-family: inherit; font-size: 0.9rem; padding: 0 15px; border-left: 1px solid var(--border-color); cursor: pointer; }
         #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
+        #search-input:focus, #search-category:focus { outline: none; }
         
         details.issue-accordion { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; background: var(--bg-card); overflow: hidden; }
         details.issue-accordion[open] { box-shadow: var(--shadow); }
@@ -84,7 +113,6 @@
         .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-card); }
         .modal-close-button { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #aaa; position: absolute; top: 15px; left: 20px; }
         
-        .btn { padding: 10px 20px; font-weight: bold; }
         .btn-loading { pointer-events: none; position: relative; }
         .btn-loading .btn-text, .btn-loading i { opacity: 0; }
         .btn-loading::after { content: ''; position: absolute; width: 18px; height: 18px; border: 2px solid; border-color: currentColor currentColor transparent transparent; border-radius: 50%; animation: spin-btn 0.8s linear infinite; }
@@ -98,31 +126,37 @@
 <div id="loading-overlay"><div class="loader"></div><p>در حال بارگذاری اطلاعات نشریه...</p></div>
 
 <div id="page-wrapper" style="opacity:0; transition: opacity 0.5s;">
-    <header class="site-header">
-        <div class="container">
-            <h1>سالنامه علمی تبیان</h1>
-            <p class="subtitle">حوزه علمیه امام صادق (ع) جیرفت</p>
+    <header>
+        <div class="top-bar">
+            <div class="container top-bar-content">
+                <div class="site-info"><p>نشریه علمی-پژوهشی حوزه علمیه</p></div>
+                <div class="login-dropdown">
+                    <button class="btn btn-accent" id="login-menu-btn"><i class="fas fa-sign-in-alt"></i> <span class="btn-text">ورود به سامانه</span></button>
+                    <ul class="dropdown-menu" id="login-dropdown-menu">
+                        <li><a id="researcher-link" href="#" target="_blank"><i class="fas fa-user-graduate"></i> پنل محققان</a></li>
+                        <li><a id="professor-link" href="#" target="_blank"><i class="fas fa-user-tie"></i> پنل اساتید</a></li>
+                        <li><a id="admin-link" href="#" target="_blank"><i class="fas fa-user-shield"></i> پنل مدیریت</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
+        <div class="main-header">
+            <div class="container">
+                <h1>سالنامه علمی تبیان</h1>
+                <p>حوزه علمیه امام صادق (ع) جیرفت</p>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <div class="container"><ul>
+                <li><a href="#" class="active">صفحه اصلی</a></li>
+                <li><a href="#" onclick="showAboutModal(event)">درباره نشریه</a></li>
+                <li><a href="#" onclick="showIssuesModal(event)">آرشیو دوره‌ها</a></li>
+            </ul></div>
+        </nav>
     </header>
 
-    <nav class="main-nav">
-        <div class="container"><ul>
-            <li><a href="#" class="active" onclick="event.preventDefault();">صفحه اصلی</a></li>
-            <li><a href="#" onclick="showAboutModal(event)">درباره نشریه</a></li>
-            <li><a href="#" onclick="showIssuesModal(event)">آرشیو دوره‌ها</a></li>
-            <li class="login-dropdown">
-                <a href="#" class="login-button" id="login-menu-btn" onclick="event.preventDefault()"><i class="fas fa-sign-in-alt" style="margin-left: 8px;"></i> ورود به سامانه</a>
-                <div class="dropdown-menu" id="login-dropdown-menu">
-                    <a id="researcher-link" href="#" target="_blank"><i class="fas fa-user-graduate"></i> پنل محققان</a>
-                    <a id="professor-link" href="#" target="_blank"><i class="fas fa-user-tie"></i> پنل اساتید</a>
-                    <a id="admin-link" href="#" target="_blank"><i class="fas fa-user-shield"></i> پنل مدیریت</a>
-                </div>
-            </li>
-        </ul></div>
-    </nav>
-
-    <main class="main-content container">
-        <div class="main-column card">
+    <main class="container page-grid">
+        <div class="main-column">
             <div class="advanced-search">
                 <select id="search-category">
                     <option value="all">همه موارد</option><option value="title">عنوان</option>
@@ -134,6 +168,21 @@
             <div id="issues-container"></div>
             <div id="load-more-container" style="text-align: center; margin-top: 2rem;"></div>
         </div>
+        <aside class="sidebar">
+            <div class="card">
+                <h3>درباره نشریه</h3>
+                <p><strong>سالنامه علمی تبیان</strong> یک نشریه تخصصی در زمینه علوم حوزوی و اسلامی است که توسط <strong>حوزه علمیه امام صادق (ع) جیرفت</strong> منتشر می‌شود...</p>
+                <a href="#" onclick="showAboutModal(event)">اطلاعات بیشتر...</a>
+            </div>
+             <div class="card">
+                <h3>هیئت تحریریه</h3>
+                <ul>
+                    <li><strong>صاحب امتیاز:</strong> حوزه علمیه امام صادق (ع) جیرفت</li>
+                    <li><strong>مدیر مسئول:</strong> حجت الاسلام شهدادنژاد</li>
+                    <li><strong>سردبیر:</strong> حجت الاسلام پرموده</li>
+                </ul>
+            </div>
+        </aside>
     </main>
 
     <footer class="main-footer"><p>&copy; تمامی حقوق برای سالنامه علمی تبیان محفوظ است.</p></footer>
@@ -209,9 +258,7 @@
                             <h3>شماره ${issue.issueNumber}</h3>
                             <span>تاریخ نشر: ${formatDate(issue.publishDate)}</span>
                         </div>
-                        <div class="issue-actions">
-                            <button class="btn btn-secondary" onclick="downloadIssuePDF(event, '${issue.issueNumber}')"><span class="btn-text"><i class="fas fa-book"></i> دانلود کل دوره</span></button>
-                        </div>
+                        <div class="issue-actions"><button class="btn btn-secondary" onclick="downloadIssuePDF(event, '${issue.issueNumber}')"><span class="btn-text"><i class="fas fa-book"></i> دانلود کل دوره</span></button></div>
                     </summary>
                     <div class="article-list">
                         ${articles.map(article => `
@@ -249,12 +296,29 @@
     
     function showAboutModal(event) {
         event.preventDefault();
-        showModal(`<div class="modal-header"><h2>درباره سالنامه علمی تبیان</h2><button class="modal-close-button" onclick="closeModal()">&times;</button></div><div class="modal-body"><p><strong>سالنامه علمی تبیان</strong> یک نشریه تخصصی... (متن کامل درباره نشریه)</p></div>`);
+        showModal(
+            `<div class="modal-header"><h2>درباره سالنامه علمی تبیان</h2><button class="modal-close-button" onclick="closeModal()">&times;</button></div>
+             <div class="modal-body"><p><strong>سالنامه علمی تبیان</strong> یک نشریه تخصصی... (متن کامل درباره نشریه)</p></div>`
+        );
+    }
+
+    function showIssuesModal(event) {
+        event.preventDefault();
+        let content = `<div class="modal-header"><h2>آرشیو دوره‌ها</h2><button class="modal-close-button" onclick="closeModal()">&times;</button></div><div class="modal-body">`;
+        if (allIssues.length > 0) {
+            content += `<table style="width:100%; border-collapse: collapse;"><thead><tr><th style="padding:10px; border:1px solid #ddd;">شماره دوره</th><th style="padding:10px; border:1px solid #ddd;">سال انتشار</th><th style="padding:10px; border:1px solid #ddd;">دانلود</th></tr></thead><tbody>`;
+            allIssues.forEach(issue => {
+                content += `<tr><td style="padding:10px; border:1px solid #ddd;">${issue.issueNumber}</td><td style="padding:10px; border:1px solid #ddd;">${formatDate(issue.publishDate)}</td>
+                <td style="text-align:center; padding:10px; border:1px solid #ddd;"><button class="btn btn-secondary btn-sm" onclick="downloadIssuePDF(event, '${issue.issueNumber}')">PDF</button></td></tr>`;
+            });
+            content += `</tbody></table>`;
+        } else { content += `<p>دوره‌ای برای نمایش وجود ندارد.</p>`; }
+        showModal(content + `</div>`);
     }
     
     async function showArticleModal(articleId, event) {
         if(event) event.preventDefault();
-        showModal(`<div class="modal-content"><div class="loader-wrapper"><div class="loader"></div></div></div>`);
+        showModal(`<div class="loader-wrapper"><div class="loader"></div></div>`);
         const response = await callApi('getPublishedArticleDetails', { articleId });
         if (response?.status === 'success') {
             const d = response.data;
@@ -334,7 +398,7 @@
 
     // --- Utility Functions ---
     function showModal(content) {
-        document.getElementById('modal-container').innerHTML = `<div class="modal-overlay visible" id="main-modal"><div class="modal-content">${content}</div></div>`;
+        document.getElementById('modal-container').innerHTML = `<div class="modal-overlay visible" id="main-modal" onclick="if(event.target.id === 'main-modal') closeModal()"><div class="modal-content">${content}</div></div>`;
         document.body.classList.add('modal-open');
     }
     function updateModal(content) {
