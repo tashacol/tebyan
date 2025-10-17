@@ -80,7 +80,7 @@
         .sidebar ul { list-style: none; }
         .sidebar li { margin-bottom: 10px; }
         
-        /* دستور اول: استایل فیلتر جستجوی جدید */
+        /* استایل فیلتر جستجوی جدید */
         .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
         .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
         #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
@@ -175,7 +175,6 @@
 
     <main class="container page-grid">
         <div class="main-column">
-            <!-- دستور اول: ساختار جدید فیلد جستجو با فیلترهای تیک‌دار -->
             <div class="search-container">
                 <div class="search-bar">
                     <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
@@ -230,11 +229,10 @@
 </div>
 
 <div id="modal-container"></div>
-<!-- دستور چهارم تا هفتم: کانتینر رندر PDF برای چاپ -->
 <div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm;"></div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
+    const GOOGLE_SCRIPT_URL = 'YOUR_SCRIPT_URL_HERE';
     const PANEL_URLS = { researcher: '#', professor: '#', admin: '#' };
     const JOURNAL_NAME = "سالنامه علمی تبیان";
 
@@ -249,7 +247,6 @@
         const loginMenuBtn = document.getElementById('login-menu-btn');
         const loginDropdownMenu = document.getElementById('login-dropdown-menu');
         
-        // دستور اول: منطق فیلتر جستجوی جدید
         const filterBtn = document.getElementById('search-filter-btn');
         const filterDropdown = document.getElementById('search-filter-dropdown');
         
@@ -356,7 +353,6 @@
         }, 300);
     }
 
-    // دستور اول: تابع جستجو برای کار با فیلترهای چندگانه
     function handleSearch() {
         const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
         const checkedCategories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
@@ -402,7 +398,6 @@
         showModal(content + `</div>`);
     }
     
-    // دستور سوم: نمایش وابستگی در صفحه مقاله
     function showArticleModal(articleId) {
         const d = allArticles.find(a => String(a.articleId) === String(articleId));
         if (d) {
@@ -478,70 +473,75 @@
         if (button) button.classList.remove('btn-loading');
     }
 
-    // دستورات چهارم، پنجم، ششم و هفتم: تابع تولید PDF با تمام جزئیات جدید
     async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
         const renderContainer = document.getElementById('pdf-render-container');
-        let fullContent = collectionTitle ? `<div style="text-align:center; margin-bottom: 30px;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
-        
-        articles.forEach((details, index) => {
-            const pageStyle = `padding: 0 20mm; font-size: 14pt; line-height: 1.5;`; // دستور ششم: فاصله 2 سانت و line-height
-            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem;`; // دستور ششم: استایل عناوین
+        let pageElements = [];
 
-            fullContent += `
-                <div style="page-break-after: always;">
-                    <!-- صفحه اول: اطلاعات اصلی و چکیده -->
-                    <div style="${pageStyle}">
-                        <div style="text-align:center; margin-bottom: 20px;">
-                            <p>${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
-                            <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
-                        </div>
-                        <p><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
-                        <p><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
-                        <p><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
-                        <p><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
-                        <p><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
-                        <hr style="margin: 20px 0;">
-                        <h2 style="${titleStyle}">چکیده</h2>
-                        <p style="text-align: justify;">${details.abstract || '-'}</p>
-                        <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+        // دستور اول و دوم: تعریف استایل‌های اصلی برای هر صفحه چاپی
+        const pageStyle = `
+            width: 210mm;
+            height: 297mm; /* ارتفاع ثابت برای یک صفحه A4 */
+            padding: 20mm; /* حاشیه ۲ سانت از همه طرف */
+            box-sizing: border-box; /* تضمین می‌کند که padding در ابعاد کلی محاسبه شود */
+            display: flex;
+            flex-direction: column; /* چیدمان عمودی محتوا */
+        `;
+        const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem;`;
+        const bodyStyle = `font-size: 14pt; line-height: 1.5; text-align: justify; white-space: pre-wrap;`;
+        
+        if (collectionTitle) {
+            pageElements.push(`<div style="${pageStyle} justify-content: center; align-items: center; text-align: center;"><div><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div></div>`);
+        }
+
+        articles.forEach((details) => {
+            // صفحه اول: اطلاعات اصلی و چکیده
+            pageElements.push(`
+                <div class="pdf-page" style="${pageStyle}">
+                    <div style="text-align:center; margin-bottom: 20px;">
+                        <p style="font-size: 12pt;">${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
+                        <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
                     </div>
-                </div>
-                <!-- دستور هفتم: شکستن صفحات برای هر بخش -->
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="white-space: pre-wrap; text-align: justify;">${details.introduction || '-'}</div></div>
-                </div>
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="white-space: pre-wrap; text-align: justify;">${details.body || '-'}</div></div>
-                </div>
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="white-space: pre-wrap; text-align: justify;">${details.conclusion || '-'}</div></div>
-                </div>
-                <div>
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="white-space: pre-wrap;">${details.references || '-'}</div></div>
-                </div>
-                `;
-        });
-        
-        // این بخش برای جلوگیری از ایجاد یک صفحه خالی اضافی در انتهای PDF مقالات گروهی است
-         if (articles.length > 1) {
-            fullContent += `<div style="page-break-before: ${articles.length > 1 ? 'always' : 'auto'};"></div>`;
-         }
+                    <p style="font-size: 12pt;"><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
+                    <p style="font-size: 12pt;"><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
+                    <p style="font-size: 12pt;"><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
+                    <p style="font-size: 12pt;"><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
+                    <p style="font-size: 12pt;"><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
+                    <hr style="margin: 20px 0;">
+                    <h2 style="${titleStyle}">چکیده</h2>
+                    <div style="${bodyStyle}">${details.abstract || '-'}</div>
+                    <p style="font-size: 12pt; margin-top: auto;"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+                </div>`);
 
-        renderContainer.innerHTML = fullContent;
+            // صفحه دوم: مقدمه
+            if (details.introduction) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="${bodyStyle}">${details.introduction}</div></div>`);
+            
+            // صفحه سوم: بدنه اصلی
+            if (details.body) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="${bodyStyle}">${details.body}</div></div>`);
+
+            // صفحه چهارم: نتیجه‌گیری
+            if (details.conclusion) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="${bodyStyle}">${details.conclusion}</div></div>`);
+
+            // صفحه پنجم: منابع
+            if (details.references) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="${bodyStyle} text-align: right;">${details.references}</div></div>`);
+        });
+
+        renderContainer.innerHTML = `<style>.pdf-page { page-break-after: always; }</style>` + pageElements.join('');
+
         try {
             const { jsPDF } = window.jspdf; 
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             
-            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-            const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
             const margin = 20;
 
             const addPageContent = (pdfDoc, pageNum, totalPages) => {
                 pdfDoc.setFontSize(9);
                 pdfDoc.setTextColor(100);
-                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
+                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin - 10, { align: 'center' });
+                // دستور سوم: شماره صفحه فارسی در مرکز فوتر
                 const pageNumPersian = toPersianNumerals(String(pageNum));
-                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
+                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - margin + 10, { align: 'center' });
             };
 
             const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
@@ -551,22 +551,18 @@
             const imgHeight = canvas.height * imgWidth / canvas.width;
             let heightLeft = imgHeight;
             let position = 0;
-            let page = 1;
 
             pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
             heightLeft -= pageHeight;
             
-            let totalPages = pdf.internal.getNumberOfPages();
-
-            while (heightLeft >= 0) {
-              position = -pageHeight * page;
+            while (heightLeft > -10) { // A small tolerance for rounding errors
+              position -= pageHeight;
               pdf.addPage();
               pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
               heightLeft -= pageHeight;
-              page++;
-              totalPages++;
             }
             
+            const totalPages = pdf.internal.getNumberOfPages();
             for(let i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
                 addPageContent(pdf, i, totalPages);
@@ -604,8 +600,7 @@
             return '';
         }
     }
-
-    // دستور پنجم: تابع تبدیل اعداد به فارسی
+    
     function toPersianNumerals(str) {
         if (str === null || str === undefined) return '';
         if (typeof str !== 'string') str = String(str);
