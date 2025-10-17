@@ -11,9 +11,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
         
         :root {
-            --primary-color: #0a2351; /* آبی لاجوردی بسیار تیره */
-            --secondary-color: #334155; /* خاکستری سربی */
-            --accent-color: #b48d40; /* طلایی با وقار */
+            --primary-color: #0a2351;
+            --secondary-color: #334155;
+            --accent-color: #b48d40;
             --text-dark: #1e293b;
             --text-light: #64748b;
             --bg-main: #f1f5f9;
@@ -34,11 +34,7 @@
         }
         body.modal-open { overflow: hidden; }
         
-        #loading-overlay {
-            position: fixed; inset: 0; background-color: var(--bg-card);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-        }
+        #loading-overlay { position: fixed; inset: 0; background-color: var(--bg-card); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
         .loader { width: 50px; height: 50px; position: relative; }
         .loader::before, .loader::after { content: ''; position: absolute; width: inherit; height: inherit; border-radius: 50%; mix-blend-mode: multiply; animation: spin 2s infinite cubic-bezier(0.77, 0, 0.175, 1); }
         .loader::before { background-color: var(--primary-color); }
@@ -66,7 +62,6 @@
         .main-nav a { display: block; padding: 1rem 1.5rem; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 3px solid transparent; transition: var(--transition); }
         .main-nav a:hover, .main-nav a.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
         
-        /* دستور اول: استایل‌دهی مدرن به بخش ورود */
         .login-dropdown { position: relative; }
         .login-dropdown .btn-accent { border-radius: 30px; padding: 10px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .dropdown-menu { position: absolute; top: 120%; left: 0; background-color: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); list-style: none; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); border: 1px solid var(--border-color); padding: 5px; }
@@ -85,47 +80,29 @@
         .sidebar ul { list-style: none; }
         .sidebar li { margin-bottom: 10px; }
         
-        /* دستورات دوم، سوم و چهارم: بهبود ظاهر و عملکرد فیلد جستجو */
-        .search-container { 
-            margin-top: 1.5rem; /* دستور دوم: ایجاد فاصله از هدر */
-            margin-bottom: 2rem; 
-            display: flex;
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            overflow: hidden; 
-            box-shadow: var(--shadow-sm);
-            background-color: var(--bg-card);
-        }
-        #search-category {
-            border: none;
-            background-color: #f8fafc;
-            font-family: inherit;
-            font-size: 0.9rem;
-            padding: 0 15px;
-            border-left: 1px solid var(--border-color);
-            cursor: pointer;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: left 0.5rem center;
-            background-size: 1.2em;
-            padding-left: 2.5rem;
-        }
+        /* دستور اول: استایل فیلتر جستجوی جدید */
+        .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
+        .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
         #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
-        #search-input:focus, #search-category:focus { outline: 2px solid var(--accent-color); outline-offset: -2px; }
-        #search-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0 18px;
-            cursor: pointer;
-            transition: background-color var(--transition);
-        }
+        #search-input:focus { outline: none; }
+        .search-bar-buttons { display: flex; }
+        #search-filter-btn { background-color: #f8fafc; color: var(--text-dark); border: none; border-left: 1px solid var(--border-color); padding: 0 15px; cursor: pointer; transition: background-color var(--transition); }
+        #search-filter-btn:hover { background-color: #f1f5f9; }
+        #search-filter-btn i { transition: transform var(--transition); }
+        #search-filter-btn.active i { transform: rotate(180deg); }
+        #search-button { background-color: var(--primary-color); color: white; border: none; padding: 0 18px; cursor: pointer; transition: background-color var(--transition); }
         #search-button:hover { background-color: var(--secondary-color); }
-        #search-button i { font-size: 1.1rem; }
-        
+        #search-filter-dropdown { position: absolute; top: calc(100% + 10px); right: 0; left: 0; background: var(--bg-card); border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border-color); padding: 20px; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(10px); transition: var(--transition); }
+        #search-filter-dropdown.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .filter-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
+        .filter-checkbox { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background-color var(--transition); user-select: none; }
+        .filter-checkbox:hover { background-color: var(--bg-main); }
+        .filter-checkbox input { display: none; }
+        .filter-checkbox .checkmark { width: 20px; height: 20px; border: 2px solid var(--border-color); border-radius: 4px; display: inline-block; position: relative; margin-left: 10px; transition: var(--transition); background-color: #fff; }
+        .filter-checkbox input:checked + .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .filter-checkbox .checkmark::after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+        .filter-checkbox input:checked + .checkmark::after { display: block; }
+
         details.issue-accordion { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; background: var(--bg-card); overflow: hidden; }
         details.issue-accordion[open] { box-shadow: var(--shadow); }
         summary.issue-header { padding: 1.5rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
@@ -198,15 +175,36 @@
 
     <main class="container page-grid">
         <div class="main-column">
-            <!-- دستورات دوم، سوم و چهارم: ساختار جدید فیلد جستجو -->
+            <!-- دستور اول: ساختار جدید فیلد جستجو با فیلترهای تیک‌دار -->
             <div class="search-container">
-                <select id="search-category">
-                    <option value="all">همه موارد</option><option value="title">عنوان</option>
-                    <option value="researcherName">نویسنده</option><option value="supervisorName">استاد راهنما</option>
-                    <option value="keywords">کلیدواژه</option>
-                </select>
-                <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
-                <button id="search-button" class="btn"><i class="fas fa-search"></i></button>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
+                    <div class="search-bar-buttons">
+                        <button id="search-filter-btn"><i class="fas fa-chevron-down"></i></button>
+                        <button id="search-button" class="btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div id="search-filter-dropdown">
+                    <p style="margin-bottom: 15px; font-weight: 500; color: var(--text-dark);">جستجو بر اساس:</p>
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="search-category" value="title" checked>
+                            <span class="checkmark"></span> عنوان
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="search-category" value="researcherName" checked>
+                            <span class="checkmark"></span> نویسنده
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="search-category" value="supervisorName" checked>
+                            <span class="checkmark"></span> استاد راهنما
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="search-category" value="keywords" checked>
+                            <span class="checkmark"></span> کلیدواژه
+                        </label>
+                    </div>
+                </div>
             </div>
             <div id="issues-container"></div>
             <div id="load-more-container" style="text-align: center; margin-top: 2rem;"></div>
@@ -232,7 +230,8 @@
 </div>
 
 <div id="modal-container"></div>
-<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm; font-size: 14pt;"></div>
+<!-- دستور چهارم تا هفتم: کانتینر رندر PDF برای چاپ -->
+<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm;"></div>
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
@@ -246,19 +245,37 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadPublicationData();
         Object.keys(PANEL_URLS).forEach(key => { document.getElementById(`${key}-link`).href = PANEL_URLS[key]; });
+        
         const loginMenuBtn = document.getElementById('login-menu-btn');
         const loginDropdownMenu = document.getElementById('login-dropdown-menu');
-        loginMenuBtn.addEventListener('click', e => { e.stopPropagation(); loginDropdownMenu.classList.toggle('visible'); });
-        document.addEventListener('click', e => { if (!loginMenuBtn.contains(e.target)) loginDropdownMenu.classList.remove('visible'); });
         
-        // دستور چهارم و پنجم: تغییر رویداد جستجو به کلیک دکمه
-        document.getElementById('search-button').addEventListener('click', triggerSearch);
-        document.getElementById('search-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                triggerSearch();
+        // دستور اول: منطق فیلتر جستجوی جدید
+        const filterBtn = document.getElementById('search-filter-btn');
+        const filterDropdown = document.getElementById('search-filter-dropdown');
+        
+        loginMenuBtn.addEventListener('click', e => { 
+            e.stopPropagation(); 
+            loginDropdownMenu.classList.toggle('visible'); 
+        });
+
+        filterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterDropdown.classList.toggle('visible');
+            filterBtn.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!loginMenuBtn.contains(e.target) && !loginDropdownMenu.contains(e.target)) {
+                loginDropdownMenu.classList.remove('visible');
+            }
+            if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+                filterDropdown.classList.remove('visible');
+                filterBtn.classList.remove('active');
             }
         });
-        document.getElementById('search-category').addEventListener('change', triggerSearch);
+
+        document.getElementById('search-button').addEventListener('click', triggerSearch);
+        document.getElementById('search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
     });
 
     async function callApi(action, params = {}) {
@@ -275,13 +292,12 @@
     }
 
     async function loadPublicationData() {
-        // دستور ششم: تمام اطلاعات در همین ابتدا بارگیری می‌شوند
         const response = await callApi('getPublicationData');
         const loadingOverlay = document.getElementById('loading-overlay');
         if (response?.status === 'success') {
             allIssues = response.data.issues.sort((a, b) => b.issueNumber - a.issueNumber);
             allArticles = response.data.allArticles;
-            handleSearch(); // نمایش اولیه مقالات
+            handleSearch();
         }
         loadingOverlay.style.opacity = '0';
         setTimeout(() => {
@@ -302,7 +318,7 @@
         const issuesToRender = issues.slice(0, visibleIssuesCount);
         container.innerHTML = issuesToRender.map((issue, index) => {
             const articles = articlesByIssue[issue.issueNumber] || [];
-            if (articles.length === 0) return ''; // اگر مقاله‌ای در این شماره پس از فیلتر کردن وجود نداشت، آن را نمایش نده
+            if (articles.length === 0) return '';
             return `
                 <details class="issue-accordion" ${index === 0 ? 'open' : ''}>
                     <summary class="issue-header">
@@ -334,32 +350,32 @@
     function triggerSearch() {
         const searchButton = document.getElementById('search-button');
         searchButton.classList.add('btn-loading');
-        // یک تأخیر کوتاه برای نمایش لودینگ
         setTimeout(() => {
             handleSearch();
             searchButton.classList.remove('btn-loading');
         }, 300);
     }
 
-    // دستور پنجم: جستجو در داده‌های بارگیری شده در کلاینت انجام می‌شود
+    // دستور اول: تابع جستجو برای کار با فیلترهای چندگانه
     function handleSearch() {
         const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
-        const category = document.getElementById('search-category').value;
+        const checkedCategories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
+
         const filteredArticles = !searchTerm ? allArticles : allArticles.filter(article => {
-            const fields = {
-                title: (article.title || '').toLowerCase(), 
-                researcherName: (article.researcherName || '').toLowerCase(),
-                supervisorName: (article.supervisorName || '').toLowerCase(), 
-                keywords: (article.keywords || '').toLowerCase()
-            };
-            if (category === 'all') {
-                return Object.values(fields).some(f => f.includes(searchTerm));
-            } else {
+            if (checkedCategories.length === 0) return false;
+            
+            return checkedCategories.some(category => {
+                const fields = {
+                    title: (article.title || '').toLowerCase(), 
+                    researcherName: (article.researcherName || '').toLowerCase(),
+                    supervisorName: (article.supervisorName || '').toLowerCase(), 
+                    keywords: (article.keywords || '').toLowerCase()
+                };
                 return (fields[category] || '').includes(searchTerm);
-            }
+            });
         });
+
         const articlesByIssue = groupArticlesByIssue(filteredArticles);
-        // نمایش شماره‌هایی که پس از فیلتر، هنوز مقاله دارند
         const relevantIssues = allIssues.filter(issue => articlesByIssue[issue.issueNumber] && articlesByIssue[issue.issueNumber].length > 0);
         renderIssues(searchTerm ? relevantIssues : allIssues, articlesByIssue);
     }
@@ -386,9 +402,8 @@
         showModal(content + `</div>`);
     }
     
-    // دستورات ششم، هفتم و هشتم: نمایش محتوای مقاله از داده‌های از قبل بارگیری شده
+    // دستور سوم: نمایش وابستگی در صفحه مقاله
     function showArticleModal(articleId) {
-        // پیدا کردن مقاله در آرایه allArticles
         const d = allArticles.find(a => String(a.articleId) === String(articleId));
         if (d) {
             const modalHtml = `
@@ -398,6 +413,7 @@
                 </div>
                 <div class="modal-body-meta">
                     <p><strong>نویسنده:</strong> ${d.researcherName || 'نامشخص'}</p>
+                    <p><strong>وابستگی سازمانی:</strong> ${d.researcherAffiliation || 'ثبت نشده'}</p>
                     <p><strong>استاد راهنما:</strong> ${d.supervisorName || 'نامشخص'}</p>
                     <p><strong>تاریخ پذیرش:</strong> ${formatDate(d.acceptanceDate) || 'ثبت نشده'} | <strong>تاریخ نشر:</strong> ${formatDate(d.publishDate) || 'ثبت نشده'}</p>
                 </div>
@@ -462,43 +478,100 @@
         if (button) button.classList.remove('btn-loading');
     }
 
+    // دستورات چهارم، پنجم، ششم و هفتم: تابع تولید PDF با تمام جزئیات جدید
     async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
         const renderContainer = document.getElementById('pdf-render-container');
         let fullContent = collectionTitle ? `<div style="text-align:center; margin-bottom: 30px;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
+        
         articles.forEach((details, index) => {
+            const pageStyle = `padding: 0 20mm; font-size: 14pt; line-height: 1.5;`; // دستور ششم: فاصله 2 سانت و line-height
+            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem;`; // دستور ششم: استایل عناوین
+
             fullContent += `
-                <div style="page-break-before: ${index > 0 || collectionTitle ? 'always' : 'auto'};">
-                    <div style="text-align:center; margin-bottom: 20px;"><h1 style="font-size:18pt; font-weight: 700;">${details.title}</h1></div>
-                    <p><strong>محقق:</strong> ${details.researcherName}</p><p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
-                    <p><strong>تاریخ پذیرش:</strong> ${formatDate(details.acceptanceDate)}</p><hr style="margin: 20px 0;">
-                    <h2 style="font-size: 16pt; font-weight: 700;">چکیده</h2><p style="line-height: 1.8;">${details.abstract || '-'}</p>
-                    <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
-                    <div style="page-break-before: always;"></div><h2 style="font-size: 16pt; font-weight: 700;">مقدمه</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.introduction || '-'}</div>
-                    <div style="page-break-before: always;"></div><h2 style="font-size: 16pt; font-weight: 700;">بدنه اصلی</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.body || '-'}</div>
-                    <div style="page-break-before: always;"></div><h2 style="font-size: 16pt; font-weight: 700;">نتیجه‌گیری</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.conclusion || '-'}</div>
-                    <div style="page-break-before: always;"></div><h2 style="font-size: 16pt; font-weight: 700;">منابع و مآخذ</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.references || '-'}</div>
-                </div>`;
+                <div style="page-break-after: always;">
+                    <!-- صفحه اول: اطلاعات اصلی و چکیده -->
+                    <div style="${pageStyle}">
+                        <div style="text-align:center; margin-bottom: 20px;">
+                            <p>${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
+                            <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
+                        </div>
+                        <p><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
+                        <p><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
+                        <p><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
+                        <p><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
+                        <p><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
+                        <hr style="margin: 20px 0;">
+                        <h2 style="${titleStyle}">چکیده</h2>
+                        <p style="text-align: justify;">${details.abstract || '-'}</p>
+                        <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+                    </div>
+                </div>
+                <!-- دستور هفتم: شکستن صفحات برای هر بخش -->
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="white-space: pre-wrap; text-align: justify;">${details.introduction || '-'}</div></div>
+                </div>
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="white-space: pre-wrap; text-align: justify;">${details.body || '-'}</div></div>
+                </div>
+                <div style="page-break-after: always;">
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="white-space: pre-wrap; text-align: justify;">${details.conclusion || '-'}</div></div>
+                </div>
+                <div>
+                    <div style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="white-space: pre-wrap;">${details.references || '-'}</div></div>
+                </div>
+                `;
         });
+        
+        // این بخش برای جلوگیری از ایجاد یک صفحه خالی اضافی در انتهای PDF مقالات گروهی است
+         if (articles.length > 1) {
+            fullContent += `<div style="page-break-before: ${articles.length > 1 ? 'always' : 'auto'};"></div>`;
+         }
+
         renderContainer.innerHTML = fullContent;
         try {
-            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true });
-            const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            const margin = 20; const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgProps = pdf.getImageProperties(canvas); const ratio = imgProps.height / imgProps.width;
-            const canvasWidth = pdfWidth - (2 * margin); const canvasHeight = canvasWidth * ratio;
-            let heightLeft = canvasHeight; let position = 0; let page = 1;
-            const addPageContent = (pdf, pageNum) => {
-                pdf.setFontSize(9); pdf.setTextColor(100);
-                pdf.text(JOURNAL_NAME, pdfWidth / 2, 15, { align: 'center' });
-                pdf.text(String(pageNum), pageNum % 2 !== 0 ? pdfWidth - margin : margin, pdfHeight - 15, { align: pageNum % 2 !== 0 ? 'right' : 'left' });
+            const { jsPDF } = window.jspdf; 
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            
+            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+            const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+            const margin = 20;
+
+            const addPageContent = (pdfDoc, pageNum, totalPages) => {
+                pdfDoc.setFontSize(9);
+                pdfDoc.setTextColor(100);
+                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
+                const pageNumPersian = toPersianNumerals(String(pageNum));
+                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
             };
-            pdf.addImage(canvas, 'PNG', margin, margin, canvasWidth, canvasHeight);
-            addPageContent(pdf, page); heightLeft -= (pdfHeight - (2 * margin));
-            while (heightLeft > 0) {
-                position -= (pdfHeight - (2 * margin)); pdf.addPage(); page++;
-                pdf.addImage(canvas, 'PNG', margin, position + margin, canvasWidth, canvasHeight);
-                addPageContent(pdf, page); heightLeft -= (pdfHeight - (2 * margin));
+
+            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const imgWidth = 210; 
+            const pageHeight = 297;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+            let page = 1;
+
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            let totalPages = pdf.internal.getNumberOfPages();
+
+            while (heightLeft >= 0) {
+              position = -pageHeight * page;
+              pdf.addPage();
+              pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+              page++;
+              totalPages++;
             }
+            
+            for(let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                addPageContent(pdf, i, totalPages);
+            }
+
             pdf.save(filename);
         } catch (error) { console.error("PDF Generation Error:", error); } 
         finally { renderContainer.innerHTML = ''; }
@@ -530,6 +603,14 @@
         } catch(e) {
             return '';
         }
+    }
+
+    // دستور پنجم: تابع تبدیل اعداد به فارسی
+    function toPersianNumerals(str) {
+        if (str === null || str === undefined) return '';
+        if (typeof str !== 'string') str = String(str);
+        const persian = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
+        return str.replace(/[0-9]/g, (w) => persian[w]);
     }
 </script>
 
