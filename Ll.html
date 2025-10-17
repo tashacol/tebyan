@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -80,7 +80,6 @@
         .sidebar ul { list-style: none; }
         .sidebar li { margin-bottom: 10px; }
         
-        /* استایل فیلتر جستجوی جدید */
         .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
         .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
         #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
@@ -229,7 +228,7 @@
 </div>
 
 <div id="modal-container"></div>
-<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm;"></div>
+<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 170mm;"></div>
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
@@ -473,102 +472,110 @@
         if (button) button.classList.remove('btn-loading');
     }
 
+    // تابع تولید PDF با پیاده‌سازی کامل دستورات جدید
     async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
         const renderContainer = document.getElementById('pdf-render-container');
-        let pageElements = [];
-
-        // دستور اول و دوم: تعریف استایل‌های اصلی برای هر صفحه چاپی
-        const pageStyle = `
-            width: 210mm;
-            height: 297mm; /* ارتفاع ثابت برای یک صفحه A4 */
-            padding: 20mm; /* حاشیه ۲ سانت از همه طرف */
-            box-sizing: border-box; /* تضمین می‌کند که padding در ابعاد کلی محاسبه شود */
-            display: flex;
-            flex-direction: column; /* چیدمان عمودی محتوا */
-        `;
-        const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem;`;
-        const bodyStyle = `font-size: 14pt; line-height: 1.5; text-align: justify; white-space: pre-wrap;`;
+        let fullContent = '';
         
         if (collectionTitle) {
-            pageElements.push(`<div style="${pageStyle} justify-content: center; align-items: center; text-align: center;"><div><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div></div>`);
+            fullContent += `<div style="page-break-after: always; text-align:center; padding-top: 40vh;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>`;
         }
+        
+        articles.forEach((details, index) => {
+            const pageContentStyle = `font-size: 14pt; line-height: 1.5; text-align: justify;`;
+            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem; text-align: right;`;
 
-        articles.forEach((details) => {
-            // صفحه اول: اطلاعات اصلی و چکیده
-            pageElements.push(`
-                <div class="pdf-page" style="${pageStyle}">
-                    <div style="text-align:center; margin-bottom: 20px;">
-                        <p style="font-size: 12pt;">${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
-                        <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
+            fullContent += `
+                <!-- Wrapper برای هر مقاله تا شکست صفحه بین مقالات در یک شماره درست عمل کند -->
+                <div style="${index > 0 ? 'page-break-before: always;' : ''}">
+                    <!-- دستور دوم: صفحه اول شامل کلیات و چکیده -->
+                    <div style="page-break-after: always;">
+                        <div style="text-align:center; margin-bottom: 20px;">
+                            <p>${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
+                            <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
+                        </div>
+                        <p style="${pageContentStyle}"><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
+                        <p style="${pageContentStyle}"><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
+                        <p style="${pageContentStyle}"><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
+                        <p style="${pageContentStyle}"><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
+                        <p style="${pageContentStyle}"><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
+                        <hr style="margin: 20px 0;">
+                        <h2 style="${titleStyle}">چکیده</h2>
+                        <div style="${pageContentStyle}">${details.abstract || '-'}</div>
+                        <p style="${pageContentStyle}"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
                     </div>
-                    <p style="font-size: 12pt;"><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
-                    <p style="font-size: 12pt;"><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
-                    <p style="font-size: 12pt;"><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
-                    <p style="font-size: 12pt;"><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
-                    <p style="font-size: 12pt;"><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
-                    <hr style="margin: 20px 0;">
-                    <h2 style="${titleStyle}">چکیده</h2>
-                    <div style="${bodyStyle}">${details.abstract || '-'}</div>
-                    <p style="font-size: 12pt; margin-top: auto;"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
-                </div>`);
-
-            // صفحه دوم: مقدمه
-            if (details.introduction) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="${bodyStyle}">${details.introduction}</div></div>`);
-            
-            // صفحه سوم: بدنه اصلی
-            if (details.body) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="${bodyStyle}">${details.body}</div></div>`);
-
-            // صفحه چهارم: نتیجه‌گیری
-            if (details.conclusion) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="${bodyStyle}">${details.conclusion}</div></div>`);
-
-            // صفحه پنجم: منابع
-            if (details.references) pageElements.push(`<div class="pdf-page" style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="${bodyStyle} text-align: right;">${details.references}</div></div>`);
+                    <!-- دستور دوم: مقدمه در ابتدای صفحه بعد -->
+                    <div style="page-break-after: always;">
+                        <h2 style="${titleStyle}">مقدمه</h2>
+                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.introduction || '-'}</div>
+                    </div>
+                    <!-- دستور دوم: بدنه در ابتدای صفحه بعد -->
+                    <div style="page-break-after: always;">
+                        <h2 style="${titleStyle}">بدنه اصلی</h2>
+                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.body || '-'}</div>
+                    </div>
+                    <!-- دستور دوم: نتیجه‌گیری در ابتدای صفحه بعد -->
+                    <div style="page-break-after: always;">
+                        <h2 style="${titleStyle}">نتیجه‌گیری</h2>
+                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.conclusion || '-'}</div>
+                    </div>
+                    <!-- دستور دوم: منابع در ابتدای صفحه بعد (آخرین بخش) -->
+                    <div>
+                        <h2 style="${titleStyle}">منابع و مآخذ</h2>
+                        <div style="${pageContentStyle} white-space: pre-wrap;">${details.references || '-'}</div>
+                    </div>
+                </div>`;
         });
 
-        renderContainer.innerHTML = `<style>.pdf-page { page-break-after: always; }</style>` + pageElements.join('');
-
+        renderContainer.innerHTML = fullContent;
         try {
             const { jsPDF } = window.jspdf; 
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            
+            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
+
+            // دستور اول: تعریف حاشیه 2 سانتی‌متری
+            const margin = 20;
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const margin = 20;
+            
+            // عرض و ارتفاع قابل استفاده داخل حاشیه‌ها
+            const usableWidth = pdfWidth - (2 * margin);
+            const usableHeight = pdfHeight - (2 * margin);
 
-            const addPageContent = (pdfDoc, pageNum, totalPages) => {
+            const imgProps = pdf.getImageProperties(canvas);
+            const canvasWidth = imgProps.width;
+            const canvasHeight = (imgProps.height * usableWidth) / canvasWidth;
+
+            let heightLeft = canvasHeight;
+            let position = 0;
+            let page = 1;
+
+            // دستور سوم: تابع افزودن هدر و فوتر (شامل شماره صفحه)
+            const addPageContent = (pdfDoc, pageNum) => {
                 pdfDoc.setFontSize(9);
                 pdfDoc.setTextColor(100);
-                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin - 10, { align: 'center' });
-                // دستور سوم: شماره صفحه فارسی در مرکز فوتر
+                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
                 const pageNumPersian = toPersianNumerals(String(pageNum));
-                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - margin + 10, { align: 'center' });
+                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
             };
 
-            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const imgWidth = 210; 
-            const pageHeight = 297;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
+            // افزودن صفحه اول
+            pdf.addImage(canvas, 'PNG', margin, margin - position, usableWidth, canvasHeight);
+            addPageContent(pdf, page);
+            heightLeft -= usableHeight;
 
-            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            while (heightLeft > -10) { // A small tolerance for rounding errors
-              position -= pageHeight;
-              pdf.addPage();
-              pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-            }
-            
-            const totalPages = pdf.internal.getNumberOfPages();
-            for(let i = 1; i <= totalPages; i++) {
-                pdf.setPage(i);
-                addPageContent(pdf, i, totalPages);
+            // افزودن صفحات بعدی در صورت وجود
+            while (heightLeft > 0) {
+                position += usableHeight;
+                pdf.addPage();
+                page++;
+                pdf.addImage(canvas, 'PNG', margin, margin - position, usableWidth, canvasHeight);
+                addPageContent(pdf, page);
+                heightLeft -= usableHeight;
             }
 
             pdf.save(filename);
+
         } catch (error) { console.error("PDF Generation Error:", error); } 
         finally { renderContainer.innerHTML = ''; }
     }
@@ -600,7 +607,7 @@
             return '';
         }
     }
-    
+
     function toPersianNumerals(str) {
         if (str === null || str === undefined) return '';
         if (typeof str !== 'string') str = String(str);
