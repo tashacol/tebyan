@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 
 <html lang="fa" dir="rtl">
 <head>
@@ -81,7 +81,6 @@
     .sidebar ul { list-style: none; }
     .sidebar li { margin-bottom: 10px; }
     
-    /* دستور اول: استایل فیلتر جستجوی جدید */
     .search-container { margin-top: 1.5rem; margin-bottom: 2rem; position: relative; }
     .search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm); background-color: var(--bg-card); }
     #search-input { width: 100%; border: none; padding: 12px 15px; font-size: 1rem; }
@@ -176,7 +175,6 @@
 
 <main class="container page-grid">
     <div class="main-column">
-        <!-- دستور اول: ساختار جدید فیلد جستجو با فیلترهای تیک‌دار -->
         <div class="search-container">
             <div class="search-bar">
                 <input type="text" id="search-input" placeholder="جستجو در مقالات منتشر شده...">
@@ -231,8 +229,6 @@
 </div>
 
 <div id="modal-container"></div>
-<!-- <<<< ویرایش: عرض کانتینر رندر به اندازه محتوای داخل حاشیه تنظیم شده است >>>> -->
-<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 170mm;"></div>
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
@@ -250,7 +246,6 @@
         const loginMenuBtn = document.getElementById('login-menu-btn');
         const loginDropdownMenu = document.getElementById('login-dropdown-menu');
         
-        // دستور اول: منطق فیلتر جستجوی جدید
         const filterBtn = document.getElementById('search-filter-btn');
         const filterDropdown = document.getElementById('search-filter-dropdown');
         
@@ -357,7 +352,6 @@
         }, 300);
     }
 
-    // دستور اول: تابع جستجو برای کار با فیلترهای چندگانه
     function handleSearch() {
         const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
         const checkedCategories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
@@ -403,7 +397,6 @@
         showModal(content + `</div>`);
     }
     
-    // دستور سوم: نمایش وابستگی در صفحه مقاله
     function showArticleModal(articleId) {
         const d = allArticles.find(a => String(a.articleId) === String(articleId));
         if (d) {
@@ -462,127 +455,55 @@
         event.stopPropagation();
         const button = event.target.closest('button');
         if (button) button.classList.add('btn-loading');
-        
-        const articlesInIssue = allArticles.filter(a => String(a.issueNumber) === String(issueNumber));
-        if (articlesInIssue.length > 0) {
-            await generatePdfFromDetails(articlesInIssue, `Issue-${issueNumber}.pdf`, `مجلد شماره ${issueNumber}`);
+
+        try {
+            const response = await callApi('generatePdfForIssue', { issueNumber: issueNumber });
+            if (response && response.status === 'success') {
+                downloadBase64File(response.data);
+            } else {
+                alert('خطا در تولید PDF دوره: ' + (response ? response.message : 'پاسخی از سرور دریافت نشد.'));
+            }
+        } catch (error) {
+            console.error("Issue PDF Download Error:", error);
+            alert('یک خطای غیرمنتظره در هنگام دانلود PDF دوره رخ داد.');
+        } finally {
+            if (button) button.classList.remove('btn-loading');
         }
-        if (button) button.classList.remove('btn-loading');
     }
 
     async function handleDownloadPDF(button, articleId) {
         if (button) button.classList.add('btn-loading');
-        const articleData = allArticles.find(a => String(a.articleId) === String(articleId));
-        if (articleData) {
-            await generatePdfFromDetails([articleData], `Article-${articleId}.pdf`);
-        }
-        if (button) button.classList.remove('btn-loading');
-    }
 
-    // <<<< تابع تولید PDF با منطق جدید و دقیق >>>>
-    async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
-        const renderContainer = document.getElementById('pdf-render-container');
-        let fullContent = collectionTitle ? `<div style="text-align:center; margin: 20px 0;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
-        
-        articles.forEach((details, index) => {
-            /* <<<< ویرایش: استایل‌ها برای حذف تمام فاصله‌های داخلی جهت کنترل کامل توسط jsPDF >>>> */
-            const pageStyle = `font-size: 14pt; line-height: 1.5;`; 
-            const titleStyle = `font-size: 16pt; font-weight: bold; margin: 0 0 1rem 0;`; 
-
-            fullContent += `
-                <div style="page-break-after: always;">
-                    <!-- صفحه اول: اطلاعات اصلی و چکیده -->
-                    <div style="${pageStyle}">
-                        <div style="text-align:center; margin-bottom: 20px;">
-                            <p>${toPersianNumerals(JOURNAL_NAME)}، شماره ${toPersianNumerals(String(details.issueNumber || ''))}</p>
-                            <h1 style="font-size:18pt; font-weight: 700; margin:10px 0;">${details.title || ''}</h1>
-                        </div>
-                        <p><strong>نویسنده:</strong> ${details.researcherName || ''}</p>
-                        <p><strong>وابستگی سازمانی:</strong> ${details.researcherAffiliation || ''}</p>
-                        <p><strong>استاد راهنما:</strong> ${details.supervisorName || ''}</p>
-                        <p><strong>تاریخ پذیرش:</strong> ${toPersianNumerals(formatDate(details.acceptanceDate) || '')}</p>
-                        <p><strong>تاریخ نشر:</strong> ${toPersianNumerals(formatDate(details.publishDate) || '')}</p>
-                        <hr style="margin: 20px 0;">
-                        <h2 style="${titleStyle}">چکیده</h2>
-                        <p style="text-align: justify;">${details.abstract || '-'}</p>
-                        <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
-                    </div>
-                </div>
-                <!-- دستور دوم: هر بخش در صفحه‌ای جدا با عنوان در ابتدای آن -->
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="white-space: pre-wrap; text-align: justify;">${details.introduction || '-'}</div></div>
-                </div>
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">بدنه اصلی</h2><div style="white-space: pre-wrap; text-align: justify;">${details.body || '-'}</div></div>
-                </div>
-                <div style="page-break-after: always;">
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">نتیجه‌گیری</h2><div style="white-space: pre-wrap; text-align: justify;">${details.conclusion || '-'}</div></div>
-                </div>
-                <div>
-                    <div style="${pageStyle}"><h2 style="${titleStyle}">منابع و مآخذ</h2><div style="white-space: pre-wrap;">${details.references || '-'}</div></div>
-                </div>
-                `;
-        });
-        
-         if (articles.length > 1) {
-            fullContent += `<div style="page-break-before: ${articles.length > 1 ? 'always' : 'auto'};"></div>`;
-         }
-
-        renderContainer.innerHTML = fullContent;
         try {
-            const { jsPDF } = window.jspdf; 
-            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            
-            const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-            const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
-            
-            /* <<<< ویرایش دستور اول و سوم: تعریف دقیق حاشیه و ابعاد محتوا >>>> */
-            const margin = 20; // 2cm
-            const contentWidth = pdfWidth - (margin * 2); // 170mm
-            const contentHeight = pdfHeight - (margin * 2); // 257mm
-
-            const addPageNumbers = (pdfDoc) => {
-                const totalPages = pdfDoc.internal.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    pdfDoc.setPage(i);
-                    pdfDoc.setFontSize(9);
-                    pdfDoc.setTextColor(100);
-                    // سربرگ: در مرکز افقی و وسط حاشیه 2 سانتی بالا
-                    pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
-                    // شماره صفحه: در مرکز افقی و وسط حاشیه 2 سانتی پایین
-                    const pageNumPersian = toPersianNumerals(String(i));
-                    pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
-                }
-            };
-
-            const canvas = await html2canvas(renderContainer, { scale: 3, useCORS: true, logging: false });
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const ratio = canvasHeight / canvasWidth;
-            const imgHeightOnPdf = contentWidth * ratio; // ارتفاع کل محتوا در PDF
-
-            let heightLeft = imgHeightOnPdf;
-            let position = 0;
-
-            // افزودن صفحه اول
-            pdf.addImage(imgData, 'JPEG', margin, margin, contentWidth, imgHeightOnPdf);
-            heightLeft -= contentHeight;
-
-            // افزودن صفحات بعدی در صورت نیاز
-            while (heightLeft > 0) {
-                position -= contentHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', margin, position + margin, contentWidth, imgHeightOnPdf);
-                heightLeft -= contentHeight;
+            const response = await callApi('generatePdfFromArticle', { articleId: articleId });
+            if (response && response.status === 'success') {
+                downloadBase64File(response.data);
+            } else {
+                alert('خطا در تولید PDF: ' + (response ? response.message : 'پاسخی از سرور دریافت نشد.'));
             }
-            
-            addPageNumbers(pdf);
+        } catch (error) {
+            console.error("PDF Download Error:", error);
+            alert('یک خطای غیرمنتظره در هنگام دانلود PDF رخ داد.');
+        } finally {
+            if (button) button.classList.remove('btn-loading');
+        }
+    }
+    
+    function downloadBase64File({ filename, mimeType, content }) {
+        const byteCharacters = atob(content);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
 
-            pdf.save(filename);
-        } catch (error) { console.error("PDF Generation Error:", error); } 
-        finally { renderContainer.innerHTML = ''; }
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // --- Utility Functions ---
@@ -612,8 +533,6 @@
             return '';
         }
     }
-
-    // دستور پنجم: تابع تبدیل اعداد به فارسی
     function toPersianNumerals(str) {
         if (str === null || str === undefined) return '';
         if (typeof str !== 'string') str = String(str);
