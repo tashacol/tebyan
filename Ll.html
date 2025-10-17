@@ -231,8 +231,8 @@
 </div>
 
 <div id="modal-container"></div>
-<!-- دستور چهارم تا هفتم: کانتینر رندر PDF برای چاپ -->
-<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm;"></div>
+<!-- <<<< ویرایش: عرض کانتینر رندر به اندازه محتوای داخل حاشیه تنظیم شده است >>>> -->
+<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 170mm;"></div>
 
 <script>
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhU2ha6ypcNg2_bFeiiu6WFgHvqrb9zWcfkuxPxVq2alBY7-zkbMNXJPwdN4gcoxCb3Q/exec';
@@ -479,16 +479,15 @@
         if (button) button.classList.remove('btn-loading');
     }
 
-    // دستورات چهارم، پنجم، ششم و هفتم: تابع تولید PDF با تمام جزئیات جدید
+    // <<<< تابع تولید PDF با منطق جدید و دقیق >>>>
     async function generatePdfFromDetails(articles, filename, collectionTitle = '') {
         const renderContainer = document.getElementById('pdf-render-container');
-        let fullContent = collectionTitle ? `<div style="text-align:center; margin-bottom: 30px;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
+        let fullContent = collectionTitle ? `<div style="text-align:center; margin: 20px 0;"><h1 style="font-size:24pt; font-weight: 700;">${JOURNAL_NAME}</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>` : '';
         
         articles.forEach((details, index) => {
-            /* <<<< ویرایش دستور اول: فاصله ۲ سانت از بالا و پایین و طرفین */
-            const pageStyle = `padding: 20mm 20mm; font-size: 14pt; line-height: 1.5; min-height: 257mm;`; // 297mm - 20mm - 20mm = 257mm
-            /* <<<< ویرایش دستور دوم: حذف فاصله بالای عناوین برای قرارگیری در ابتدای صفحه */
-            const titleStyle = `font-size: 16pt; font-weight: bold; margin-bottom: 1rem; margin-top: 0;`; 
+            /* <<<< ویرایش: استایل‌ها برای حذف تمام فاصله‌های داخلی جهت کنترل کامل توسط jsPDF >>>> */
+            const pageStyle = `font-size: 14pt; line-height: 1.5;`; 
+            const titleStyle = `font-size: 16pt; font-weight: bold; margin: 0 0 1rem 0;`; 
 
             fullContent += `
                 <div style="page-break-after: always;">
@@ -509,7 +508,7 @@
                         <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
                     </div>
                 </div>
-                <!-- دستور دوم: شکستن صفحات برای هر بخش (این ساختار از قبل صحیح بود) -->
+                <!-- دستور دوم: هر بخش در صفحه‌ای جدا با عنوان در ابتدای آن -->
                 <div style="page-break-after: always;">
                     <div style="${pageStyle}"><h2 style="${titleStyle}">مقدمه</h2><div style="white-space: pre-wrap; text-align: justify;">${details.introduction || '-'}</div></div>
                 </div>
@@ -525,7 +524,6 @@
                 `;
         });
         
-        // این بخش برای جلوگیری از ایجاد یک صفحه خالی اضافی در انتهای PDF مقالات گروهی است
          if (articles.length > 1) {
             fullContent += `<div style="page-break-before: ${articles.length > 1 ? 'always' : 'auto'};"></div>`;
          }
@@ -537,45 +535,50 @@
             
             const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
             const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+            
+            /* <<<< ویرایش دستور اول و سوم: تعریف دقیق حاشیه و ابعاد محتوا >>>> */
             const margin = 20; // 2cm
+            const contentWidth = pdfWidth - (margin * 2); // 170mm
+            const contentHeight = pdfHeight - (margin * 2); // 257mm
 
-            const addPageContent = (pdfDoc, pageNum, totalPages) => {
-                pdfDoc.setFontSize(9);
-                pdfDoc.setTextColor(100);
-                /* <<<< ویرایش دستور اول: تنظیم موقعیت سربرگ برای رعایت فاصله ۲ سانت */
-                pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, 15, { align: 'center' }); // کمی بالاتر برای زیبایی
-                const pageNumPersian = toPersianNumerals(String(pageNum));
-                /* <<<< ویرایش دستور سوم: تنظیم موقعیت شماره صفحه در پایین، وسط و با رعایت فاصله ۲ سانت */
-                pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - 15, { align: 'center' });
+            const addPageNumbers = (pdfDoc) => {
+                const totalPages = pdfDoc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    pdfDoc.setPage(i);
+                    pdfDoc.setFontSize(9);
+                    pdfDoc.setTextColor(100);
+                    // سربرگ: در مرکز افقی و وسط حاشیه 2 سانتی بالا
+                    pdfDoc.text(JOURNAL_NAME, pdfWidth / 2, margin / 2, { align: 'center' });
+                    // شماره صفحه: در مرکز افقی و وسط حاشیه 2 سانتی پایین
+                    const pageNumPersian = toPersianNumerals(String(i));
+                    pdfDoc.text(pageNumPersian, pdfWidth / 2, pdfHeight - (margin / 2), { align: 'center' });
+                }
             };
 
-            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true, logging: false });
+            const canvas = await html2canvas(renderContainer, { scale: 3, useCORS: true, logging: false });
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const imgWidth = 210; 
-            const pageHeight = 297;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            let heightLeft = imgHeight;
+            
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const ratio = canvasHeight / canvasWidth;
+            const imgHeightOnPdf = contentWidth * ratio; // ارتفاع کل محتوا در PDF
+
+            let heightLeft = imgHeightOnPdf;
             let position = 0;
-            let page = 1;
 
-            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            let totalPages = pdf.internal.getNumberOfPages();
+            // افزودن صفحه اول
+            pdf.addImage(imgData, 'JPEG', margin, margin, contentWidth, imgHeightOnPdf);
+            heightLeft -= contentHeight;
 
-            while (heightLeft >= 0) {
-              position = -pageHeight * page;
-              pdf.addPage();
-              pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-              page++;
-              totalPages++;
+            // افزودن صفحات بعدی در صورت نیاز
+            while (heightLeft > 0) {
+                position -= contentHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', margin, position + margin, contentWidth, imgHeightOnPdf);
+                heightLeft -= contentHeight;
             }
             
-            for(let i = 1; i <= totalPages; i++) {
-                pdf.setPage(i);
-                addPageContent(pdf, i, totalPages);
-            }
+            addPageNumbers(pdf);
 
             pdf.save(filename);
         } catch (error) { console.error("PDF Generation Error:", error); } 
