@@ -9,16 +9,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
-        
+
         :root {
-            --primary: #1d4ed8; /* آبی رسمی */
-            --primary-light: #eff6ff;
+            --primary: #1e3a8a; /* آبی تیره رسمی */
             --secondary: #374151; /* خاکستری تیره */
-            --bg-main: #f9fafb;
+            --accent: #ca8a04; /* طلایی مات */
+            --bg-main: #f3f4f6;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
-            --text-dark: #111827;
+            --text-dark: #1f2937;
             --text-light: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --radius-md: 8px;
             --transition: 0.3s ease;
@@ -32,296 +33,214 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
         }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .main-header {
-            background-color: var(--bg-card);
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: var(--shadow-md);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .journal-title h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-        .journal-title p {
-            margin: 0;
-            color: var(--text-light);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
         
-        .btn {
-            font-family: inherit; padding: 10px 20px; border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 500;
-            cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; position: relative;
+        #loading-overlay {
+            position: fixed; inset: 0; background-color: var(--bg-card);
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-light { background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-color); }
-        .btn:hover { opacity: 0.85; }
+        .loader { width: 60px; height: 12px; display: flex; }
+        .loader div { width: 12px; height: 12px; border-radius: 50%; background: var(--primary); margin: 0 4px; animation: loader-pulse 1.4s infinite alternate; }
+        .loader div:nth-child(2) { animation-delay: 0.2s; }
+        .loader div:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes loader-pulse { from { opacity: 1; transform: scale(1); } to { opacity: 0.25; transform: scale(0.75); } }
 
-        /* Login Dropdown */
-        .login-dropdown {
-            position: relative;
-        }
-        .dropdown-menu {
-            position: absolute;
-            top: 110%;
-            left: 0;
-            background-color: var(--bg-card);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            list-style: none;
-            padding: 0.5rem;
-            margin: 0;
-            width: 200px;
-            z-index: 100;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: var(--transition);
-        }
-        .dropdown-menu.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .dropdown-menu a {
-            display: block;
-            padding: 10px 15px;
-            text-decoration: none;
-            color: var(--text-dark);
-            border-radius: 4px;
-        }
-        .dropdown-menu a:hover {
-            background-color: var(--primary-light);
-            color: var(--primary);
-        }
+        .container { width: 90%; max-width: 1280px; margin: 0 auto; }
+        .page-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; padding-top: 2rem; }
+        @media (min-width: 1024px) { .page-layout { grid-template-columns: 3fr 1fr; } }
+
+        .top-bar { background-color: #eef2ff; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); }
+        .top-bar-content { display: flex; justify-content: flex-end; align-items: center; }
+        .main-header { background-color: var(--bg-card); padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); }
+        .header-content { display: flex; align-items: center; gap: 1.5rem; }
+        .logo-placeholder { width: 80px; height: 80px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 2.5rem; }
+        .journal-title h1 { margin: 0; font-size: 2rem; color: var(--primary); }
+        .journal-title p { margin: 5px 0 0; color: var(--text-light); }
+        
+        .main-nav { background-color: var(--secondary); box-shadow: var(--shadow-md); }
+        .main-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 1rem; }
+        .main-nav a { display: block; padding: 1rem 1.5rem; color: #d1d5db; font-weight: 500; text-decoration: none; border-bottom: 3px solid transparent; transition: var(--transition); }
+        .main-nav a:hover, .main-nav a.active { color: white; border-bottom-color: var(--accent); }
+
+        .btn { padding: 8px 16px; border: none; border-radius: var(--radius-md); font-size: 0.9rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-secondary { background-color: var(--secondary); color: white; }
+        .btn-light { background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-color); }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-loading { pointer-events: none; }
+        .btn-loading .btn-text { visibility: hidden; }
+        .btn-loading::after { content: ''; position: absolute; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+        .login-dropdown { position: relative; }
+        .dropdown-menu { position: absolute; top: 120%; left: 0; background-color: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-md); list-style: none; padding: 0.5rem; margin: 0; width: 200px; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: var(--transition); }
+        .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a { display: block; padding: 10px 15px; text-decoration: none; color: var(--text-dark); border-radius: 4px; }
+        .dropdown-menu a:hover { background-color: var(--primary-light); color: var(--primary); }
         .dropdown-menu i { margin-left: 10px; }
 
-        /* Search Section */
-        .search-hero {
-            padding: 4rem 0;
-            text-align: center;
-        }
-        .search-hero h2 { font-size: 2rem; margin-bottom: 1rem; }
-        .search-box {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-        }
-        #search-input {
-            width: 100%;
-            border: none;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            border-radius: var(--radius-md) 0 0 var(--radius-md);
-        }
-        #search-input:focus { box-shadow: none; }
-        #search-btn {
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            padding: 0 25px;
-        }
+        .sidebar-column .card { padding: 1.5rem; margin-bottom: 2rem; }
+        .sidebar-column h3 { font-size: 1.1rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--accent); margin-bottom: 1rem; }
+        .sidebar-column ul { list-style: none; padding: 0; }
+        .sidebar-column li { margin-bottom: 0.75rem; }
+        .sidebar-column p { line-height: 1.8; }
 
-        /* Issues Section */
-        #issues-container {
-            margin-top: 2rem;
-        }
-        .issue-accordion details {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-        }
-        .issue-accordion summary {
-            padding: 1.5rem;
-            cursor: pointer;
-            list-style: none;
-            font-size: 1.2rem;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .issue-accordion summary::-webkit-details-marker { display: none; }
-        .issue-accordion summary::after {
-            content: '\f078';
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            transition: transform 0.3s;
-        }
-        .issue-accordion details[open] summary::after {
-            transform: rotate(180deg);
-        }
-        .issue-date {
-            font-size: 1rem;
-            font-weight: 400;
-            color: var(--text-light);
-        }
-        .articles-list {
-            padding: 0 1.5rem 1.5rem 1.5rem;
-            border-top: 1px solid var(--border-color);
-        }
-        .article-card {
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-        }
-        .article-card:last-child { border-bottom: none; }
-        .article-card h4 { margin: 0 0 8px 0; cursor: pointer; color: var(--primary-dark); }
-        .article-card h4:hover { text-decoration: underline; }
-        .article-card p { margin: 0; color: var(--text-light); font-size: 0.9rem; }
-        .no-results { text-align: center; padding: 2rem; color: var(--text-light); }
+        #search-bar { width: 100%; padding: 12px 15px; margin-bottom: 2rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 1rem; }
         
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: var(--transition);
-        }
+        .issue-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 1.5rem; }
+        .issue-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .issue-header h3 { margin: 0; font-size: 1.2rem; }
+        .issue-meta { color: var(--text-light); }
+        .issue-actions button { font-size: 0.8rem; padding: 5px 10px; }
+        .article-list { padding: 0 1.5rem; max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .issue-card.open .article-list { max-height: 2000px; padding-bottom: 1.5rem; }
+        .article-item { border-top: 1px solid var(--border-color); padding: 1rem 0; }
+        .article-item h4 { margin: 0 0 8px 0; cursor: pointer; color: var(--primary-dark); font-size: 1.1rem; }
+        .article-item p { margin: 0; color: var(--text-light); font-size: 0.9rem; }
+        .no-results { text-align: center; padding: 2rem; color: var(--text-light); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transition); }
         .modal-overlay.visible { opacity: 1; visibility: visible; }
-        .modal-box {
-            background: white; border-radius: var(--radius-lg); width: 90%; max-width: 800px;
-            max-height: 90vh; display: flex; flex-direction: column;
-            transform: scale(0.95); transition: var(--transition);
-        }
+        .modal-box { background: white; border-radius: var(--radius-lg); width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; transform: scale(0.95); transition: var(--transition); }
         .modal-overlay.visible .modal-box { transform: scale(1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
         .modal-body { padding: 1.5rem; overflow-y: auto; line-height: 1.8; }
-        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); text-align: left; }
+        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
         .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
 
-        .loader-wrapper { display: flex; justify-content: center; align-items: center; min-height: 400px; }
-        .loader { width: 48px; height: 48px; border: 5px solid #f3f3f3; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        
-        footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-light);
-        }
+        footer { text-align: center; padding: 2rem; margin-top: 3rem; background: var(--secondary); color: #d1d5db; }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="container header-content">
-            <div class="journal-title">
-                <h1>نشریه علمی-پژوهشی</h1>
-                <p>دانشگاه و صنعت</p>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-light" id="about-btn"><i class="fas fa-info-circle"></i> درباره نشریه</button>
-                <div class="login-dropdown">
-                    <button class="btn btn-primary" id="login-menu-btn"><i class="fas fa-sign-in-alt"></i> ورود به سامانه</button>
-                    <ul class="dropdown-menu" id="login-dropdown-menu">
-                        <li><a href="URL_TO_RESEARCHER_PANEL" target="_blank"><i class="fas fa-user-graduate"></i> پنل محققان</a></li>
-                        <li><a href="URL_TO_PROFESSOR_PANEL" target="_blank"><i class="fas fa-user-tie"></i> پنل اساتید</a></li>
-                        <li><a href="URL_TO_ADMIN_PANEL" target="_blank"><i class="fas fa-user-shield"></i> پنل مدیریت</a></li>
-                    </ul>
-                </div>
+<div id="loading-overlay"><div class="loader"></div></div>
+
+<header>
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="login-dropdown">
+                <button class="btn btn-primary" id="login-menu-btn"><i class="fas fa-sign-in-alt"></i> <span class="btn-text">ورود به سامانه</span></button>
+                <ul class="dropdown-menu" id="login-dropdown-menu">
+                    <li><a id="researcher-link" href="#" target="_blank"><i class="fas fa-user-graduate"></i> پنل محققان</a></li>
+                    <li><a id="professor-link" href="#" target="_blank"><i class="fas fa-user-tie"></i> پنل اساتید</a></li>
+                    <li><a id="admin-link" href="#" target="_blank"><i class="fas fa-user-shield"></i> پنل مدیریت</a></li>
+                </ul>
             </div>
         </div>
-    </header>
-
-    <main class="container">
-        <section class="search-hero">
-            <h2>آرشیو مقالات منتشر شده</h2>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="جستجو بر اساس عنوان مقاله، نام محقق یا کلیدواژه...">
-                <button class="btn btn-primary" id="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="main-header">
+        <div class="container header-content">
+            <div class="logo-placeholder"><i class="fas fa-landmark"></i></div>
+            <div class="journal-title">
+                <h1>نشریه علمی-پژوهشی</h1>
+                <p>مرکز پژوهش‌های علمی و کاربردی</p>
             </div>
-        </section>
-        
-        <section id="issues-container" class="issue-accordion">
-            <!-- شماره‌های نشریه به صورت پویا در اینجا قرار می‌گیرند -->
-        </section>
-    </main>
-    
-    <footer class="main-footer">
-        <p>&copy; تمامی حقوق برای این نشریه محفوظ است.</p>
-    </footer>
+        </div>
+    </div>
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#" class="active">صفحه اصلی</a></li>
+                <li><a href="#" id="about-nav-btn">درباره نشریه</a></li>
+                <li><a href="#" id="board-nav-btn">هیئت تحریریه</a></li>
+                <li><a href="#" id="contact-nav-btn">تماس با ما</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
 
-    <div id="modal-container"></div>
-    <div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm; padding: 1.5cm; box-sizing: border-box;"></div>
+<main class="container page-layout">
+    <div class="main-column">
+        <input type="text" id="search-bar" placeholder="جستجو در عنوان، نویسندگان یا کلیدواژه‌های مقالات...">
+        <div id="issues-container">
+            <!-- شماره‌های نشریه به صورت پویا در اینجا قرار می‌گیرند -->
+        </div>
+    </div>
+    <div class="sidebar-column">
+        <div class="card">
+            <h3>درباره نشریه</h3>
+            <p>این نشریه با هدف ترویج دانش و پژوهش در حوزه تعامل میان دانشگاه و صنعت ایجاد شده است...</p>
+        </div>
+        <div class="card">
+            <h3>هیئت تحریریه</h3>
+            <ul>
+                <li><strong>سردبیر:</strong> نام سردبیر</li>
+                <li><strong>مدیر مسئول:</strong> نام مدیر مسئول</li>
+                <li><strong>اعضا:</strong> نام اعضا</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<footer class="main-footer">
+    <p>&copy; تمامی حقوق برای این نشریه محفوظ است.</p>
+</footer>
+
+<div id="modal-container"></div>
+<div id="pdf-render-container" style="position: fixed; left: -9999px; top: -9999px; background: white; color: black; font-family: 'Vazirmatn', sans-serif; direction: rtl; width: 210mm; font-size: 14pt;"></div>
 
 <script>
     // ===============================================
-    // == JavaScript - صفحه اصلی نشریه
+    // == JavaScript نهایی - صفحه اصلی نشریه
     // ===============================================
 
-    // !مهم: آدرس دیپلوی اسکریپت خود را اینجا قرار دهید
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwftma-QYCexiqqYq6PwEh-D2y0RQKwdqfF3wCTt83G7oAmhfD1h7sDdziD3lmCLp_J/exec';
+    const GOOGLE_SCRIPT_URL = 'PASTE_YOUR_NEW_DEPLOYMENT_URL_HERE';
+    const PANEL_URLS = {
+        researcher: '#', // لینک پنل محققان
+        professor: '#', // لینک پنل اساتید
+        admin: '#' // لینک پنل مدیریت
+    };
+
     let allIssues = [];
-    let allArticles = {};
+    let allArticles = [];
 
     document.addEventListener('DOMContentLoaded', () => {
         loadPublicationData();
         
+        document.getElementById('researcher-link').href = PANEL_URLS.researcher;
+        document.getElementById('professor-link').href = PANEL_URLS.professor;
+        document.getElementById('admin-link').href = PANEL_URLS.admin;
+
         const loginMenuBtn = document.getElementById('login-menu-btn');
         const loginDropdownMenu = document.getElementById('login-dropdown-menu');
-        loginMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            loginDropdownMenu.classList.toggle('visible');
-        });
-        document.addEventListener('click', () => {
-            if(loginDropdownMenu.classList.contains('visible')) {
-                loginDropdownMenu.classList.remove('visible');
-            }
-        });
+        loginMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); loginDropdownMenu.classList.toggle('visible'); });
+        document.addEventListener('click', () => { if(loginDropdownMenu.classList.contains('visible')) loginDropdownMenu.classList.remove('visible'); });
         
-        document.getElementById('about-btn').addEventListener('click', showAboutModal);
-        document.getElementById('search-input').addEventListener('keyup', handleSearch);
-        document.getElementById('search-btn').addEventListener('click', handleSearch);
+        document.getElementById('about-nav-btn').addEventListener('click', showAboutModal);
+        document.getElementById('search-bar').addEventListener('keyup', handleSearch);
     });
 
     async function callApi(action, params = {}) {
-        const issuesContainer = document.getElementById('issues-container');
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action, params })
-            });
+            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action, params }) });
             if (!response.ok) throw new Error('خطا در ارتباط با سرور');
             const data = await response.json();
             if (data.status === 'error') throw new Error(data.message);
             return data;
         } catch (error) {
-            issuesContainer.innerHTML = `<p class="no-results">${error.message}</p>`;
+            document.getElementById('issues-container').innerHTML = `<p class="no-results">${error.message}</p>`;
             return null;
         }
     }
 
     async function loadPublicationData() {
-        const issuesContainer = document.getElementById('issues-container');
-        issuesContainer.innerHTML = `<div class="loader-wrapper"><div class="loader"></div></div>`;
-        
         const response = await callApi('getPublicationData');
-        if (response && response.status === 'success') {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (response?.status === 'success') {
             allIssues = response.data.issues;
-            allArticles = response.data.articlesByIssue;
-            renderIssues(allIssues, allArticles);
+            allArticles = response.data.allArticles;
+            renderIssues(allIssues, groupArticlesByIssue(allArticles));
         }
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => loadingOverlay.style.display = 'none', 500);
+    }
+    
+    function groupArticlesByIssue(articles) {
+        return articles.reduce((acc, article) => {
+            const issueNum = article.issueNumber;
+            if (!acc[issueNum]) acc[issueNum] = [];
+            acc[issueNum].push(article);
+            return acc;
+        }, {});
     }
 
     function renderIssues(issues, articlesByIssue) {
@@ -336,109 +255,80 @@
         issues.sort((a, b) => b.issueNumber - a.issueNumber).forEach(issue => {
             const articles = articlesByIssue[issue.issueNumber] || [];
             const articlesHTML = articles.map(article => `
-                <div class="article-card" data-title="${article.title.toLowerCase()}" data-author="${article.researcherName.toLowerCase()}" data-keywords="${article.keywords.toLowerCase()}">
+                <div class="article-item">
                     <h4 onclick="showArticleModal('${article.articleId}')">${article.title}</h4>
                     <p>نویسنده: ${article.researcherName}</p>
-                </div>
-            `).join('');
+                </div>`).join('');
             
             const issueHTML = `
-                <details>
-                    <summary>
-                        <span>شماره ${issue.issueNumber}</span>
-                        <span class="issue-date">تاریخ نشر: ${formatDate(issue.publishDate)}</span>
-                    </summary>
-                    <div class="articles-list">
-                        ${articlesHTML || `<p class="no-results">مقاله‌ای در این شماره یافت نشد.</p>`}
+                <div class="issue-card" id="issue-${issue.issueNumber}">
+                    <div class="issue-header" onclick="toggleIssue(this)">
+                        <div>
+                            <h3>شماره ${issue.issueNumber}</h3>
+                            <span class="issue-meta">تاریخ نشر: ${formatDate(issue.publishDate)}</span>
+                        </div>
+                        <div class="issue-actions">
+                            <button class="btn btn-secondary" onclick="downloadIssuePDF(event, '${issue.issueNumber}')"><span class="btn-text"><i class="fas fa-book"></i> دانلود کل دوره</span></button>
+                        </div>
                     </div>
-                </details>
-            `;
+                    <div class="article-list">${articlesHTML || `<div style="padding: 1rem 0;"><p class="no-results">مقاله‌ای در این شماره یافت نشد.</p></div>`}</div>
+                </div>`;
             issuesContainer.innerHTML += issueHTML;
         });
     }
-    
-    function handleSearch() {
-        const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-        const allArticleCards = document.querySelectorAll('.article-card');
-        
-        allArticleCards.forEach(card => {
-            const title = card.dataset.title;
-            const author = card.dataset.author;
-            const keywords = card.dataset.keywords;
-            
-            if (title.includes(searchTerm) || author.includes(searchTerm) || keywords.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
 
-        // Check if any issue has become empty and show a message
-        document.querySelectorAll('.articles-list').forEach(list => {
-            const visibleArticles = list.querySelectorAll('.article-card:not([style*="display: none"])');
-            let noResultsMsg = list.querySelector('.no-results');
-            if (visibleArticles.length === 0 && !noResultsMsg) {
-                const msg = document.createElement('p');
-                msg.className = 'no-results';
-                msg.textContent = 'مقاله‌ای مطابق با جستجوی شما در این شماره یافت نشد.';
-                list.appendChild(msg);
-            } else if (visibleArticles.length > 0 && noResultsMsg) {
-                noResultsMsg.remove();
-            }
-        });
+    function toggleIssue(header) {
+        header.closest('.issue-card').classList.toggle('open');
+    }
+
+    function handleSearch() {
+        const searchTerm = document.getElementById('search-bar').value.toLowerCase().trim();
+        const filteredArticles = allArticles.filter(article => 
+            article.title.toLowerCase().includes(searchTerm) ||
+            article.researcherName.toLowerCase().includes(searchTerm) ||
+            article.keywords.toLowerCase().includes(searchTerm)
+        );
+        renderIssues(allIssues, groupArticlesByIssue(filteredArticles));
+        if (searchTerm) {
+            document.querySelectorAll('.issue-card').forEach(card => card.classList.add('open'));
+        }
     }
 
     function showAboutModal() {
         const content = `
             <h3>درباره نشریه</h3>
-            <p>این نشریه با هدف ترویج دانش و پژوهش در حوزه تعامل میان دانشگاه و صنعت ایجاد شده است. ما به دنبال انتشار مقالات با کیفیت و نوآورانه هستیم که بتوانند به حل مسائل واقعی کمک کنند.</p>
-            <h4>اهداف و چشم‌اندازها</h4>
-            <ul>
-                <li>ایجاد پل ارتباطی میان پژوهشگران دانشگاهی و متخصصان صنعت</li>
-                <li>انتشار آخرین دستاوردهای علمی و کاربردی</li>
-                <li>فراهم آوردن بستری برای تبادل نظر و همکاری</li>
-            </ul>`;
+            <p>این نشریه با هدف ترویج دانش و پژوهش در حوزه تعامل میان دانشگاه و صنعت ایجاد شده است...</p>`;
         showModal('درباره ما', content);
     }
 
     async function showArticleModal(articleId) {
         showModal('درحال بارگذاری...', `<div class="loader-wrapper"><div class="loader"></div></div>`);
         const response = await callApi('getPublishedArticleDetails', { articleId });
-        if (response && response.status === 'success') {
+        if (response?.status === 'success') {
             const details = response.data;
             const content = `
                 <h3>${details.title}</h3>
                 <p><strong>نویسنده:</strong> ${details.researcherName}</p>
-                <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
-                <hr>
-                <h4>چکیده</h4>
-                <p>${details.abstract}</p>
-                <p><strong>کلیدواژه‌ها:</strong> ${details.keywords}</p>
-            `;
-            updateModal(details.title, content, `<button class="btn btn-primary" id="pdf-download-btn"><i class="fas fa-file-pdf"></i> دانلود PDF کامل مقاله</button>`);
-            document.getElementById('pdf-download-btn').onclick = (e) => handleDownloadPDF(details, e.target);
+                <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p><hr>
+                <h4>چکیده</h4><p>${details.abstract}</p>
+                <p><strong>کلیدواژه‌ها:</strong> ${details.keywords}</p>`;
+            const footer = `<button class="btn btn-primary" onclick="handleDownloadPDF(this, '${articleId}')"><span class="btn-text"><i class="fas fa-file-pdf"></i> دانلود PDF کامل مقاله</span></button>`;
+            updateModal(details.title, content, footer);
         }
     }
-    
+
     function formatDate(dateString) {
         if (!dateString) return '';
         return new Date(dateString).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    // Modal Helpers
     function showModal(title, content) {
-        const modalContainer = document.getElementById('modal-container');
-        modalContainer.innerHTML = `
+        document.getElementById('modal-container').innerHTML = `
             <div class="modal-overlay visible" id="main-modal">
                 <div class="modal-box">
-                    <div class="modal-header">
-                        <h3>${title}</h3>
-                        <button class="close-btn" onclick="closeModal()">&times;</button>
-                    </div>
+                    <div class="modal-header"><h3>${title}</h3><button class="close-btn" onclick="closeModal()">&times;</button></div>
                     <div class="modal-body">${content}</div>
-                    <div class="modal-footer" id="main-modal-footer">
-                        <button class="btn btn-light" onclick="closeModal()">بستن</button>
-                    </div>
+                    <div class="modal-footer" id="main-modal-footer"><button class="btn btn-light" onclick="closeModal()">بستن</button></div>
                 </div>
             </div>`;
     }
@@ -448,13 +338,10 @@
         if (modalBox) {
             modalBox.querySelector('.modal-header h3').textContent = title;
             modalBox.querySelector('.modal-body').innerHTML = content;
-            if (footerContent) {
-                const footer = modalBox.querySelector('.modal-footer');
-                footer.innerHTML = footerContent + footer.innerHTML;
-            }
+            if (footerContent) modalBox.querySelector('.modal-footer').innerHTML = footerContent;
         }
     }
-    
+
     function closeModal() {
         const modal = document.getElementById('main-modal');
         if (modal) {
@@ -462,40 +349,70 @@
             setTimeout(() => modal.remove(), 300);
         }
     }
-    
-    // PDF Generation
-    async function handleDownloadPDF(details, button) {
+
+    async function handleDownloadPDF(button, articleId) {
         if (button) button.classList.add('btn-loading');
         
+        const response = await callApi('getPublishedArticleDetails', { articleId });
+        if (!response) { if(button) button.classList.remove('btn-loading'); return; }
+        
+        const details = response.data;
+        await generatePdfFromDetails([details], `Article-${details.articleId}.pdf`, `مقاله شماره ${details.articleId}`);
+        if (button) button.classList.remove('btn-loading');
+    }
+
+    async function downloadIssuePDF(event, issueNumber) {
+        event.stopPropagation();
+        const button = event.target.closest('button');
+        if (button) button.classList.add('btn-loading');
+        
+        const articlesInIssue = allArticles.filter(a => String(a.issueNumber) === String(issueNumber));
+        if (articlesInIssue.length === 0) {
+            showToast('مقاله‌ای برای دانلود در این دوره وجود ندارد.', 'error');
+            if (button) button.classList.remove('btn-loading');
+            return;
+        }
+
+        await generatePdfFromDetails(articlesInIssue, `Issue-${issueNumber}.pdf`, `مجلد شماره ${issueNumber}`);
+        if (button) button.classList.remove('btn-loading');
+    }
+
+    async function generatePdfFromDetails(articles, filename, collectionTitle) {
         const renderContainer = document.getElementById('pdf-render-container');
+        let fullContent = `<div style="text-align:center; margin-bottom: 30px;"><h1 style="font-size:24pt; font-weight: 700;">نشریه علمی-پژوهشی</h1><h2 style="font-size:18pt;">${collectionTitle}</h2></div>`;
+
+        articles.forEach((details, index) => {
+            fullContent += `
+                <div style="page-break-before: ${index > 0 ? 'always' : 'auto'};">
+                    <div style="text-align:center; margin-bottom: 20px;"><h1 style="font-size:18pt; font-weight: 700;">${details.title}</h1></div>
+                    <p><strong>محقق:</strong> ${details.researcherName}</p>
+                    <p><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
+                    <p><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate)}</p>
+                    <hr style="margin: 20px 0;">
+                    <h2 style="font-size: 16pt; font-weight: 700;">چکیده</h2><p style="line-height: 1.8;">${details.abstract || '-'}</p>
+                    <p><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
+                    <div style="page-break-before: always;"></div>
+                    <h2 style="font-size: 16pt; font-weight: 700;">مقدمه</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.introduction || '-'}</div>
+                    <div style="page-break-before: always;"></div>
+                    <h2 style="font-size: 16pt; font-weight: 700;">بدنه اصلی</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.body || '-'}</div>
+                    <div style="page-break-before: always;"></div>
+                    <h2 style="font-size: 16pt; font-weight: 700;">نتیجه‌گیری</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.conclusion || '-'}</div>
+                    <div style="page-break-before: always;"></div>
+                    <h2 style="font-size: 16pt; font-weight: 700;">منابع و مآخذ</h2><div style="line-height: 1.8; white-space: pre-wrap;">${details.references || '-'}</div>
+                </div>`;
+        });
         
-        let content = `
-            <div style="text-align:center; margin-bottom: 20px;"><h1 style="font-size:22px; font-weight: 700;">${details.title}</h1></div>
-            <p style="font-size: 14px;"><strong>محقق:</strong> ${details.researcherName}</p>
-            <p style="font-size: 14px;"><strong>استاد راهنما:</strong> ${details.supervisorName}</p>
-            <p style="font-size: 14px;"><strong>تاریخ ثبت:</strong> ${formatDate(details.requestDate, false)}</p>
-            <hr style="margin: 20px 0;">
-            <h2 style="font-size: 18px; font-weight: 700;">چکیده</h2><p style="font-size: 14px; line-height: 1.8;">${details.abstract || '-'}</p>
-            <p style="font-size: 14px;"><strong>کلیدواژه‌ها:</strong> ${details.keywords || '-'}</p>
-            <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">مقدمه</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.introduction || '-'}</div>
-            <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">بدنه اصلی</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.body || '-'}</div>
-            <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">نتیجه‌گیری</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.conclusion || '-'}</div>
-            <div style="page-break-before: always;"></div>
-            <h2 style="font-size: 18px; font-weight: 700;">منابع و مآخذ</h2><div style="font-size: 14px; line-height: 1.8; white-space: pre-wrap;">${details.references || '-'}</div>`;
+        renderContainer.innerHTML = fullContent;
         
-        renderContainer.innerHTML = content;
-        
-        html2canvas(renderContainer, { scale: 3, useCORS: true }).then(canvas => {
+        try {
+            const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
+            
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const margin = 15; // 1.5cm
+            const margin = 15;
             
             const imgProps = pdf.getImageProperties(imgData);
             const ratio = imgProps.height / imgProps.width;
@@ -508,7 +425,7 @@
 
             pdf.addImage(imgData, 'PNG', margin, margin, canvasWidth, canvasHeight);
             pdf.setFontSize(10);
-            pdf.text(String(page), margin, pdfHeight - 10);
+            pdf.text(String(page), page % 2 !== 0 ? pdfWidth - margin : margin, pdfHeight - 10, { align: page % 2 !== 0 ? 'right' : 'left' });
             heightLeft -= (pdfHeight - (2 * margin));
 
             while (heightLeft > 0) {
@@ -518,15 +435,30 @@
                 pdf.addImage(imgData, 'PNG', margin, position + margin, canvasWidth, canvasHeight);
                 heightLeft -= (pdfHeight - (2 * margin));
                 pdf.setFontSize(10);
-                pdf.text(String(page), (page % 2 === 0 ? pdfWidth - margin : margin), pdfHeight - 10);
+                pdf.text(String(page), page % 2 !== 0 ? pdfWidth - margin : margin, pdfHeight - 10, { align: page % 2 !== 0 ? 'right' : 'left' });
             }
 
-            pdf.save(`Article-${details.articleId}.pdf`);
+            pdf.save(filename);
+        } catch (error) {
+            console.error("PDF Generation Error:", error);
+            showToast("خطا در تولید فایل PDF. لطفاً دوباره تلاش کنید.", 'error');
+        } finally {
             renderContainer.innerHTML = '';
-            if (button) button.classList.remove('btn-loading');
-        });
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); if(!container.hasChildNodes()) container.remove(); }, 4000);
     }
 
 </script>
+
 </body>
 </html>
