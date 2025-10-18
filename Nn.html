@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>پنل کاربری محققین</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <!-- کتابخانه‌های لازم برای تولید PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- <<<< دستور دوم: کتابخانه‌های PDF حذف شدند >>>> -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
 
@@ -38,7 +36,6 @@
             background-color: var(--bg-main);
             color: var(--text-dark);
             margin: 0;
-            /* Padding is now conditional */
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -47,22 +44,18 @@
             transition: background-image 0.5s ease-in-out;
         }
         
-        /* START: Instruction 3 - Login Background */
         body.login-view {
-            /* لینک تصویر پس‌زمینه خود را در اینجا جایگزین کنید */
             background-image: url('https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            align-items: center; /* Center the login box vertically */
+            align-items: center;
             padding: 20px;
         }
         
         body:not(.login-view) {
             padding: 20px;
         }
-        /* END: Instruction 3 */
-
 
         .hidden {
             display: none !important;
@@ -82,7 +75,6 @@
             border: 1px solid var(--border-color);
         }
         
-        /* START: Instruction 1 & 2 - Modern Login Box Styles */
         .login-wrapper {
             display: flex;
             flex-direction: column;
@@ -111,7 +103,6 @@
             background-color: var(--border-color);
             border-radius: 50%;
             margin: 0 auto 20px auto;
-            /* This is a placeholder for an <img> tag */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -120,11 +111,10 @@
              border: 4px solid white;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-        /* You can replace this icon with your own image */
         .login-logo-placeholder::before {
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
-            content: '\f1ad'; /* fa-building icon */
+            content: '\f1ad';
         }
 
         .login-box h2 {
@@ -182,7 +172,6 @@
             font-size: 0.9rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        /* END: Instruction 1 & 2 */
 
         h1,
         h2,
@@ -384,7 +373,6 @@
           to { transform: rotate(-360deg); }
         }
 
-
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -433,7 +421,6 @@
             border-right: 5px solid var(--primary);
             box-shadow: var(--shadow);
             transition: var(--transition);
-            /* Instruction 4: UI/UX Improvement - Flex layout for centering and icon support */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -443,7 +430,6 @@
             padding-top: 40px;
         }
         
-        /* Instruction 4: UI/UX Improvement - Adding icons to summary cards */
         .summary-card::before {
             content: '';
             font-family: "Font Awesome 6 Free";
@@ -456,16 +442,16 @@
         }
 
         .summary-card:first-child::before {
-            content: '\f017'; /* fa-clock */
+            content: '\f017';
         }
 
         .summary-card.accepted::before {
-            content: '\f058'; /* fa-check-circle */
+            content: '\f058';
             color: var(--success-light);
         }
         
         .summary-card.rejected::before {
-            content: '\f057'; /* fa-times-circle */
+            content: '\f057';
             color: var(--danger-light);
         }
 
@@ -499,8 +485,7 @@
         .summary-card.rejected {
             border-right-color: var(--danger);
         }
-
-        /* START: Instruction 3 - Skeleton Loader styles */
+        
         .skeleton-loader {
             background-color: #e2e8f0;
             border-radius: var(--radius-md);
@@ -523,7 +508,6 @@
                 transform: translateX(100%);
             }
         }
-        /* END: Instruction 3 - Skeleton Loader styles */
         
         .status-loader {
             width: 20px;
@@ -1382,80 +1366,6 @@
             background-color: var(--primary);
             color: white;
         }
-
-        #pdf-render-container {
-            font-family: 'Vazirmatn', sans-serif;
-            position: fixed;
-            z-index: -9999;
-            left: -9999px;
-            top: 0;
-            background: white;
-            color: black;
-            width: 210mm;
-            padding: 20mm;
-            box-sizing: border-box;
-            direction: rtl;
-            text-align: right;
-        }
-
-        #pdf-render-container h1,
-        #pdf-render-container h2,
-        #pdf-render-container h3 {
-            font-family: 'Vazirmatn', sans-serif;
-            color: black;
-            font-weight: bold;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        #pdf-render-container .pdf-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        #pdf-render-container .pdf-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        #pdf-render-container .pdf-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #555;
-            margin: 20px 0;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-        }
-
-        #pdf-render-container .pdf-authors {
-            margin: 20px 0;
-            font-weight: 500;
-        }
-
-        #pdf-render-container p {
-            font-size: 14px;
-            line-height: 1.8;
-            text-align: justify;
-        }
-
-        #pdf-render-container .pdf-keywords {
-            margin-top: 15px;
-            font-style: italic;
-        }
-
-        #pdf-render-container .pdf-references ul {
-            list-style-type: none;
-            padding-right: 0;
-        }
-
-        #pdf-render-container .pdf-references li {
-            margin-bottom: 8px;
-        }
         
         .editable-field {
             padding: 5px 0;
@@ -1514,14 +1424,10 @@
 <body>
     <div id="alert-container"></div>
     <div class="container">
-        <!-- START: Instructions 1, 2, 3 - New Login Page HTML -->
         <div id="login-page">
             <div class="login-wrapper">
                 <div class="login-box">
-                    <div class="login-logo-placeholder">
-                        <!-- کاربر می‌تواند تگ img خود را اینجا قرار دهد -->
-                        <!-- <img src="path/to/your/logo.png" alt="Logo"> -->
-                    </div>
+                    <div class="login-logo-placeholder"></div>
                     <h2>ورود به پنل کاربری</h2>
                     <p class="login-subtitle">برای ورود اطلاعات خود را وارد کنید</p>
                     <form id="login-form">
@@ -1549,7 +1455,6 @@
                 </div>
             </div>
         </div>
-        <!-- END: New Login Page HTML -->
 
         <div id="dashboard-page" class="hidden">
             <div class="dashboard-header">
@@ -1588,7 +1493,7 @@
         </div>
     </div>
     <div id="modal-container"></div>
-    <div id="pdf-render-container" aria-hidden="true"></div>
+    <!-- <<<< دستور دوم: المنت رندر PDF حذف شد >>>> -->
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwTgJU4lbocweggC0zU7XyzzWKg3BhcUcFc5kaeYoD6dsAHVN7A-15L19G32UCa2hB/exec';
         const loginPage = document.getElementById('login-page');
@@ -1636,14 +1541,11 @@
                  loginPage.classList.remove('hidden');
                  dashboardPage.classList.add('hidden');
                  body.classList.add('login-view');
-                 // START: Instruction 2 - Event listeners for new login buttons
                  document.getElementById('register-btn').addEventListener('click', showRegistrationModal);
                  document.getElementById('main-page-link').addEventListener('click', (e) => {
                      e.preventDefault();
-                     // TODO: Replace with the actual main page URL
                      showCustomAlert('این لینک به صفحه اصلی وب‌سایت منتقل خواهد شد.', 'info');
                  });
-                 // END: Instruction 2
             }
 
             document.addEventListener('click', function (event) {
@@ -1674,7 +1576,6 @@
             }
         });
 
-        // START: Instruction 2 - New function for registration modal
         function showRegistrationModal() {
             const modalContent = `
                 <div class="modal-body">
@@ -1699,7 +1600,6 @@
                  showCustomAlert('ثبت نام فعلا ممکن نیست.', 'info');
             };
         }
-        // END: Instruction 2
         
         function showDashboard(user) {
             document.getElementById('dashboard-user-name').textContent = user.name;
@@ -1821,9 +1721,9 @@
             let inProgress, accepted, rejected;
 
             if (Array.isArray(articlesOrSummary)) {
-                inProgress = articlesOrSummary.filter(a => ![0, 5, 9, '0', '5', '9'].includes(a.articleStatus)).length;
+                inProgress = articlesOrSummary.filter(a => ![0, 5, 9, 10, '0', '5', '9', '10'].includes(a.articleStatus)).length;
                 accepted = articlesOrSummary.filter(a => String(a.articleStatus) === '5').length;
-                rejected = articlesOrSummary.filter(a => String(a.articleStatus) === '0').length;
+                rejected = articlesOrSummary.filter(a => ['0', '10'].includes(String(a.articleStatus))).length;
             } else {
                 inProgress = articlesOrSummary.inProgress;
                 accepted = articlesOrSummary.accepted;
@@ -2330,9 +2230,9 @@
             articlesContainer.innerHTML = '';
 
             const drafts = articles.filter(a => String(a.articleStatus) === '9');
-            const rejected = articles.filter(a => String(a.articleStatus) === '0');
+            const rejected = articles.filter(a => ['0', '10'].includes(String(a.articleStatus)));
             const accepted = articles.filter(a => String(a.articleStatus) === '5');
-            const inProgress = articles.filter(a => !['0', '5', '9'].includes(String(a.articleStatus)));
+            const inProgress = articles.filter(a => !['0', '5', '9', '10'].includes(String(a.articleStatus)));
 
             renderGroup('پیش‌نویس‌ها', drafts, articlesContainer);
             renderGroup('مقالات در حال پیگیری', inProgress, articlesContainer);
@@ -2364,7 +2264,8 @@
             else if (article.supervisorStatus == 0) { supervisorStatusColor = '#dc3545'; } 
             else { supervisorStatusColor = '#6c757d'; }
             const [, articleStatusColor] = getStatusInfo('article', article.articleStatus);
-            return (isDraft || article.articleStatus == 5 || article.articleStatus == 0 || article.articleStatus == 4) ? articleStatusColor : supervisorStatusColor;
+            const finalOverrideStatuses = [0, 5, 9, 10, 4]; // Statuses that determine the border color regardless of supervisor status
+            return (finalOverrideStatuses.includes(Number(article.articleStatus))) ? articleStatusColor : supervisorStatusColor;
         }
         
         function generateArticleCardInnerHTML(article) {
@@ -2384,9 +2285,12 @@
             const isReadOnly = [5, 6, 8, 11].includes(Number(article.articleStatus));
             
             let editorFeedbackHTML = '';
-            if ((article.articleStatus == 2 || article.articleStatus == 0) && article.rejectionReason) {
-                const noticeClass = article.articleStatus == 0 ? 'editor-feedback-notice rejected' : 'editor-feedback-notice';
-                editorFeedbackHTML = `<div class="${noticeClass}"><strong>توضیحات:</strong> ${article.rejectionReason}</div>`;
+            // <<<< دستور اول: نمایش پیام برای وضعیت 2 و 10 >>>>
+            if ((['2', '10', '0'].includes(String(article.articleStatus))) && article.rejectionReason) {
+                const noticeClass = ['0', '10'].includes(String(article.articleStatus)) ? 'editor-feedback-notice rejected' : 'editor-feedback-notice';
+                const reasonTitle = String(article.articleStatus) === '2' ? 'درخواست استاد:' : 'توضیحات نشریه:';
+                const reasonText = String(article.articleStatus) === '2' ? article.rejectionReason.split('توضیحات محقق:')[0].replace('درخواست استاد:', '').trim() : article.rejectionReason;
+                editorFeedbackHTML = `<div class="${noticeClass}"><strong>${reasonTitle}</strong> ${reasonText}</div>`;
             }
             
             let supervisorCancellationNotice = '';
@@ -2394,14 +2298,18 @@
                 supervisorCancellationNotice = `<div class="supervisor-cancellation-notice">استاد از بررسی مقاله شما انصراف داده است. لطفاً از بخش ویرایش، استاد راهنمای مقاله را تغییر دهید.</div>`;
             }
             
+            // <<<< دستور اول: اضافه کردن دکمه ارسال ویرایشات نهایی >>>>
             const reReviewButtonHTML = article.articleStatus == 2 ? `<button class="btn-rereview btn-info" data-article-id="${article.articleId}">ارسال جهت بررسی مجدد</button>` : '';
+            const finalRevisionsButtonHTML = article.articleStatus == 10 ? `<button class="btn-resubmit-final btn-info" data-article-id="${article.articleId}">ارسال ویرایشات نهایی</button>` : '';
+            
             const supervisorRejectionNotice = article.supervisorStatus == 0 ? `<div class="supervisor-rejection-notice">استاد راهنما این درخواست را نپذیرفته است. لطفاً از بخش ویرایش، استاد راهنمای دیگری انتخاب کنید.</div>` : '';
             const requestDateFormatted = article.requestDate ? new Date(article.requestDate).toLocaleDateString('fa-IR') : 'نامشخص';
             const acceptanceDateFormatted = article.acceptanceDate ? new Date(article.acceptanceDate).toLocaleDateString('fa-IR') : 'نامشخص';
             const publicationDateFormatted = article.publishDate ? new Date(article.publishDate).toLocaleDateString('fa-IR') : 'نامشخص';
             const acceptanceInfo = (String(article.articleStatus) === '5') ? `<div><strong>تاریخ پذیرش:</strong> <span>${acceptanceDateFormatted}</span></div><div><strong>تاریخ نشر:</strong> <span>${publicationDateFormatted}</span></div><div><strong>شماره مجله:</strong> <span>${article.issueNumber || 'نامشخص'}</span></div>` : '';
             const supervisorContactInfo = article.supervisorContact ? `<div><strong>تماس با استاد:</strong> <span>${article.supervisorContact}</span></div>` : '';
-            const printButtonHTML = article.articleStatus == 5 ? `<button class="btn-print btn-success" title="چاپ مقاله"><i class="fas fa-print"></i></button>` : '';
+            // <<<< دستور دوم: تغییر نام دکمه از چاپ به دانلود PDF >>>>
+            const downloadButtonHTML = article.articleStatus == 5 ? `<button class="btn-download-pdf btn-success" title="دانلود PDF مقاله"><i class="fas fa-file-pdf"></i></button>` : '';
             
             let supervisorAcceptanceNotice = '';
             if (String(article.supervisorStatus) === '5' && String(article.articleStatus) === '1') {
@@ -2409,16 +2317,16 @@
             }
 
             const isContentComplete = article.title && article.affiliation && article.knowledgeArea && article.topicReason && article.abstract && article.keywords && article.introduction && article.body && article.conclusion && article.references;
-            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
+            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12, 10].includes(Number(article.articleStatus));
             const finalReviewButtonHTML = canSendForFinalReview ? `<button class="btn-send-final-review btn-success" data-article-id="${article.articleId}">ارسال جهت برسی نهایی</button>` : '';
 
-            return `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${printButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
+            return `<div class="article-header-clickable"><div class="article-header"><div class="article-title-wrapper"><span class="article-title">${article.title}</span><span class="toggle-icon"><i class="fas fa-chevron-down"></i></span></div><div class="status-badges"><span class="status-badge" style="background-color: ${isDraft ? '#6c757d' : supervisorStatusColor};">${isDraft ? 'پیش‌نویس' : supervisorStatusText}</span><span class="status-badge" style="background-color: ${articleStatusColor};">${articleStatusText}</span></div></div>${supervisorRejectionNotice}${supervisorCancellationNotice}${supervisorAcceptanceNotice}${editorFeedbackHTML}</div><div class="collapsible-details"><div class="details-grid"><div><strong>ثبت درخواست:</strong> <span>${requestDateFormatted}</span></div><div><strong>شناسه مقاله:</strong> <span>${article.articleId}</span></div><div><strong>استاد راهنما:</strong> <span>${article.supervisorName || (isDraft ? 'هنوز انتخاب نشده' : 'نامشخص')}</span></div>${supervisorContactInfo}<div><strong>حیطه دانشی:</strong> <span>${article.knowledgeArea || 'نامشخص'}</span></div>${acceptanceInfo}</div></div><div class="article-details"><div class="article-actions">${finalReviewButtonHTML}${reReviewButtonHTML}${finalRevisionsButtonHTML}<button class="btn-view">${isReadOnly ? 'مشاهده' : (isDraft ? 'تکمیل پیش‌نویس' : (article.articleStatus == 4 ? 'مشاهده و ویرایش' : 'مشاهده و تکمیل'))}</button><button class="btn-history btn-secondary" title="مشاهده تاریخچه"><i class="fas fa-history"></i></button>${downloadButtonHTML}${canBeDeleted ? `<button class="btn-delete btn-danger" title="حذف مقاله"><i class="fas fa-trash"></i></button>` : ''}</div></div>`;
         }
 
         function bindArticleCardEvents(card, article) {
             const canBeDeleted = article.supervisorStatus != 5 || article.articleStatus == 9;
             const isContentComplete = article.title && article.affiliation && article.knowledgeArea && article.topicReason && article.abstract && article.keywords && article.introduction && article.body && article.conclusion && article.references;
-            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12].includes(Number(article.articleStatus));
+            const canSendForFinalReview = isContentComplete && (String(article.supervisorStatus) === '5') && ![5, 6, 8, 11, 12, 10].includes(Number(article.articleStatus));
             
             card.querySelector('.article-header-clickable').onclick = () => card.classList.toggle('expanded');
             card.querySelector('.btn-view').onclick = (e) => { e.stopPropagation(); showEditArticleWizard(article); };
@@ -2427,13 +2335,18 @@
             const rereviewBtn = card.querySelector('.btn-rereview');
             if (rereviewBtn) { rereviewBtn.onclick = (e) => { e.stopPropagation(); handleRequestReReviewClick(e.target.closest('button')); }; }
 
+            // <<<< دستور اول: رویداد برای دکمه جدید >>>>
+            const finalRevisionsBtn = card.querySelector('.btn-resubmit-final');
+            if (finalRevisionsBtn) { finalRevisionsBtn.onclick = (e) => { e.stopPropagation(); handleRequestFinalRevisionsClick(e.target.closest('button')); }; }
+
             if (canBeDeleted) {
                 const deleteBtn = card.querySelector('.btn-delete');
                 if(deleteBtn) { deleteBtn.onclick = (e) => { e.stopPropagation(); handleDeleteArticle(article.articleId, e.target.closest('button')); }; }
             }
 
-            const printBtn = card.querySelector('.btn-print');
-            if(printBtn) { printBtn.onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
+            // <<<< دستور دوم: اتصال رویداد به دکمه دانلود >>>>
+            const downloadBtn = card.querySelector('.btn-download-pdf');
+            if(downloadBtn) { downloadBtn.onclick = (e) => { e.stopPropagation(); generatePdf(article, e.target.closest('button')); }; }
             
             if (canSendForFinalReview) { 
                 const finalReviewBtn = card.querySelector('.btn-send-final-review');
@@ -2458,37 +2371,41 @@
             });
         }
 
+        // <<<< دستور دوم: تابع تولید PDF بازنویسی شد >>>>
         async function generatePdf(article, button) {
-            button.classList.add('btn-loading');
-            const { jsPDF } = window.jspdf;
-            const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fa-IR') : 'نامشخص';
-            const renderContainer = document.getElementById('pdf-render-container');
-            renderContainer.innerHTML = `<div class="pdf-header"><h2>مجله علمی تعالی</h2><div class="pdf-meta"><span>شماره جلد: ${article.issueNumber || 'نامشخص'}</span><span>تاریخ پذیرش: ${formatDate(article.acceptanceDate)}</span><span>تاریخ نشر: ${formatDate(article.publicationDate)}</span></div></div><h1 class="pdf-title">${article.title}</h1><div class="pdf-authors"><p><strong>محقق:</strong> ${article.researcherName || 'نامشخص'}</p><p><strong>وابستگی سازمانی:</strong> ${article.affiliation || 'نامشخص'}</p><p><strong>استاد راهنما:</strong> ${article.supervisorName || 'نامشخص'}</p></div><h2>چکیده</h2><p>${article.abstract || ''}</p><p class="pdf-keywords"><strong>کلیدواژه‌ها:</strong> ${article.keywords || ''}</p><h2>مقدمه</h2><p>${(article.introduction || '').replace(/\n/g, '<br>')}</p><h2>بدنه مقاله</h2><p>${(article.body || '').replace(/\n/g, '<br>')}</p><h2>نتیجه‌گیری</h2><p>${(article.conclusion || '').replace(/\n/g, '<br>')}</p><h2 class="pdf-references">منابع و مآخذ</h2><ul>${(article.references || '').split('\n').map(ref => `<li>${ref}</li>`).join('')}</ul>`;
-            try {
-                const canvas = await html2canvas(renderContainer, { scale: 2, useCORS: true });
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                let heightLeft = pdfHeight;
-                let position = 0;
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
-                while (heightLeft >= 0) {
-                    position = heightLeft - pdfHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pdf.internal.pageSize.getHeight();
-                }
-                pdf.save(`article-${article.articleId}.pdf`);
-            } catch (error) {
-                console.error("Error generating PDF:", error);
-                showCustomAlert('خطایی در تولید فایل PDF رخ داد.', 'error');
-            } finally {
-                renderContainer.innerHTML = '';
-                button.classList.remove('btn-loading');
+            const user = getStoredUser();
+            if (!user) return;
+
+            showCustomAlert('در حال آماده‌سازی فایل PDF... لطفاً منتظر بمانید.', 'info');
+            
+            const response = await callApi('generateArticlePdf', {
+                nationalId: user.nationalId,
+                articleId: article.articleId
+            }, button);
+
+            if (response?.status === 'success') {
+                closeAllModals(); // بستن پیام "در حال آماده سازی"
+                downloadBase64File(response.data);
+            } else {
+                showCustomAlert(response?.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در تولید PDF: ' + (response?.message || 'خطای نامشخص'), 'error');
             }
+        }
+
+        function downloadBase64File({ filename, mimeType, content }) {
+            const byteCharacters = atob(content);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         async function handleSendForFinalReview(articleId, button) {
@@ -2504,6 +2421,61 @@
                     }
                 } else { closeModal(); }
             }, 'بله، ارسال کن', 'لغو');
+        }
+
+        // <<<< دستور اول: تابع جدید برای مدیریت وضعیت 10 >>>>
+        async function handleRequestFinalRevisionsClick(button) {
+            const articleId = button.dataset.articleId;
+            const article = allUserArticles.find(a => a.articleId == articleId);
+            if (!article) {
+                return showCustomAlert('خطا: مقاله یافت نشد.', 'error');
+            }
+            
+            const originalReason = article.rejectionReason || 'توضیحی توسط نشریه ثبت نشده است.';
+
+            const modalContent = `
+                <div class="modal-body">
+                    <div class="editor-feedback-notice rejected" style="margin-bottom: 20px;">
+                        <strong>توضیحات نشریه:</strong>
+                        <p>${originalReason}</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="researcher-revision-notes">ویرایش های انجام شده را بیان کنید (حداکثر 100 کلمه)</label>
+                        <textarea id="researcher-revision-notes" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-rereview-btn" class="btn-secondary">لغو</button>
+                    <button id="submit-rereview-btn" class="btn-info"><span class="btn-text">ارسال</span></button>
+                </div>
+            `;
+            renderModal('ارسال ویرایشات نهایی مقاله', modalContent, 'modal-sm');
+
+            const submitBtn = document.getElementById('submit-rereview-btn');
+            const cancelBtn = document.getElementById('cancel-rereview-btn');
+            const notesTextarea = document.getElementById('researcher-revision-notes');
+
+            cancelBtn.onclick = () => closeModalById('main-modal');
+
+            submitBtn.onclick = async () => {
+                const notes = notesTextarea.value.trim();
+                if (!notes) { return showCustomAlert('لطفاً توضیحات ویرایش را وارد کنید.', 'error'); }
+                if (notes.split(/\s+/).filter(Boolean).length > 100) { return showCustomAlert('توضیحات شما نباید بیشتر از ۱۰۰ کلمه باشد.', 'error'); }
+
+                const user = getStoredUser();
+                const response = await callApi('submitFinalRevisions', { // فراخوانی اکشن جدید
+                    articleId: articleId,
+                    nationalId: user.nationalId,
+                    revisionNotes: notes
+                }, submitBtn);
+
+                if (response?.status === 'success') {
+                    closeModalById('main-modal');
+                    showCustomAlert(response.message, 'success', () => loadArticles(user.nationalId, false));
+                } else {
+                    showCustomAlert(response.isNetworkError ? 'خطا در ارتباط با سرور' : 'خطا در ارسال: ' + (response.message || 'خطای نامشخص'), 'error');
+                }
+            };
         }
 
         async function handleRequestReReviewClick(button) {
@@ -2925,7 +2897,7 @@
         function getStoredUser() { return JSON.parse(localStorage.getItem('currentUser')); }
         function getStatusInfo(type, code) {
             const map = {
-                article: { '0': ['رد شده توسط نشریه', '#dc3545'], '1': ['در دست بررسی توسط استاد', '#0d6efd'], '2': ['نیازمند ویرایش', '#fd7e14'], '3': ['انصراف محقق', '#6c757d'], '4': ['انصراف استاد راهنما', '#ffc107'], '5': ['تایید نهایی و آماده نشر', '#198754'], '6': ['تایید استاد، منتظر بررسی نهایی', '#0dcaf0'], '8': ['در حال بررسی مجدد', '#6f42c1'], '9': ['پیش‌نویس', '#6c757d'], '11': ['ارسال برای بررسی نهایی', '#2563EB'], '12': ['ویرایش ارسال شد', '#8b5cf6'] }
+                article: { '0': ['رد شده توسط نشریه', '#dc3545'], '1': ['در دست بررسی توسط استاد', '#0d6efd'], '2': ['نیازمند ویرایش', '#fd7e14'], '3': ['انصراف محقق', '#6c757d'], '4': ['انصراف استاد راهنما', '#ffc107'], '5': ['تایید نهایی و آماده نشر', '#198754'], '6': ['تایید استاد، منتظر بررسی نهایی', '#0dcaf0'], '8': ['در حال بررسی مجدد', '#6f42c1'], '9': ['پیش‌نویس', '#6c757d'], '10': ['نیازمند ویرایش‌های نهایی', '#ef4444'], '11': ['ارسال برای بررسی نهایی', '#2563EB'], '12': ['ویرایش ارسال شد', '#8b5cf6'] }
             };
             return (map[type] && map[type][String(code)]) || ['نامشخص', '#6c757d'];
         }
