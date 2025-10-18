@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -129,10 +128,53 @@
     .modal-close-button { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #aaa; position: absolute; top: 15px; left: 20px; transition: color 0.2s; }
     .modal-close-button:hover { color: #333; }
 
+    /* <<<< دستور سوم: اصلاح انیمیشن لودینگ >>>> */
     .btn-loading { pointer-events: none; }
     .btn-loading .btn-text, .btn-loading i { opacity: 0; }
-    .btn-loading::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; border: 2px solid; border-color: currentColor currentColor transparent transparent; border-radius: 50%; animation: spin-btn 0.8s linear infinite; }
-    @keyframes spin-btn { to { transform: rotate(360deg); } }
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 18px;
+        height: 18px;
+        border: 2px solid;
+        border-color: currentColor currentColor transparent transparent;
+        border-radius: 50%;
+        animation: spin-btn 0.8s linear infinite;
+        /* transform property is now handled by the animation itself to prevent shaking */
+    }
+    @keyframes spin-btn {
+        from {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+
+    /* <<<< دستور دوم: استایل نوتیفیکیشن >>>> */
+    #toast-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translate(-50%, -100px);
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10001;
+        font-size: 1rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s;
+    }
+    #toast-notification.show {
+        transform: translate(-50%, 0);
+        opacity: 1;
+        visibility: visible;
+    }
 
     footer { text-align: center; padding: 2.5rem; margin-top: 3rem; background: var(--secondary-color); color: #d1d5db; border-top: 5px solid var(--accent-color); }
 </style>
@@ -140,6 +182,9 @@
 <body>
 
 <div id="loading-overlay"><div class="loader"></div><p>در حال بارگذاری اطلاعات نشریه...</p></div>
+
+<!-- <<<< دستور دوم: المنت نوتیفیکیشن >>>> -->
+<div id="toast-notification"></div>
 
 <div id="page-wrapper" style="opacity:0; transition: opacity 0.5s;">
     <header>
@@ -291,7 +336,9 @@
         if (response?.status === 'success') {
             allIssues = response.data.issues.sort((a, b) => b.issueNumber - a.issueNumber);
             allArticles = response.data.allArticles;
-            handleSearch();
+            // <<<< دستور اول: نمایش اولیه مقالات >>>>
+            const articlesByIssue = groupArticlesByIssue(allArticles);
+            renderIssues(allIssues, articlesByIssue);
         }
         loadingOverlay.style.opacity = '0';
         setTimeout(() => {
@@ -335,44 +382,42 @@
         const loadMoreContainer = document.getElementById('load-more-container');
         if (visibleIssuesCount < issues.length) {
             loadMoreContainer.innerHTML = `<button id="load-more-btn" class="btn btn-secondary">نمایش دوره‌های بیشتر</button>`;
-            document.getElementById('load-more-btn').onclick = () => { visibleIssuesCount += 5; handleSearch(); };
+            document.getElementById('load-more-btn').onclick = () => { visibleIssuesCount += 5; renderIssues(issues, articlesByIssue); };
         } else {
             loadMoreContainer.innerHTML = '';
         }
     }
     
-    function triggerSearch() {
+    // <<<< دستور اول: تابع جستجوی جدید >>>>
+    async function triggerSearch() {
         const searchButton = document.getElementById('search-button');
         searchButton.classList.add('btn-loading');
-        setTimeout(() => {
-            handleSearch();
-            searchButton.classList.remove('btn-loading');
-        }, 300);
-    }
 
-    function handleSearch() {
-        const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
-        const checkedCategories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
+        const searchTerm = document.getElementById('search-input').value.trim();
+        const categories = Array.from(document.querySelectorAll('input[name="search-category"]:checked')).map(cb => cb.value);
+        
+        let articlesToDisplay;
 
-        const filteredArticles = !searchTerm ? allArticles : allArticles.filter(article => {
-            if (checkedCategories.length === 0) return false;
-            
-            return checkedCategories.some(category => {
-                const fields = {
-                    title: (article.title || '').toLowerCase(), 
-                    researcherName: (article.researcherName || '').toLowerCase(),
-                    supervisorName: (article.supervisorName || '').toLowerCase(), 
-                    keywords: (article.keywords || '').toLowerCase()
-                };
-                return (fields[category] || '').includes(searchTerm);
-            });
-        });
-
-        const articlesByIssue = groupArticlesByIssue(filteredArticles);
+        if (!searchTerm) {
+            articlesToDisplay = allArticles; // اگر جستجو خالی بود، از داده‌های اولیه استفاده کن
+        } else {
+            const response = await callApi('searchArticles', { searchTerm, categories });
+            if (response?.status === 'success') {
+                articlesToDisplay = response.data.articles;
+            } else {
+                articlesToDisplay = [];
+            }
+        }
+        
+        const articlesByIssue = groupArticlesByIssue(articlesToDisplay);
         const relevantIssues = allIssues.filter(issue => articlesByIssue[issue.issueNumber] && articlesByIssue[issue.issueNumber].length > 0);
+        
+        visibleIssuesCount = 5; // ریست کردن تعداد نمایش برای جستجوی جدید
         renderIssues(searchTerm ? relevantIssues : allIssues, articlesByIssue);
+
+        searchButton.classList.remove('btn-loading');
     }
-    
+
     function showAboutModal(event) {
         event.preventDefault();
         showModal(
@@ -396,7 +441,9 @@
     }
     
     function showArticleModal(articleId) {
-        const d = allArticles.find(a => String(a.articleId) === String(articleId));
+        // برای نمایش جزئیات مقاله، از داده‌های موجود (allArticles) استفاده می‌کنیم تا سریع باشد
+        const articlePool = allArticles;
+        const d = articlePool.find(a => String(a.articleId) === String(articleId));
         if (d) {
             const modalHtml = `
                 <div class="modal-header">
@@ -453,6 +500,7 @@
         event.stopPropagation();
         const button = event.target.closest('button');
         if (button) button.classList.add('btn-loading');
+        showToast('مقاله در دست تولید و تنظیم جهت ذخیره است...');
 
         try {
             const response = await callApi('generatePdfForIssue', { issueNumber: issueNumber });
@@ -466,11 +514,13 @@
             alert('یک خطای غیرمنتظره در هنگام دانلود PDF دوره رخ داد.');
         } finally {
             if (button) button.classList.remove('btn-loading');
+            hideToast();
         }
     }
 
     async function handleDownloadPDF(button, articleId) {
         if (button) button.classList.add('btn-loading');
+        showToast('مقاله در دست تولید و تنظیم جهت ذخیره است...');
 
         try {
             const response = await callApi('generatePdfFromArticle', { articleId: articleId });
@@ -484,6 +534,7 @@
             alert('یک خطای غیرمنتظره در هنگام دانلود PDF رخ داد.');
         } finally {
             if (button) button.classList.remove('btn-loading');
+            hideToast();
         }
     }
     
@@ -531,6 +582,19 @@
             return '';
         }
     }
+    
+    // <<<< دستور دوم: توابع مربوط به نوتیفیکیشن >>>>
+    let toastTimeout;
+    function showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        toast.textContent = message;
+        toast.classList.add('show');
+    }
+    function hideToast() {
+        const toast = document.getElementById('toast-notification');
+        toast.classList.remove('show');
+    }
+
 </script>
 
 </body>
