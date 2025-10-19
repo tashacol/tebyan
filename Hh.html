@@ -26,7 +26,6 @@
             border-radius: var(--radius-md); font-size: 1rem; font-family: inherit; transition: var(--transition); background-color: #f9fafb;
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
-        
         button {
             font-family: inherit; padding: 10px 16px; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 500;
             cursor: pointer; transition: var(--transition); display: inline-flex;
@@ -130,7 +129,7 @@
         .accordion .accordion-content { padding: 16px 8px 16px; animation: fadeIn 0.4s; line-height: 1.8; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .info-box { padding: 12px 16px; margin: 24px 0; border-radius: var(--radius-md); border-right: 4px solid; font-size: 0.9rem; }
+        .info-box { padding: 12px 16px; border-radius: var(--radius-md); border-right: 4px solid; font-size: 0.9rem; }
         .info-box.warning { background-color: #fffbeb; border-color: var(--warning); color: #92400e; }
         .info-box.danger { background-color: var(--danger-light); border-color: var(--danger); color: #991b1b; }
         
@@ -218,7 +217,6 @@
 <div id="modal-container"></div>
 
 <script>
-    // !مهم: آدرس دیپلوی اسکریپت خود را اینجا قرار دهید
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm40432lrIkCtE6ZUb6wUQ6cQOJEByi3RLh6G_wnKwwxQIjiFtQZclNDFytd8jWGk/exec';
     let allArticles = [];
     let currentProfessor = null;
@@ -285,9 +283,10 @@
         // <<<< دستور پنجم: رویداد برای دکمه بروزرسانی >>>>
         document.getElementById('refresh-btn').onclick = async (e) => {
             const btn = e.currentTarget;
-            btn.querySelector('i').classList.add('fa-spin');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
             await loadDashboardData();
-            setTimeout(() => { btn.querySelector('i').classList.remove('fa-spin'); }, 500);
+            setTimeout(() => { icon.classList.remove('fa-spin'); }, 500);
         };
         
         let searchDebounce;
@@ -379,6 +378,7 @@
         if (String(article.supervisor_status) === '5' && !['0', '4', '5', '6'].includes(String(article.article_status))) {
             dropdownItems += `<li onclick="showCancelSupervisionModal('${article.article_id}')" style="color: var(--danger);"><i class="fas fa-user-slash fa-fw"></i> انصراف از راهنمایی</li>`;
         }
+        
         // <<<< دستور اول: نمایش پیام مدیریت در کارت مقاله >>>>
         let managementMessage = '';
         if (String(article.article_status) === '10' && article.rejection_reason) {
@@ -483,9 +483,11 @@
     
     // <<<< دستور دوم: تابع جدید برای دانلود PDF >>>>
     async function handleDownloadPdf(button, articleId) {
+        showCustomAlert('در حال آماده‌سازی فایل PDF، لطفا منتظر بمانید...', 'info');
         button.classList.add('btn-loading');
         const response = await callApi('generateProfessorArticlePdf', { articleId });
         button.classList.remove('btn-loading');
+        closeAllModals(); // بستن پیام "در حال آماده سازی"
         if (response?.status === 'success' && response.data) {
             downloadBase64File(response.data);
         }
@@ -674,7 +676,7 @@
         const res = await callApi('getProfessorProfile');
         
         // <<<< دستور چهارم: بررسی توکن قبل از رندر >>>>
-        if (modalLoadToken !== currentToken) return;
+        if (modalLoadToken !== currentToken || !document.getElementById('modal-container').querySelector('.modal-box')) return;
 
         const modalBox = document.querySelector('#modal-container .modal-box');
         const modalBody = modalBox?.querySelector('.modal-body');
@@ -745,7 +747,7 @@
          const res = await callApi('getSuggestedTitles');
          
          // <<<< دستور چهارم: بررسی توکن قبل از رندر >>>>
-         if (modalLoadToken !== currentToken) return;
+         if (modalLoadToken !== currentToken || !document.getElementById('modal-container').querySelector('.modal-box')) return;
 
          const modalBody = document.querySelector('#modal-container .modal-body');
 
@@ -785,14 +787,13 @@
         const modalWrapper = document.createElement('div');
         modalWrapper.className = 'modal-overlay';
         
-        let modalBoxContent = `<div class="modal-box ${sizeClass}">
+        modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}">
                 <div class="modal-header">
                     <h3>${title}</h3>
                     <button class="btn-icon" onclick="closeAllModals()"><i class="fas fa-times"></i></button>
                 </div>
                 ${content}
             </div>`;
-        modalWrapper.innerHTML = content.includes('<div class="modal-box">') ? content : modalBoxContent;
 
         document.getElementById('modal-container').appendChild(modalWrapper);
         setTimeout(() => modalWrapper.classList.add('visible'), 10);
@@ -822,7 +823,7 @@
                 <i class="fas ${icons[type]}" style="font-size: 3rem; color: var(--${type}); margin-bottom: 16px;"></i>
                 <p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p>
             </div>
-            <div class="modal-footer" style="justify-content: center;"><button id="alert-ok-btn" class="btn-${type === 'error' ? 'danger' : 'success'}">تایید</button></div>
+            <div class="modal-footer" style="justify-content: center;"><button id="alert-ok-btn" class="btn-${type === 'error' ? 'danger' : 'success'}">${type === 'info' ? 'متوجه شدم' : 'تایید'}</button></div>
         </div>`;
         alertContainer.appendChild(overlay);
         setTimeout(() => overlay.classList.add('visible'), 10);
