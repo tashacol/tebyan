@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -27,12 +27,11 @@
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
         
-        /* <<<< دستور سوم: اصلاح انیمیشن لودینگ دکمه ها >>>> */
         button {
             font-family: inherit; padding: 10px 16px; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 500;
             cursor: pointer; transition: var(--transition); display: inline-flex;
             align-items: center; justify-content: center; gap: 8px; position: relative; background-color: var(--primary); color: white;
-            vertical-align: middle; min-height: 41px; box-sizing: border-box;
+            vertical-align: middle;
         }
         button:hover:not(:disabled) { opacity: 0.85; }
         button:disabled { background-color: #d1d5db; cursor: not-allowed; }
@@ -43,14 +42,19 @@
         .btn-light { background-color: var(--bg-main); color: var(--text-dark); border: 1px solid var(--border-color); }
         .btn-icon { background: none; color: var(--text-light); width: 36px; height: 36px; min-height: auto; padding: 0; font-size: 1.1rem; border-radius: 50%; }
         .btn-icon:hover { background: var(--bg-main); color: var(--primary); }
+        
+        /* <<<< دستور سوم: اصلاح کامل انیمیشن لودینگ دکمه ها >>>> */
         .btn-loading .btn-text, .btn-loading .fas, .btn-loading .fa-solid { visibility: hidden; }
         .btn-loading::after {
-            content: ''; position: absolute; top: 50%; left: 50%;
-            width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white; border-radius: 50%;
-            animation: spin-center 0.8s linear infinite;
+            content: ''; position: absolute;
+            top: 50%; left: 50%;
+            width: 18px; height: 18px;
+            border: 2px solid;
+            border-color: currentColor currentColor transparent transparent;
+            border-radius: 50%;
+            animation: spin-perfect-center 0.8s linear infinite;
         }
-        @keyframes spin-center {
+        @keyframes spin-perfect-center {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
@@ -64,25 +68,31 @@
         .skeleton-loader { background-color: #e5e7eb; border-radius: 4px; animation: pulse 1.5s infinite ease-in-out; width: 60px; height: 32px; display: inline-block; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        /* <<<< دستور سوم: اصلاح انیمیشن اسپینر مودال >>>> */
+        /* <<<< دستور سوم: اصلاح کامل انیمیشن لودینگ پنجره ها >>>> */
         .modern-spinner {
-            width: 48px; height: 48px; position: relative;
+            width: 48px; height: 48px; border-radius: 50%;
+            display: inline-block; position: relative;
+            border: 3px solid;
+            border-color: var(--primary) var(--primary) transparent transparent;
+            box-sizing: border-box;
+            animation: spin-content 1.2s linear infinite;
         }
-        .modern-spinner::before, .modern-spinner::after {
+        .modern-spinner::after, .modern-spinner::before {
             content: ''; box-sizing: border-box; position: absolute;
-            top: 50%; left: 50%; width: 48px; height: 48px;
-            margin-top: -24px; margin-left: -24px;
-            border-radius: 50%; border: 3px solid transparent;
-            animation: spin-center 1.2s linear infinite;
+            left: 0; right: 0; top: 0; bottom: 0; margin: auto;
+            border: 3px solid;
+            border-color: transparent transparent var(--success) var(--success);
+            width: 40px; height: 40px; border-radius: 50%;
+            animation: spin-content-alt 1s linear infinite;
         }
         .modern-spinner::before {
-            border-top-color: var(--primary);
+            width: 32px; height: 32px;
+            border-color: var(--primary) var(--primary) transparent transparent;
+            animation: spin-content 1.5s linear infinite reverse;
         }
-        .modern-spinner::after {
-            border-bottom-color: var(--success);
-            animation-delay: -0.6s;
-        }
-        .spinner-container { text-align: center; padding: 40px; display: flex; justify-content: center; align-items: center; }
+        @keyframes spin-content { to { transform: rotate(360deg); } }
+        @keyframes spin-content-alt { to { transform: rotate(-360deg); } }
+        .spinner-container { text-align: center; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 200px; }
 
         .article-card { background: var(--bg-card); border-radius: var(--radius-lg); margin-bottom: 16px; padding: 20px; transition: var(--transition); border: 1px solid var(--border-color); }
         .article-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
@@ -91,7 +101,7 @@
         .article-meta { margin-top: 8px; font-size: 0.85rem; color: var(--text-light); }
         .article-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; color: white; display: inline-flex; align-items: center; justify-content: center; min-width: 80px; }
-        .status-badge .mini-loader { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin-center 1s linear infinite; }
+        .status-badge .mini-loader { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin-perfect-center 1s linear infinite; }
         .actions-menu { position: relative; display: flex; gap: 4px; }
         .dropdown-menu { position: absolute; left: 0; top: 100%; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); list-style: none; padding: 8px; margin: 4px 0 0 0; width: max-content; z-index: 100; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s, visibility 0.2s; }
         .dropdown-menu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -111,18 +121,18 @@
         .accordion summary { 
             font-size: 1rem; font-weight: 700; padding: 16px 8px; cursor: pointer; list-style: none; display: flex; 
             justify-content: space-between; align-items: center;
-            position: sticky; top: -1px; background-color: var(--bg-card); z-index: 1;
-            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; background-color: var(--bg-card); z-index: 1;
         }
-        .accordion details[open] summary { border-bottom-color: var(--primary); }
         .accordion summary::-webkit-details-marker { display: none; }
         .accordion summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s; color: var(--text-light); }
+        .accordion details[open] summary { border-bottom: 1px solid var(--border-color); }
         .accordion details[open] summary::after { transform: rotate(180deg); }
-        .accordion .accordion-content { padding: 24px 8px 16px; animation: fadeIn 0.4s; line-height: 1.8; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .accordion .accordion-content { padding: 16px 8px 16px; animation: fadeIn 0.4s; line-height: 1.8; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .info-box { padding: 12px 16px; margin-bottom: 24px; border-radius: var(--radius-md); border-right: 4px solid; font-size: 0.9rem; }
+        .info-box { padding: 12px 16px; margin: 24px 0; border-radius: var(--radius-md); border-right: 4px solid; font-size: 0.9rem; }
         .info-box.warning { background-color: #fffbeb; border-color: var(--warning); color: #92400e; }
+        .info-box.danger { background-color: var(--danger-light); border-color: var(--danger); color: #991b1b; }
         
         .titles-list { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
         .titles-list li { 
@@ -144,6 +154,7 @@
         .timeline-icon.warning { background: var(--warning); }
         .timeline-icon.info { background: var(--info); }
         .timeline-icon.primary { background: var(--primary); }
+        .timeline-icon.secondary { background-color: var(--text-light); }
         .timeline-content { flex-grow: 1; }
         .timeline-header { display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 5px; }
         .timeline-details { font-size: 0.9rem; color: var(--text-light); }
@@ -186,7 +197,7 @@
                 <button id="manage-titles-btn" class="btn-light"><i class="fas fa-lightbulb"></i><span class="btn-text">عناوین</span></button>
                 <button id="profile-btn" class="btn-light"><i class="fas fa-user-cog"></i><span class="btn-text">پروفایل</span></button>
                 <!-- <<<< دستور پنجم: دکمه بروزرسانی اضافه شد >>>> -->
-                <button id="refresh-btn" class="btn-light" title="بروزرسانی"><i class="fas fa-sync-alt"></i></button>
+                <button id="refresh-btn" class="btn-light" title="بروزرسانی اطلاعات"><i class="fas fa-sync-alt"></i></button>
                 <button id="logout-btn" class="btn-danger" title="خروج"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
@@ -207,9 +218,12 @@
 <div id="modal-container"></div>
 
 <script>
+    // !مهم: آدرس دیپلوی اسکریپت خود را اینجا قرار دهید
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzm40432lrIkCtE6ZUb6wUQ6cQOJEByi3RLh6G_wnKwwxQIjiFtQZclNDFytd8jWGk/exec';
     let allArticles = [];
     let currentProfessor = null;
+    // <<<< دستور چهارم: توکن برای کنترل باز شدن مودال‌ها >>>>
+    let modalLoadToken = 0;
 
     const loginPage = document.getElementById('login-page');
     const dashboardPage = document.getElementById('dashboard-page');
@@ -269,21 +283,28 @@
         document.getElementById('profile-btn').onclick = showProfileModal;
         document.getElementById('manage-titles-btn').onclick = showTitlesModal;
         // <<<< دستور پنجم: رویداد برای دکمه بروزرسانی >>>>
-        document.getElementById('refresh-btn').onclick = loadDashboardData;
+        document.getElementById('refresh-btn').onclick = async (e) => {
+            const btn = e.currentTarget;
+            btn.querySelector('i').classList.add('fa-spin');
+            await loadDashboardData();
+            setTimeout(() => { btn.querySelector('i').classList.remove('fa-spin'); }, 500);
+        };
         
         let searchDebounce;
         document.getElementById('search-input').addEventListener('input', e => {
             clearTimeout(searchDebounce);
             const searchTerm = e.target.value.trim();
             searchDebounce = setTimeout(async () => {
+                articlesContainer.innerHTML = `<div class="spinner-container"><div class="modern-spinner"></div></div>`;
                 if (searchTerm.length > 2) {
-                    articlesContainer.innerHTML = `<div class="spinner-container"><div class="modern-spinner"></div></div>`;
                     const response = await callApi('searchArticles', { searchTerm });
                     if(response.status === 'success') {
                         renderArticles(response.articles);
                     }
                 } else if (searchTerm.length === 0) {
                     renderArticles(allArticles);
+                } else {
+                     articlesContainer.innerHTML = '<p style="text-align: center; padding: 20px;">برای جستجو حداقل ۳ حرف وارد کنید.</p>';
                 }
             }, 500);
         });
@@ -329,7 +350,7 @@
             renderArticles(response.articles);
             updateStats(response.stats);
         } else {
-            articlesContainer.innerHTML = '';
+            articlesContainer.innerHTML = '<p style="text-align: center; color: var(--danger);">خطا در بارگذاری اطلاعات</p>';
         }
     }
 
@@ -352,19 +373,19 @@
         }
         if (String(article.article_status) === '2') {
             dropdownItems += `<li onclick="showEditFeedbackModal('${article.article_id}')"><i class="fas fa-comment-edit fa-fw"></i> ویرایش توضیحات</li>`;
-        } else if (String(article.supervisor_status) === '5' && !['0', '2', '4', '5', '6'].includes(String(article.article_status))) {
+        } else if (String(article.supervisor_status) === '5' && !['0', '2', '4', '5', '6', '10'].includes(String(article.article_status))) {
             dropdownItems += `<li onclick="showRevisionModal('${article.article_id}')"><i class="fas fa-edit fa-fw"></i> ارسال برای ویرایش</li>`;
         }
         if (String(article.supervisor_status) === '5' && !['0', '4', '5', '6'].includes(String(article.article_status))) {
             dropdownItems += `<li onclick="showCancelSupervisionModal('${article.article_id}')" style="color: var(--danger);"><i class="fas fa-user-slash fa-fw"></i> انصراف از راهنمایی</li>`;
         }
-        
-        // <<<< دستور اول: نمایش پیام برای وضعیت 10 >>>>
-        let infoNote = '';
+        // <<<< دستور اول: نمایش پیام مدیریت در کارت مقاله >>>>
+        let managementMessage = '';
         if (String(article.article_status) === '10' && article.rejection_reason) {
-            infoNote = `<div class="info-box warning" style="background-color: var(--danger-light); border-color: var(--danger); color: #991b1b; margin-top: 16px;">
-                           <strong>بازگردانده شده به محقق توسط نشریه:</strong> ${article.rejection_reason}
-                       </div>`;
+            managementMessage = `<div class="info-box danger" style="margin-top: 16px;">
+                <strong>بازگردانده شده به محقق توسط نشریه:</strong>
+                <p style="margin: 5px 0 0 0;">${article.rejection_reason}</p>
+            </div>`;
         }
 
         return `
@@ -375,12 +396,12 @@
                 <div class="article-meta">
                     <span>محقق: ${article.researcher_name}</span> | <span>تاریخ: ${new Date(article.request_date).toLocaleDateString('fa-IR')}</span>
                 </div>
-                ${infoNote}
+                ${managementMessage}
                 <div class="article-footer">
                     <span class="status-badge" style="background-color: ${color}">${text}</span>
                     <div class="actions-menu">
-                        <!-- <<<< دستور دوم: دکمه دانلود برای همه کارت‌ها اضافه شد >>>> -->
-                        <button class="btn-icon" title="دانلود فایل مقاله" onclick="handleDownloadDocx('${article.article_id}', this)"><i class="fas fa-file-word"></i></button>
+                        <!-- <<<< دستور دوم: دکمه دانلود PDF برای همه کارت‌ها >>>> -->
+                        <button class="btn-icon" title="دانلود PDF مقاله" onclick="handleDownloadPdf(this, '${article.article_id}')"><i class="fas fa-file-pdf"></i></button>
                         <button class="btn-icon" title="سوابق مقاله" onclick="showHistoryModal('${article.article_id}')"><i class="fas fa-history"></i></button>
                         ${dropdownItems ? `<button class="btn-icon" title="عملیات" onclick="toggleDropdown(this)"><i class="fas fa-ellipsis-v"></i></button>
                         <ul class="dropdown-menu">${dropdownItems}</ul>` : ''}
@@ -392,8 +413,8 @@
     function getStatusInfo(article) {
         if (String(article.supervisor_status) === '1') return { text: 'نیازمند تصمیم‌گیری', color: '#f59e0b' };
         if (String(article.supervisor_status) === '0') return { text: 'رد شده توسط شما', color: '#ef4444' };
+        // <<<< دستور اول: اضافه شدن وضعیت 10 به لیست >>>>
         const status = String(article.article_status);
-        // <<<< دستور اول: اضافه شدن وضعیت 10 >>>>
         const map = {
             '0': { text: 'رد شده توسط نشریه', color: '#b91c1c' }, 
             '1': { text: 'در انتظار محقق', color: '#4f46e5' },
@@ -459,6 +480,32 @@
             }
         }
     }
+    
+    // <<<< دستور دوم: تابع جدید برای دانلود PDF >>>>
+    async function handleDownloadPdf(button, articleId) {
+        button.classList.add('btn-loading');
+        const response = await callApi('generateProfessorArticlePdf', { articleId });
+        button.classList.remove('btn-loading');
+        if (response?.status === 'success' && response.data) {
+            downloadBase64File(response.data);
+        }
+    }
+
+    function downloadBase64File({ filename, mimeType, content }) {
+        const byteCharacters = atob(content);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     function toggleDropdown(button) {
         const dropdown = button.nextElementSibling;
@@ -481,7 +528,7 @@
             const professorRequest = (parts[0] || '').replace('درخواست استاد:', '').trim();
             const researcherExplanation = (parts[1] || '').trim();
             
-            infoNote = `<div class="info-box warning">
+            infoNote = `<div class="info-box warning" style="line-height: 1.8;">
                            <p style="margin: 0;"><strong>درخواست استاد:</strong> ${professorRequest}</p>
                            <p style="margin: 8px 0 0 0;"><strong>توضیحات محقق:</strong> ${researcherExplanation}</p>
                        </div>`;
@@ -509,7 +556,7 @@
             </div>`;
         }
         
-        const content = `<div class="modal-body">${infoNote} <div class="accordion">
+        const content = `<div class="modal-body"> ${infoNote} <div class="accordion">
             ${accordionItems.map(item => `<details ${item.id === 'info' ? 'open' : ''}><summary>${item.title}</summary><div class="accordion-content">${item.content}</div></details>`).join('')}
         </div></div> ${guidanceActions}`;
 
@@ -601,13 +648,13 @@
             modalBody.classList.remove('spinner-container');
             const filteredHistory = res.history.filter(entry => entry.action !== 'PROF_LOGIN_SUCCESS');
             if (filteredHistory.length === 0) {
-                modalBody.innerHTML = '<p>سابقه‌ای برای نمایش وجود ندارد.</p>';
+                modalBody.innerHTML = '<p style="text-align:center;">سابقه‌ای برای نمایش وجود ندارد.</p>';
             } else {
                 modalBody.innerHTML = `<ul class="history-timeline">${filteredHistory.map(entry => {
                     const logInfo = LOG_ACTION_TITLES[entry.action] || { title: entry.action, icon: 'fa-question-circle', color: 'secondary' };
                     return `
                     <li class="timeline-item">
-                        <div class="timeline-icon ${logInfo.color}"><i class="fas ${logInfo.icon}"></i></div>
+                        <div class="timeline-icon ${logInfo.color}"><i class="fa-solid ${logInfo.icon}"></i></div>
                         <div class="timeline-content">
                             <div class="timeline-header">
                                 <span>${entry.user}: ${logInfo.title}</span>
@@ -621,15 +668,16 @@
     }
 
     async function showProfileModal() {
-        // <<<< دستور چهارم: استفاده از ID منحصر به فرد برای مودال >>>>
-        const modalId = 'profile-modal';
-        renderModal('مدیریت پروفایل', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, 'modal-lg', modalId);
+        // <<<< دستور چهارم: ایجاد توکن جدید برای این مودال >>>>
+        const currentToken = ++modalLoadToken;
+        renderModal('مدیریت پروفایل', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, 'modal-lg');
         const res = await callApi('getProfessorProfile');
         
-        // <<<< دستور چهارم: بررسی وجود مودال قبل از تزریق محتوا >>>>
-        const modalBox = document.getElementById(modalId);
-        if (!modalBox) return; // اگر کاربر مودال را بسته بود، ادامه نده
-        const modalBody = modalBox.querySelector('.modal-body');
+        // <<<< دستور چهارم: بررسی توکن قبل از رندر >>>>
+        if (modalLoadToken !== currentToken) return;
+
+        const modalBox = document.querySelector('#modal-container .modal-box');
+        const modalBody = modalBox?.querySelector('.modal-body');
 
         if (res.status === 'success' && modalBody) {
             modalBody.classList.remove('spinner-container');
@@ -637,7 +685,7 @@
             modalBody.innerHTML = `
                 <div class="profile-grid">
                     <div class="profile-section">
-                        <h4><i class="fas fa-toggle-on"></i> وضعیت و ظرفیت</h4>
+                        <h4><i class="fa-solid fa-toggle-on"></i> وضعیت و ظرفیت</h4>
                         <div class="form-group">
                             <label>وضعیت فعالیت</label>
                             <div class="btn-group">
@@ -653,7 +701,7 @@
                         </div>
                     </div>
                      <div class="profile-section">
-                        <h4><i class="fas fa-address-book"></i> اطلاعات تکمیلی</h4>
+                        <h4><i class="fa-solid fa-address-book"></i> اطلاعات تکمیلی</h4>
                          <div class="form-group">
                             <label for="profile-contact">اطلاعات تماس (ایمیل، تلفن و...)</label>
                             <input type="text" id="profile-contact" value="${profile.contactInfo || ''}">
@@ -661,7 +709,7 @@
                     </div>
                 </div>
                 <div class="profile-section" style="margin-top: 24px;">
-                     <h4><i class="fas fa-circle-info"></i> توضیحات و تخصص‌ها</h4>
+                     <h4><i class="fa-solid fa-circle-info"></i> توضیحات و تخصص‌ها</h4>
                      <textarea id="profile-desc" rows="3" placeholder="تخصص اصلی شما، ساعات پاسخگویی و...">${profile.description || ''}</textarea>
                 </div>
             `;
@@ -691,19 +739,20 @@
     }
 
     async function showTitlesModal() {
-         // <<<< دستور چهارم: استفاده از ID منحصر به فرد برای مودال >>>>
-         const modalId = 'titles-modal';
-         renderModal('مدیریت عناوین پیشنهادی', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, '', modalId);
+        // <<<< دستور چهارم: ایجاد توکن جدید برای این مودال >>>>
+         const currentToken = ++modalLoadToken;
+         renderModal('مدیریت عناوین پیشنهادی', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, '');
          const res = await callApi('getSuggestedTitles');
          
-         // <<<< دستور چهارم: بررسی وجود مودال قبل از تزریق محتوا >>>>
-         const modalBody = document.querySelector(`#${modalId} .modal-body`);
-         if (!modalBody) return;
+         // <<<< دستور چهارم: بررسی توکن قبل از رندر >>>>
+         if (modalLoadToken !== currentToken) return;
 
-         if (res.status === 'success') {
+         const modalBody = document.querySelector('#modal-container .modal-body');
+
+         if (res.status === 'success' && modalBody) {
              modalBody.classList.remove('spinner-container');
              const titlesHTML = res.titles.length > 0 ? res.titles.map(t => `
-                <li><span class="title-text">${t.title}</span><span class="title-status ${t.status == 5 ? 'taken' : 'free'}">${t.status == 5 ? `<i class="fas fa-lock"></i> پذیرفته شده (مقاله ${t.articleId})` : '<i class="fas fa-lock-open"></i> آزاد'}</span></li>`).join('') : '<li>عنوانی ثبت نشده است.</li>';
+                <li><span class="title-text">${t.title}</span><span class="title-status ${t.status == 5 ? 'taken' : 'free'}">${t.status == 5 ? `<i class="fa-solid fa-lock"></i> پذیرفته شده (مقاله ${t.articleId})` : '<i class="fa-solid fa-lock-open"></i> آزاد'}</span></li>`).join('') : '<li>عنوانی ثبت نشده است.</li>';
              
              modalBody.innerHTML = `<h4>لیست عناوین پیشنهادی شما</h4>
                 <ul class="titles-list">${titlesHTML}</ul>
@@ -731,11 +780,9 @@
     }
 
     // --- Utility Functions ---
-    // <<<< دستور چهارم: تابع رندر مودال برای پذیرش ID >>>>
-    function renderModal(title, content, sizeClass = '', modalId = 'main-modal') {
+    function renderModal(title, content, sizeClass = '') {
         closeAllModals();
         const modalWrapper = document.createElement('div');
-        modalWrapper.id = modalId;
         modalWrapper.className = 'modal-overlay';
         
         let modalBoxContent = `<div class="modal-box ${sizeClass}">
@@ -752,10 +799,13 @@
     }
     
     function closeAllModals() {
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
+        // <<<< دستور چهارم: افزایش توکن هنگام بستن مودال‌ها >>>>
+        modalLoadToken++;
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
             modal.classList.remove('visible');
             modal.addEventListener('transitionend', () => modal.remove());
-        });
+        }
     }
 
     function showCustomAlert(message, type = 'info', onClose = null) {
@@ -772,7 +822,7 @@
                 <i class="fas ${icons[type]}" style="font-size: 3rem; color: var(--${type}); margin-bottom: 16px;"></i>
                 <p style="font-size: 1.1rem; margin-bottom: 20px;">${message}</p>
             </div>
-            <div class="modal-footer" style="justify-content: center;"><button id="alert-ok-btn" class="btn-${type === 'error' ? 'danger' : 'success'}">${type === 'success' ? 'عالی' : 'تایید'}</button></div>
+            <div class="modal-footer" style="justify-content: center;"><button id="alert-ok-btn" class="btn-${type === 'error' ? 'danger' : 'success'}">تایید</button></div>
         </div>`;
         alertContainer.appendChild(overlay);
         setTimeout(() => overlay.classList.add('visible'), 10);
@@ -810,38 +860,6 @@
         confirmBtn.onclick = () => onConfirm(true, confirmBtn, closeModal);
         cancelBtn.onclick = () => { onConfirm(false, null, closeModal); closeModal(); };
     }
-    
-    // <<<< دستور دوم: تابع جدید برای دانلود فایل >>>>
-    async function handleDownloadDocx(articleId, button) {
-        showCustomAlert('در حال آماده‌سازی فایل مقاله... لطفاً منتظر بمانید.', 'info');
-        
-        const response = await callApi('generateProfessorArticleDocx', { articleId }, button);
-        
-        if (response?.status === 'success') {
-            closeAllModals(); // بستن پیام "در حال آماده سازی"
-            downloadBase64File(response.data);
-        } else {
-            // پیام خطا توسط خود callApi نمایش داده می‌شود
-        }
-    }
-
-    function downloadBase64File({ filename, mimeType, content }) {
-        const byteCharacters = atob(content);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: mimeType });
-
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
 </script>
 
 </body>
