@@ -671,6 +671,7 @@
 
     async function showProfileModal() {
         // <<<< دستور چهارم: ایجاد توکن جدید برای این مودال >>>>
+        closeAllModals();
         const currentToken = ++modalLoadToken;
         renderModal('مدیریت پروفایل', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, 'modal-lg');
         const res = await callApi('getProfessorProfile');
@@ -742,6 +743,7 @@
 
     async function showTitlesModal() {
         // <<<< دستور چهارم: ایجاد توکن جدید برای این مودال >>>>
+         closeAllModals();
          const currentToken = ++modalLoadToken;
          renderModal('مدیریت عناوین پیشنهادی', `<div class="modal-body spinner-container"><div class="modern-spinner"></div></div>`, '');
          const res = await callApi('getSuggestedTitles');
@@ -783,8 +785,12 @@
 
     // --- Utility Functions ---
     function renderModal(title, content, sizeClass = '') {
-        closeAllModals();
+        const modalId = 'main-modal';
+        const existingModal = document.getElementById(modalId);
+        if (existingModal) existingModal.remove();
+
         const modalWrapper = document.createElement('div');
+        modalWrapper.id = modalId;
         modalWrapper.className = 'modal-overlay';
         
         modalWrapper.innerHTML = `<div class="modal-box ${sizeClass}">
